@@ -12,5 +12,6 @@ class PlayerRestrictionsModel {
         this.canRepeatTrack = map['canRepeatTrack'],
         this.canSeek = map['canSeek'],
         this.canSkipNext = map['canSkipNext'],
-        this.canSkipPrev = map['canSkipPrev'];
+        this.canSkipPrev = map['canSkipPrev'],
+        this.canToggleShuffle = map['canToggleShuffle'];
 }

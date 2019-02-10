@@ -1,4 +1,5 @@
 import 'package:yes_music/models/payer_options_model.dart';
+import 'package:yes_music/models/player_restrictions_model.dart';
 import 'package:yes_music/models/track_model.dart';
 
 /// A data model for a player state as returned by the Spotify API.
@@ -6,8 +7,7 @@ class PlayerStateModel {
   final bool isPaused;
   final PlayerOptionsModel playbackOptions;
   final int playbackPosition;
-
-  // TODO: Add player restrictions.
+  final PlayerRestrictionsModel playbackRestrictions;
   final double playbackSpeed;
   final TrackModel track;
 
@@ -16,6 +16,8 @@ class PlayerStateModel {
         this.playbackOptions =
             new PlayerOptionsModel.fromMap(map['playbackOptions']),
         this.playbackPosition = map['playbackPosition'],
+        this.playbackRestrictions =
+            new PlayerRestrictionsModel.fromMap(map['playbackRestrictions']),
         this.playbackSpeed = map['playbackSpeed'],
         this.track = new TrackModel.fromMap(map['track']);
 }
