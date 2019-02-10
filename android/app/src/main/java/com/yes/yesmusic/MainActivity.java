@@ -16,13 +16,26 @@ public class MainActivity extends FlutterActivity {
   private static final String PLAYBACK_CHANNEL = "yes.yesmusic/playback";
   private static final String CONNECTION_CHANNEL = "yes.yesmusic/connection";
 
+  private SpotifyConnectionHandler connectionHandler;
+  private SpotifyPlaybackHandler playbackHandler;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     GeneratedPluginRegistrant.registerWith(this);
 
     // Set this app's call handlers to our Spotify call handlers.
-    new MethodChannel(getFlutterView(), PLAYBACK_CHANNEL).setMethodCallHandler(new SpotifyPlaybackHandler());
-    new MethodChannel(getFlutterView(), CONNECTION_CHANNEL).setMethodCallHandler(new SpotifyConnectionHandler());
+    MethodChannel connectionChannel = new MethodChannel(getFlutterView(), CONNECTION_CHANNEL);
+    MethodChannel playbackChannel = new MethodChannel(getFlutterView(), PLAYBACK_CHANNEL);
+    this.connectionHandler = SpotifyConnectionHandler.getInstance(this, connectionChannel);
+    this.playbackHandler = SpotifyPlaybackHandler.getInstance(playbackChannel);
+    connectionChannel.setMethodCallHandler(this.connectionHandler);
+    playbackChannel.setMethodCallHandler(this.playbackHandler);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    this.connectionHandler.disconnect();
   }
 }

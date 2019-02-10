@@ -5,7 +5,7 @@ import 'package:yes_music/models/player_state_model.dart';
 /// A class that handles playback interactions with the Spotify app.
 class SpotifyPlaybackHandler {
   /// The method channel used for playback handling.
-  static const MethodChannel platform =
+  static const MethodChannel channel =
       const MethodChannel("yes.yesmusic/playback");
 
   /// A singleton instance of the Spotify playback handler.
@@ -17,13 +17,14 @@ class SpotifyPlaybackHandler {
   }
 
   SpotifyPlaybackHandler._internal() {
-    platform.setMethodCallHandler(_handleMethod);
+    channel.setMethodCallHandler(_handleMethod);
   }
 
   /// Handles method calls from native side.
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "updatePlayerState":
+        _updatePlayerState(call.arguments);
         break;
       default:
         throw new UnimplementedError(
@@ -34,11 +35,25 @@ class SpotifyPlaybackHandler {
 
   /// An rxdart [BehaviorSubject] that publishes the current state of the music
   /// player in the Spotify app.
-  BehaviorSubject<PlayerStateModel> _playerStateSubject =
-      new BehaviorSubject(seedValue: null);
+  BehaviorSubject<PlayerStateModel> _playerStateSubject;
 
+  /// Adds a [PlayerStateModel] to the [_playerStateSubject] stream.
+  void _updatePlayerState(Map map) {
+    this._playerStateSubject?.add(new PlayerStateModel.fromMap(map));
+  }
+
+  /// Adds a subscription to [_playerStateSubject].
   void playerStateSubscribe() {
-    if (this._playerStateSubject == null) {}
+    if (this._playerStateSubject == null) {
+      this._playerStateSubject = new BehaviorSubject(seedValue: null);
+    }
+
+    channel.invokeMethod("subscribeToPlayerState");
+  }
+
+  /// Removes a subscription from the Spotify API player state stream.
+  void playerStateUnsubscribe() {
+    channel.invokeMethod("unsubscribeFromPlayerState");
   }
 
   void close() {
