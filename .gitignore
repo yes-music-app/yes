@@ -35,6 +35,7 @@ build/
 **/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
+**/android/app/src/main/java/com/yes/yesmusic/methods/spotify/Items.java
 
 # iOS/XCode related
 **/ios/**/*.mode1v3

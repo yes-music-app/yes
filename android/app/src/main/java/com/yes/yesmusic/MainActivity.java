@@ -1,7 +1,8 @@
 package com.yes.yesmusic;
 
 import android.os.Bundle;
-import handlers.methods.SpotifyCallHandler;
+import com.yes.yesmusic.methods.spotify.SpotifyConnectionHandler;
+import com.yes.yesmusic.methods.spotify.SpotifyPlaybackHandler;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
@@ -11,15 +12,17 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
  */
 public class MainActivity extends FlutterActivity {
 
-  // The channel path to be used by the method channel.
-  private static final String CHANNEL = "yes.yesmusic/spotify";
+  // The channel paths to be used by the method channels.
+  private static final String PLAYBACK_CHANNEL = "yes.yesmusic/playback";
+  private static final String CONNECTION_CHANNEL = "yes.yesmusic/connection";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     GeneratedPluginRegistrant.registerWith(this);
 
-    // Set this app's call handler to our Spotify call handler.
-    new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(new SpotifyCallHandler());
+    // Set this app's call handlers to our Spotify call handlers.
+    new MethodChannel(getFlutterView(), PLAYBACK_CHANNEL).setMethodCallHandler(new SpotifyPlaybackHandler());
+    new MethodChannel(getFlutterView(), CONNECTION_CHANNEL).setMethodCallHandler(new SpotifyConnectionHandler());
   }
 }

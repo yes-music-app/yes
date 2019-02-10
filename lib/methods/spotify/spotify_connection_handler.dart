@@ -1,7 +1,9 @@
 import 'package:flutter/services.dart';
-import 'package:yes_music/methods/spotify/spotify_method_handler.dart';
 
 class SpotifyLoginHandler {
+  static const MethodChannel platform =
+      const MethodChannel("yes.yesmusic/connection");
+
   /// Attempt to login through the Spotify auth API. Returns an integer code
   /// representing the result status, mapped as follows:
   ///
@@ -9,7 +11,7 @@ class SpotifyLoginHandler {
     int loginResult = -1;
 
     try {
-      loginResult = await SpotifyMethodHandler.platform.invokeMethod('login');
+      loginResult = await platform.invokeMethod('login');
     } on PlatformException catch (e) {
       print("Failed to login: ${e.message}");
     }
