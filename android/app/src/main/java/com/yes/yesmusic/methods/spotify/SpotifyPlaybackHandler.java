@@ -1,5 +1,7 @@
 package com.yes.yesmusic.methods.spotify;
 
+import static com.yes.yesmusic.methods.spotify.SpotifyDataMappers.mapPlayerState;
+
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.client.Subscription;
 import com.spotify.protocol.types.PlayerState;
@@ -77,7 +79,7 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
     if (this.playerStateSubscription == null) {
       this.subscribeToPlayerState();
       this.playerStateSubscription.setEventCallback((playerState) ->
-          this.channel.invokeMethod("updatePlayerState", playerState));
+          this.channel.invokeMethod("updatePlayerState", mapPlayerState(playerState)));
       this.playerStateSubscriptions = 0;
     }
 
