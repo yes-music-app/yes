@@ -4,6 +4,7 @@ import static com.yes.yesmusic.methods.spotify.Items.CLIENT_ID;
 import static com.yes.yesmusic.methods.spotify.Items.REDIRECT_URI;
 
 import android.app.Activity;
+import android.net.Uri;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector.ConnectionListener;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -23,8 +24,9 @@ public class SpotifyConnectionHandler implements MethodCallHandler {
   private SpotifyConnectionHandler(Activity activity, MethodChannel channel) {
     this.activity = activity;
     this.channel = channel;
-    if (this.remote.isConnected()) {
+    if (this.remote != null && this.remote.isConnected()) {
       SpotifyAppRemote.disconnect(this.remote);
+      this.remote = null;
     }
   }
 

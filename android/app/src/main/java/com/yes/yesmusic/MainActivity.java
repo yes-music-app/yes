@@ -1,5 +1,7 @@
 package com.yes.yesmusic;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import com.yes.yesmusic.methods.spotify.SpotifyConnectionHandler;
 import com.yes.yesmusic.methods.spotify.SpotifyPlaybackHandler;
@@ -31,6 +33,11 @@ public class MainActivity extends FlutterActivity {
     this.playbackHandler = SpotifyPlaybackHandler.getInstance(playbackChannel);
     connectionChannel.setMethodCallHandler(this.connectionHandler);
     playbackChannel.setMethodCallHandler(this.playbackHandler);
+
+    // ATTENTION: This was auto-generated to handle app links.
+    Intent appLinkIntent = getIntent();
+    String appLinkAction = appLinkIntent.getAction();
+    Uri appLinkData = appLinkIntent.getData();
   }
 
   @Override
