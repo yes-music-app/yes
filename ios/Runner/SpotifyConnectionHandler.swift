@@ -8,12 +8,10 @@
 
 class SpotifyConnectionHandler: NSObject, SPTSessionManagerDelegate, SPTAppRemoteDelegate {
     let connectionChannel: FlutterMethodChannel
-    fileprivate let SpotifyClientID = "a50706c333cb40a396c6020d9c79fb8b"
-    fileprivate let SpotifyRedirectURI = URL(string: "yes-music-app://connect")!
     
     lazy var configuration = SPTConfiguration(
-    clientID: SpotifyClientID,
-    redirectURL: SpotifyRedirectURI
+        clientID: SpotifyClientID,
+        redirectURL: SpotifyRedirectURI
     )
     
     lazy var sessionManager: SPTSessionManager = {

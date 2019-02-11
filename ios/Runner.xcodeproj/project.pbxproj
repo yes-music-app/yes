@@ -12,7 +12,6 @@
 		205F84AB2210EDA900288D14 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 205F84A92210EB5800288D14 /* SpotifyiOS.framework */; };
 		205F84AD2210FA5200288D14 /* SpotifyPlaybackHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 205F84AC2210FA5200288D14 /* SpotifyPlaybackHandler.swift */; };
 		205F84AF2210FBDC00288D14 /* SpotifyConnectionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 205F84AE2210FBDC00288D14 /* SpotifyConnectionHandler.swift */; };
-		205F84B322113C8800288D14 /* Items.plist in Resources */ = {isa = PBXBuildFile; fileRef = 205F84B222113C8800288D14 /* Items.plist */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		3B80C3941E831B6300D905FE /* App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; };
 		3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -46,7 +45,6 @@
 		205F84A92210EB5800288D14 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
 		205F84AC2210FA5200288D14 /* SpotifyPlaybackHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyPlaybackHandler.swift; sourceTree = "<group>"; };
 		205F84AE2210FBDC00288D14 /* SpotifyConnectionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyConnectionHandler.swift; sourceTree = "<group>"; };
-		205F84B222113C8800288D14 /* Items.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Items.plist; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		3B80C3931E831B6300D905FE /* App.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = App.framework; path = Flutter/App.framework; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -130,7 +128,6 @@
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				205F84A62210E3F900288D14 /* SpotifyDataMappers.swift */,
-				205F84B222113C8800288D14 /* Items.plist */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -205,7 +202,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
-				205F84B322113C8800288D14 /* Items.plist in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
