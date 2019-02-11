@@ -12,29 +12,12 @@ import io.flutter.plugin.common.MethodChannel.Result;
 
 public class SpotifyPlaybackHandler implements MethodCallHandler {
 
-  // A singleton instance of a Spotify playback handler.
-  private static SpotifyPlaybackHandler instance = null;
-
-  private SpotifyPlaybackHandler(MethodChannel channel) {
+  public SpotifyPlaybackHandler(SpotifyConnectionHandler connectionHandler, MethodChannel channel) {
+    this.connectionHandler = connectionHandler;
     this.channel = channel;
   }
 
-  /**
-   * Retrieves the current SpotifyPlaybackHandler instance. If it not yet set up, sets it up using
-   * the given channel.
-   *
-   * @param channel the method channel to use for this instance
-   * @return The current SpotifyPlaybackHandler instance.
-   */
-  public static SpotifyPlaybackHandler getInstance(MethodChannel channel) {
-    if (instance == null) {
-      instance = new SpotifyPlaybackHandler(channel);
-    }
-
-    return instance;
-  }
-
-  // The method channel to used for all flutter interactions.
+  private final SpotifyConnectionHandler connectionHandler;
   private final MethodChannel channel;
 
   // The subscription to the player state.
@@ -62,7 +45,7 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
    * Creates a subscription to the Spotify API's player state events.
    */
   private void subscribeToPlayerState() {
-    SpotifyAppRemote remote = SpotifyConnectionHandler.getRemote();
+    SpotifyAppRemote remote = this.connectionHandler.getRemote();
 
     if (remote == null || !remote.isConnected()) {
       // If there is a problem with the remote, do nothing.
