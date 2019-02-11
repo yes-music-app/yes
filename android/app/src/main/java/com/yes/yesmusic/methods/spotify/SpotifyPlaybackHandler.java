@@ -3,6 +3,7 @@ package com.yes.yesmusic.methods.spotify;
 import static com.yes.yesmusic.methods.spotify.SpotifyDataMappers.mapPlayerState;
 
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.client.CallResult.ResultCallback;
 import com.spotify.protocol.client.Subscription;
 import com.spotify.protocol.types.PlayerState;
 import io.flutter.plugin.common.MethodCall;
@@ -66,6 +67,8 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
       this.playerStateSubscriptions = 0;
     }
 
+    this.connectionHandler.getRemote().getPlayerApi().getPlayerState().setResultCallback(
+        (result) -> channel.invokeMethod("updatePlayerState", mapPlayerState(result)));
     this.playerStateSubscriptions++;
   }
 
@@ -73,6 +76,10 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
    * Cancels the player state subscription.
    */
   private void cancelPlayerStateSubscription() {
+    if (this.playerStateSubscription == null) {
+      return;
+    }
+
     this.playerStateSubscriptions--;
     if (this.playerStateSubscriptions <= 0) {
       this.playerStateSubscription.cancel();

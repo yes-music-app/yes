@@ -40,6 +40,9 @@ class SpotifyConnectionHandler {
   BehaviorSubject<CONNECTION_STATE> _connectionSubject =
       new BehaviorSubject(seedValue: CONNECTION_STATE.DISCONNECTED);
 
+  BehaviorSubject<CONNECTION_STATE> get connectionSubject =>
+      this._connectionSubject;
+
   void _updateConnection(int state) {
     switch (state) {
       case 0:

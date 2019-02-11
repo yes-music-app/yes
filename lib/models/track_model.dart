@@ -11,20 +11,20 @@ class TrackModel {
   final bool isEpisode;
   final bool isPodcast;
   final String name;
-  final String spotifyUri;
+  final String uri;
 
   TrackModel.fromMap(Map map)
       : this.album = new AlbumModel.fromMap(map['album']),
         this.artist = new ArtistModel.fromMap(map['artist']),
-        this.artists = mapArtists(map['artists']),
+        this.artists = _mapArtists(map['artists']),
         this.duration = map['duration'],
         this.imageUri = map['imageUri'],
         this.isEpisode = map['isEpisode'],
         this.isPodcast = map['isPodcast'],
         this.name = map['name'],
-        this.spotifyUri = map['spotifyUri'];
+        this.uri = map['uri'];
 
-  static List<ArtistModel> mapArtists(List<Map> artists) {
-    return artists.map((artist) => new ArtistModel.fromMap(artist));
+  static List<ArtistModel> _mapArtists(List artists) {
+    return artists.map((artist) => new ArtistModel.fromMap(artist)).toList();
   }
 }

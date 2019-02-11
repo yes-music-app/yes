@@ -38,6 +38,9 @@ class SpotifyPlaybackHandler {
   BehaviorSubject<PlayerStateModel> _playerStateSubject =
       new BehaviorSubject(seedValue: null);
 
+  BehaviorSubject<PlayerStateModel> get playerStateSubject =>
+      this._playerStateSubject;
+
   /// Adds a [PlayerStateModel] to the [_playerStateSubject] stream.
   void _updatePlayerState(Map map) {
     this._playerStateSubject?.add(new PlayerStateModel.fromMap(map));
