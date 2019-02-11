@@ -2,127 +2,120 @@ import UIKit
 import Flutter
 
 @UIApplicationMain
-class AppDelegate: UIResponder,
-UIApplicationDelegate, SPTAppRemoteDelegate {
-    
-    fileprivate let redirectUri = URL(string:"comspotifytestsdk://")!
-    fileprivate let clientIdentifier = "089d841ccc194c10a77afad9e1c11d54"
-    fileprivate let name = "Now Playing View"
-    
-    // keys
-    static fileprivate let kAccessTokenKey = "access-token-key"
-    
-    var accessToken = UserDefaults.standard.string(forKey: kAccessTokenKey) {
-        didSet {
-            let defaults = UserDefaults.standard
-            defaults.set(accessToken, forKey: AppDelegate.kAccessTokenKey)
-            defaults.synchronize()
-        }
-    }
-    
-    
-    var playerViewController: ViewController {
-        get {
-            let navController = self.window?.rootViewController?.childViewControllers[0] as! UINavigationController
-            return navController.topViewController as! ViewController
-        }
-    }
-    
-    var window: UIWindow?
-    
-    lazy var appRemote: SPTAppRemote = {
-        let configuration = SPTConfiguration(clientID: self.clientIdentifier, redirectURL: self.redirectUri)
-        let appRemote = SPTAppRemote(configuration: configuration, logLevel: .debug)
-        appRemote.connectionParameters.accessToken = self.accessToken
-        appRemote.delegate = self
-        return appRemote
-    }()
-    
-    class var sharedInstance: AppDelegate {
-        get {
-            return UIApplication.shared.delegate as! AppDelegate
-        }
-    }
-    
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
-        let parameters = appRemote.authorizationParameters(from: url);
+@objc class AppDelegate: FlutterAppDelegate, SPTSessionManagerDelegate {
+    func sessionManager(manager: SPTSessionManager, didInitiate session: SPTSession) {
         
-        if let access_token = parameters?[SPTAppRemoteAccessTokenKey] {
-            appRemote.connectionParameters.accessToken = access_token
-            self.accessToken = access_token
-        } else if let error_description = parameters?[SPTAppRemoteErrorDescriptionKey] {
-            playerViewController.showError(error_description);
-        }
-        
-        return true
     }
     
+    func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
+        
+    }
+    
+    let SpotifyClientID = "[your spotify client id here]"
+    let SpotifyRedirectURL = URL(string: "spotify-ios-quick-start://spotify-login-callback")!
+    var connectionChannel: FlutterMethodChannel!
+    var playbackChannel: FlutterMethodChannel!
+   
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
-      ) -> Bool {
+        ) -> Bool {
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-        let spotifyChannel = FlutterMethodChannel(name: "yes.yesmusic/spotify",
+        self.connectionChannel = FlutterMethodChannel(name: "yes.yesmusic/connection",
                                                   binaryMessenger: controller)
-    
-    
+        self.playbackChannel = FlutterMethodChannel(name: "yes.yesmusic/playback",
+                                                    binaryMessenger: controller)
+        connectionChannel.setMethodCallHandler({
+            (call: FlutterMethodCall, result: FlutterResult) -> Void in
+            switch (call.method) {
+            case "connect":
+                self.connect(result: result)
+                break
+            case "disconnect":
+                self.disconnect(result: result)
+            default:
+                break
+            }
+        })
+        
+        
+        playbackChannel.setMethodCallHandler({
+            (call: FlutterMethodCall, result: FlutterResult) -> Void in
+            switch (call.method) {
+            case "subscribeToPlayerState":
+                self.subscribeToPlayerState(result: result)
+                break
+            case "unsubscribeFromPlayerState":
+                self.unsubscribeFromPlayerState(result: result)
+                break
+            default:
+                break
+            }
+        })
+        
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-      }
-    
-    func applicationWillResignActive(_ application: UIApplication) {
-        playerViewController.appRemoteDisconnect()
-        appRemote.disconnect()
     }
     
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        self.connect();
+    
+    // MARK: SPTSessionManager
+    lazy var configuration = SPTConfiguration(
+        clientID: SpotifyClientID,
+        redirectURL: SpotifyRedirectURL
+    )
+
+    lazy var sessionManager: SPTSessionManager = {
+        if let tokenSwapURL = URL(string: "https://[my token swap app domain]/api/token"),
+            let tokenRefreshURL = URL(string: "https://[my token swap app domain]/api/refresh_token") {
+            self.configuration.tokenSwapURL = tokenSwapURL
+            self.configuration.tokenRefreshURL = tokenRefreshURL
+            self.configuration.playURI = ""
+        }
+        let manager = SPTSessionManager(configuration: self.configuration, delegate: self)
+        return manager
+    }()
+
+//    func sessionManager(manager: SPTSessionManager, didInitiate session: SPTSession) {
+//        self.appRemote.connectionParameters.accessToken = session.accessToken
+//        self.appRemote.connect()
+//        print("success", session)
+//    }
+//    func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
+//        print("fail", error)
+//    }
+//    func sessionManager(manager: SPTSessionManager, didRenew session: SPTSession) {
+//        print("renewed", session)
+//    }
+
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        self.sessionManager.application(app, open: url, options: options)
+        return true
+    }
+    // MARK: connectionChannel
+    
+    private func connect(result: FlutterResult) {
+      // implement
     }
     
-    func connect() {
-        playerViewController.appRemoteConnecting()
-        appRemote.connect()
+    private func disconnect(result: FlutterResult) {
+        // implement
     }
     
-    // MARK: AppRemoteDelegate
-    
-    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
-        self.appRemote = appRemote
-        playerViewController.appRemoteConnected()
+    private func updatePlayerState() {
+        self.connectionChannel.invokeMethod("updatePlayerState", arguments: nil)
     }
     
-    func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
-        print("didFailConnectionAttemptWithError")
-        playerViewController.appRemoteDisconnect()
+    // MARK: playbackChannel
+    
+    private func subscribeToPlayerState(result: FlutterResult) {
+        
     }
     
-    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
-        print("didDisconnectWithError")
-        playerViewController.appRemoteDisconnect()
+    private func unsubscribeFromPlayerState(result: FlutterResult) {
+        
     }
     
 }
-//
-//@UIApplicationMain
-//@objc class AppDelegate: FlutterAppDelegate, UIResponder {
-//    let SpotifyClientID = "[your spotify client id here]"
-//    let SpotifyRedirectURL = URL(string: "spotify-ios-quick-start://spotify-login-callback")!
-//
-//  override func application(
-//    _ application: UIApplication,
-//    didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
-//  ) -> Bool {
-//    let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-//    let spotifyChannel = FlutterMethodChannel(name: "yes.yesmusic/spotify",
-//                                              binaryMessenger: controller)
-//
-//
-//    GeneratedPluginRegistrant.register(with: self)
-//    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-//  }
-//
-//
-//}
 //
 //extension AppDelegate: SPTSessionManagerDelegate {
 //    lazy var configuration = SPTConfiguration(
