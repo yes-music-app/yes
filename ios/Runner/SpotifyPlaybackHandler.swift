@@ -6,7 +6,9 @@
 //  Copyright © 2019 The Chromium Authors. All rights reserved.
 //
 
-class SpotifyPlaybackHandler: NSObject, SPTAppRemoteUserAPIDelegate{
+class SpotifyPlaybackHandler: NSObject, SPTAppRemotePlayerStateDelegate{
+
+    
     let playbackChannel: FlutterMethodChannel
     let appRemote: SPTAppRemote
     
@@ -14,6 +16,8 @@ class SpotifyPlaybackHandler: NSObject, SPTAppRemoteUserAPIDelegate{
         self.playbackChannel = playbackChannel
         self.appRemote = appRemote
         super.init()
+        
+        self.appRemote.playerAPI?.delegate = self
         
         playbackChannel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
@@ -43,14 +47,17 @@ class SpotifyPlaybackHandler: NSObject, SPTAppRemoteUserAPIDelegate{
     private func unsubscribeFromPlayerState(result: @escaping FlutterResult) {
         appRemote.playerAPI?.unsubscribe(toPlayerState: { (success, error) in
             if let error = error {
-                result(error)
+                result(error.localizedDescription)
+                print(error.localizedDescription)
+                print(error.localizedDescription)
             } else if let success = success {
                 result(success)
+                print(success)
             }
         })
     }
     
-    func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {
-    
+    func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
+        print("1")
     }
 }
