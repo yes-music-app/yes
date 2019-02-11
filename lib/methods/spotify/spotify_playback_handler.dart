@@ -35,7 +35,8 @@ class SpotifyPlaybackHandler {
 
   /// An rxdart [BehaviorSubject] that publishes the current state of the music
   /// player in the Spotify app.
-  BehaviorSubject<PlayerStateModel> _playerStateSubject;
+  BehaviorSubject<PlayerStateModel> _playerStateSubject =
+      new BehaviorSubject(seedValue: null);
 
   /// Adds a [PlayerStateModel] to the [_playerStateSubject] stream.
   void _updatePlayerState(Map map) {
@@ -44,10 +45,6 @@ class SpotifyPlaybackHandler {
 
   /// Adds a subscription to [_playerStateSubject].
   void playerStateSubscribe() {
-    if (this._playerStateSubject == null) {
-      this._playerStateSubject = new BehaviorSubject(seedValue: null);
-    }
-
     channel.invokeMethod("subscribeToPlayerState");
   }
 

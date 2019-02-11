@@ -11,14 +11,16 @@ Outlined below is a description of the methods that should be supported by nativ
 
 ##### Method Calls
 
-| Method     | Arguments | Return                                 | Description                             |
-|------------|-----------|----------------------------------------|-----------------------------------------|
-| connect    | N/A       | int: whether or not the call succeeded | Connects to the Spotify Remote API      |
-| disconnect | N/A       | int: whether or not the call succeeded | Disconnects from the Spotify Remote API |
+| Method     | Arguments | Return | Description                             |
+|------------|-----------|--------|-----------------------------------------|
+| connect    | N/A       | N/A    | Connects to the Spotify Remote API      |
+| disconnect | N/A       | N/A    | Disconnects from the Spotify Remote API |
 
 ##### Method Callbacks
 
-N/A
+| Method            | Arguments | Return | Description                                      |
+|-------------------|-----------|--------|--------------------------------------------------|
+| connectionUpdate  | int       | N/A    | Provides the most recent connection state change |
 
 ### Playback
 

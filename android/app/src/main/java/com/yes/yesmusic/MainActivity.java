@@ -29,8 +29,8 @@ public class MainActivity extends FlutterActivity {
     // Set this app's call handlers to our Spotify call handlers.
     MethodChannel connectionChannel = new MethodChannel(getFlutterView(), CONNECTION_CHANNEL);
     MethodChannel playbackChannel = new MethodChannel(getFlutterView(), PLAYBACK_CHANNEL);
-    this.connectionHandler = SpotifyConnectionHandler.getInstance(this, connectionChannel);
-    this.playbackHandler = SpotifyPlaybackHandler.getInstance(playbackChannel);
+    this.connectionHandler = new SpotifyConnectionHandler(this, connectionChannel);
+    this.playbackHandler = new SpotifyPlaybackHandler(this.connectionHandler, playbackChannel);
     connectionChannel.setMethodCallHandler(this.connectionHandler);
     playbackChannel.setMethodCallHandler(this.playbackHandler);
 
