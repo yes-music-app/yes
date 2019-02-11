@@ -10,6 +10,7 @@ class SpotifyConnectionHandler: NSObject, SPTSessionManagerDelegate, SPTAppRemot
     let connectionChannel: FlutterMethodChannel
     fileprivate let SpotifyClientID = "044b2c45e77f45aca8da89e338849b6a"
     fileprivate let SpotifyRedirectURI = URL(string: "spotify-login-sdk-test-app://spotify-login-callback")!
+    
     lazy var configuration: SPTConfiguration = {
         let configuration = SPTConfiguration(clientID: SpotifyClientID, redirectURL: SpotifyRedirectURI)
         
@@ -56,7 +57,12 @@ class SpotifyConnectionHandler: NSObject, SPTSessionManagerDelegate, SPTAppRemot
     }
     
     private func connect(result: FlutterResult) {
-        appRemote.connect() 
+        let requestedScopes: SPTScope = [.appRemoteControl]
+        if #available(iOS 11.0, *) {
+            self.sessionManager.initiateSession(with: requestedScopes, options: .default)
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     private func disconnect(result: FlutterResult) {

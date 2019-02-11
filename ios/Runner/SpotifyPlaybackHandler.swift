@@ -7,14 +7,13 @@
 //
 
 class SpotifyPlaybackHandler: NSObject, SPTAppRemoteUserAPIDelegate{
-
-    
     let playbackChannel: FlutterMethodChannel
     let appRemote: SPTAppRemote
     
     init(playbackChannel: FlutterMethodChannel, appRemote: SPTAppRemote) {
         self.playbackChannel = playbackChannel
         self.appRemote = appRemote
+        super.init()
         
         playbackChannel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
