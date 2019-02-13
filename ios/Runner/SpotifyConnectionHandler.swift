@@ -8,22 +8,11 @@
 
 class SpotifyConnectionHandler: NSObject, SPTSessionManagerDelegate, SPTAppRemoteDelegate {
     let connectionChannel: FlutterMethodChannel
-    fileprivate let SpotifyClientID = "044b2c45e77f45aca8da89e338849b6a"
-    fileprivate let SpotifyRedirectURI = URL(string: "spotify-login-sdk-test-app://spotify-login-callback")!
     
-    lazy var configuration: SPTConfiguration = {
-        let configuration = SPTConfiguration(clientID: SpotifyClientID, redirectURL: SpotifyRedirectURI)
-        
-        // Set the playURI to a non-nil value so that Spotify plays music after authenticating and App Remote can connect
-        // otherwise another app switch will be required
-        configuration.playURI = ""
-        
-        // Set these url's to your backend which contains the secret to exchange for an access token
-        // You can use the provided ruby script spotify_token_swap.rb for testing purposes
-        configuration.tokenSwapURL = URL(string: "http://localhost:1234/swap")
-        configuration.tokenRefreshURL = URL(string: "http://localhost:1234/refresh")
-        return configuration
-    }()
+    lazy var configuration = SPTConfiguration(
+        clientID: SpotifyClientID,
+        redirectURL: SpotifyRedirectURI
+    )
     
     lazy var sessionManager: SPTSessionManager = {
         let manager = SPTSessionManager(configuration: configuration, delegate: self)
@@ -36,19 +25,18 @@ class SpotifyConnectionHandler: NSObject, SPTSessionManagerDelegate, SPTAppRemot
         return appRemote
     }()
     
-    
     init(connectionChannel: FlutterMethodChannel) {
         self.connectionChannel = connectionChannel
         super.init()
         
         connectionChannel.setMethodCallHandler({
-            [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
+            (call: FlutterMethodCall, result: FlutterResult) -> Void in
             switch (call.method) {
             case "connect":
-                self?.connect(result: result)
+                self.connect(result: result)
                 break
             case "disconnect":
-                self?.disconnect(result: result)
+                self.disconnect(result: result)
             default:
                 break
             }
@@ -56,12 +44,14 @@ class SpotifyConnectionHandler: NSObject, SPTSessionManagerDelegate, SPTAppRemot
         
     }
     
+    // MARK: - Flutter
+    
     private func connect(result: FlutterResult) {
         let requestedScopes: SPTScope = [.appRemoteControl]
         if #available(iOS 11.0, *) {
             self.sessionManager.initiateSession(with: requestedScopes, options: .default)
         } else {
-            // Fallback on earlier versions
+//            self.sessionManager.initiateSession(with: requestedScopes, options: .default, presenting: nil)
         }
     }
     
@@ -70,35 +60,44 @@ class SpotifyConnectionHandler: NSObject, SPTSessionManagerDelegate, SPTAppRemot
     }
     
     private func updatePlayerState() {
-        self.connectionChannel.invokeMethod("updatePlayerState", arguments: nil)
+       // self.connectionChannel.invokeMethod("updatePlayerState", arguments: SpotifyDataMappers.mapPlayerState())
     }
     
     
     // MARK: - SPTSessionManagerDelegate
+ 
     
     func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
+        print("error connecting" + error.localizedDescription)
     }
     
     func sessionManager(manager: SPTSessionManager, didRenew session: SPTSession) {
+        print("renewed session")
     }
     
     func sessionManager(manager: SPTSessionManager, didInitiate session: SPTSession) {
         appRemote.connectionParameters.accessToken = session.accessToken
         appRemote.connect()
     }
+    func sessionManager(manager: SPTSessionManager, shouldRequestAccessTokenWith code: String) -> Bool {
+        return true
+    }
     
     // MARK: - SPTAppRemoteDelegate
     
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
+        connectionChannel.invokeMethod("connectionUpdate", arguments: 2)
         appRemote.playerAPI?.subscribe(toPlayerState: { (success, error) in
             if let error = error {
                 print("Error subscribing to player state:" + error.localizedDescription)
             }
         })
+        
+        
     }
     
     func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
-        return;
+       
     }
     
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {

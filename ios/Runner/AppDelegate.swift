@@ -27,9 +27,11 @@ import Flutter
     }
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        connectionHandler.sessionManager.application(app, open: url, options: options)
+        self.connectionHandler.sessionManager.application(app, open: url, options: options)
+        
         return true
     }
+   
     
     override func applicationWillResignActive(_ application: UIApplication) {
         if (connectionHandler.appRemote.isConnected) {
