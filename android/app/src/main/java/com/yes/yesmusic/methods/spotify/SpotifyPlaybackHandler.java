@@ -3,7 +3,6 @@ package com.yes.yesmusic.methods.spotify;
 import static com.yes.yesmusic.methods.spotify.SpotifyDataMappers.mapPlayerState;
 
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.protocol.client.CallResult.ResultCallback;
 import com.spotify.protocol.client.Subscription;
 import com.spotify.protocol.types.PlayerState;
 import io.flutter.plugin.common.MethodCall;
@@ -11,30 +10,78 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
+/**
+ * A class that handles playback control in Spotify.
+ */
 public class SpotifyPlaybackHandler implements MethodCallHandler {
 
-  public SpotifyPlaybackHandler(SpotifyConnectionHandler connectionHandler, MethodChannel channel) {
-    this.connectionHandler = connectionHandler;
+  private SpotifyAppRemote remote;
+  private final MethodChannel channel;
+  private Subscription<PlayerState> playerStateSubscription;
+  private int playerStateSubscriptions = 0;
+
+  public SpotifyPlaybackHandler(MethodChannel channel) {
     this.channel = channel;
   }
 
-  private final SpotifyConnectionHandler connectionHandler;
-  private final MethodChannel channel;
+  void setRemote(SpotifyAppRemote remote) {
+    this.remote = remote;
+  }
 
-  // The subscription to the player state.
-  private Subscription<PlayerState> playerStateSubscription;
-  private int playerStateSubscriptions = 0;
+  SpotifyAppRemote getRemote() {
+    return this.remote;
+  }
 
   @Override
   public void onMethodCall(MethodCall methodCall, Result result) {
     switch (methodCall.method) {
       case "subscribeToPlayerState":
-        this.addPlayerStateSubscription();
+        addPlayerStateSubscription();
         result.success(null);
         break;
       case "unsubscribeFromPlayerState":
-        this.cancelPlayerStateSubscription();
+        cancelPlayerStateSubscription();
         result.success(null);
+        break;
+      case "resume":
+        remote.getPlayerApi().resume();
+        result.success(null);
+        break;
+      case "pause":
+        remote.getPlayerApi().pause();
+        result.success(null);
+        break;
+      case "skipNext":
+        remote.getPlayerApi().skipNext();
+        result.success(null);
+        break;
+      case "skipPrevious":
+        remote.getPlayerApi().skipPrevious();
+        result.success(null);
+        break;
+      case "seekTo":
+        if (methodCall.arguments instanceof Long) {
+          remote.getPlayerApi().seekTo((long) methodCall.arguments);
+          result.success(null);
+        } else {
+          result.error("FAILURE", "Seek received a non-long argument", null);
+        }
+        break;
+      case "play":
+        if (methodCall.arguments instanceof String) {
+          remote.getPlayerApi().play((String) methodCall.arguments);
+          result.success(null);
+        } else {
+          result.error("FAILURE", "Play received a non-string argument", null);
+        }
+        break;
+      case "queue":
+        if (methodCall.arguments instanceof String) {
+          remote.getPlayerApi().queue((String) methodCall.arguments);
+          result.success(null);
+        } else {
+          result.error("FAILURE", "Queue received a non-string argument", null);
+        }
         break;
       default:
         result.notImplemented();
@@ -46,8 +93,6 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
    * Creates a subscription to the Spotify API's player state events.
    */
   private void subscribeToPlayerState() {
-    SpotifyAppRemote remote = this.connectionHandler.getRemote();
-
     if (remote == null || !remote.isConnected()) {
       // If there is a problem with the remote, do nothing.
       return;
@@ -67,7 +112,7 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
       this.playerStateSubscriptions = 0;
     }
 
-    this.connectionHandler.getRemote().getPlayerApi().getPlayerState().setResultCallback(
+    remote.getPlayerApi().getPlayerState().setResultCallback(
         (result) -> channel.invokeMethod("updatePlayerState", mapPlayerState(result)));
     this.playerStateSubscriptions++;
   }

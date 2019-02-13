@@ -29,15 +29,10 @@ public class MainActivity extends FlutterActivity {
     // Set this app's call handlers to our Spotify call handlers.
     MethodChannel connectionChannel = new MethodChannel(getFlutterView(), CONNECTION_CHANNEL);
     MethodChannel playbackChannel = new MethodChannel(getFlutterView(), PLAYBACK_CHANNEL);
-    this.connectionHandler = new SpotifyConnectionHandler(this, connectionChannel);
+    this.connectionHandler = new SpotifyConnectionHandler(this, connectionChannel, this.playbackHandler);
     this.playbackHandler = new SpotifyPlaybackHandler(this.connectionHandler, playbackChannel);
     connectionChannel.setMethodCallHandler(this.connectionHandler);
     playbackChannel.setMethodCallHandler(this.playbackHandler);
-
-    // ATTENTION: This was auto-generated to handle app links.
-    Intent appLinkIntent = getIntent();
-    String appLinkAction = appLinkIntent.getAction();
-    Uri appLinkData = appLinkIntent.getData();
   }
 
   @Override

@@ -19,28 +19,25 @@ public class SpotifyConnectionHandler implements MethodCallHandler {
 
   private final Activity activity;
   private final MethodChannel channel;
+  private final SpotifyPlaybackHandler playbackHandler;
 
-  // The SpotifyAppRemote to be connection.
-  private SpotifyAppRemote remote;
-
-  SpotifyAppRemote getRemote() {
-    return this.remote;
-  }
-
-  public SpotifyConnectionHandler(Activity activity, MethodChannel channel) {
+  public SpotifyConnectionHandler(Activity activity, MethodChannel channel,
+      SpotifyPlaybackHandler playbackHandler) {
     this.activity = activity;
     this.channel = channel;
+    this.playbackHandler = playbackHandler;
   }
 
   @Override
   public void onMethodCall(MethodCall methodCall, Result result) {
     switch (methodCall.method) {
       case "connect":
-        this.connect();
+        disconnect();
+        connect();
         result.success(null);
         break;
       case "disconnect":
-        this.disconnect();
+        disconnect();
         result.success(null);
         break;
       default:
@@ -58,16 +55,16 @@ public class SpotifyConnectionHandler implements MethodCallHandler {
         .setRedirectUri(REDIRECT_URI).showAuthView(true).build();
 
     // Actually connect to the Spotify app.
-    SpotifyAppRemote.connect(this.activity, connectionParams, new ConnectionListener() {
+    SpotifyAppRemote.connect(activity, connectionParams, new ConnectionListener() {
       @Override
       public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-        remote = spotifyAppRemote;
+        playbackHandler.setRemote(spotifyAppRemote);
         channel.invokeMethod("connectionUpdate", 2);
       }
 
       @Override
       public void onFailure(Throwable throwable) {
-        remote = null;
+        playbackHandler.setRemote(null);
         channel.invokeMethod("connectionUpdate", 0);
       }
     });
@@ -79,8 +76,10 @@ public class SpotifyConnectionHandler implements MethodCallHandler {
    * Disconnects from the spotify remote API.
    */
   public void disconnect() {
-    if (this.remote != null && this.remote.isConnected()) {
-      SpotifyAppRemote.disconnect(this.remote);
+    SpotifyAppRemote remote = playbackHandler.getRemote();
+
+    if (remote != null && remote.isConnected()) {
+      SpotifyAppRemote.disconnect(remote);
     }
 
     channel.invokeMethod("connectionUpdate", 0);

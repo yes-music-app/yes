@@ -30,6 +30,13 @@ Outlined below is a description of the methods that should be supported by nativ
 |----------------------------|-----------|--------|----------------------------------------------------------------------------------------------------------|
 | subscribeToPlayerState     | N/A       | N/A    | Creates a subscription to player state changes, causing the `updatePlayerState` callback to begin firing |
 | unsubscribeFromPlayerState | N/A       | N/A    | Unsubscribes from player state changes                                                                   |
+| resume                     | N/A       | N/A    | Resumes playback if it was paused                                                                        |
+| pause                      | N/A       | N/A    | Pauses playback if it was playing                                                                        |
+| skipNext                   | N/A       | N/A    | Skips to the next song in the queue                                                                      |
+| skipPrevious               | N/A       | N/A    | Skips to the previous song in the queue                                                                  |
+| seekTo                     | int       | N/A    | Seeks to the given position in the currently playing song                                                |
+| play                       | string    | N/A    | Plays the given song                                                                                     |
+| queue                      | string    | N/A    | Places the given song into the queue as the next song                                                    |
 
 ##### Method Callbacks
 
