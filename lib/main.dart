@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:yes_music/methods/connection_handler_base.dart';
-import 'package:yes_music/methods/spotify/spotify_connection_handler.dart';
-import 'package:yes_music/methods/spotify/spotify_playback_handler.dart';
+import 'package:yes_music/data/connection_handler_base.dart';
+import 'package:yes_music/data/spotify/spotify_connection_handler.dart';
+import 'package:yes_music/data/spotify/spotify_playback_handler.dart';
 import 'package:yes_music/models/player_state_model.dart';
 
 void main() => runApp(MyApp());

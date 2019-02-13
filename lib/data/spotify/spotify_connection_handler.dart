@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:yes_music/methods/connection_handler_base.dart';
+import 'package:yes_music/data/connection_handler_base.dart';
 
 class SpotifyConnectionHandler implements ConnectionHandlerBase {
   static const MethodChannel channel =
