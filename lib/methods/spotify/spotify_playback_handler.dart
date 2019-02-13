@@ -1,9 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:yes_music/methods/playback_handler_base.dart';
 import 'package:yes_music/models/player_state_model.dart';
 
 /// A class that handles playback interactions with the Spotify app.
-class SpotifyPlaybackHandler {
+class SpotifyPlaybackHandler implements PlaybackHandlerBase {
   /// The method channel used for playback handling.
   static const MethodChannel channel =
       const MethodChannel("yes.yesmusic/playback");
@@ -46,14 +47,49 @@ class SpotifyPlaybackHandler {
     this._playerStateSubject?.add(new PlayerStateModel.fromMap(map));
   }
 
-  /// Adds a subscription to [_playerStateSubject].
-  void playerStateSubscribe() {
+  @override
+  void subscribeToPlayerState() {
     channel.invokeMethod("subscribeToPlayerState");
   }
 
-  /// Removes a subscription from the Spotify API player state stream.
-  void playerStateUnsubscribe() {
+  @override
+  void unsubscribeFromPlayerState() {
     channel.invokeMethod("unsubscribeFromPlayerState");
+  }
+
+  @override
+  void resume() {
+    channel.invokeMethod("resume");
+  }
+
+  @override
+  void pause() {
+    channel.invokeMethod("pause");
+  }
+
+  @override
+  void skipNext() {
+    channel.invokeMethod("skipNext");
+  }
+
+  @override
+  void skipPrevious() {
+    channel.invokeMethod("skipPrevious");
+  }
+
+  @override
+  void seekTo(int position) {
+    channel.invokeMethod("seekTo", position);
+  }
+
+  @override
+  void play(String trackUri) {
+    channel.invokeMethod("play", trackUri);
+  }
+
+  @override
+  void queue(String trackUri) {
+    channel.invokeMethod("queue", trackUri);
   }
 
   void close() {

@@ -1,13 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:yes_music/methods/connection_handler_base.dart';
 
-enum CONNECTION_STATE {
-  DISCONNECTED,
-  CONNECTING,
-  CONNECTED,
-}
-
-class SpotifyConnectionHandler {
+class SpotifyConnectionHandler implements ConnectionHandlerBase {
   static const MethodChannel channel =
       const MethodChannel("yes.yesmusic/connection");
 
@@ -63,8 +58,7 @@ class SpotifyConnectionHandler {
     _connectionSubject.add(CONNECTION_STATE.CONNECTING);
   }
 
-  /// Attempt to disconnect from the Spotify auth API.
-  Future<int> disconnect() async {
+  void disconnect() {
     channel.invokeMethod("disconnect");
     this._connectionSubject.add(CONNECTION_STATE.DISCONNECTED);
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:yes_music/methods/connection_handler_base.dart';
 import 'package:yes_music/methods/spotify/spotify_connection_handler.dart';
 import 'package:yes_music/methods/spotify/spotify_playback_handler.dart';
 import 'package:yes_music/models/player_state_model.dart';
@@ -40,9 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     widget.connectionSubject.listen((state) {
       if (state == CONNECTION_STATE.CONNECTED) {
-        new SpotifyPlaybackHandler().playerStateSubscribe();
+        new SpotifyPlaybackHandler().subscribeToPlayerState();
       } else if (state == CONNECTION_STATE.DISCONNECTED) {
-        new SpotifyPlaybackHandler().playerStateUnsubscribe();
+        new SpotifyPlaybackHandler().unsubscribeFromPlayerState();
       }
     });
 
