@@ -8,10 +8,10 @@ class PlayerRestrictionsModel {
   final bool canToggleShuffle;
 
   PlayerRestrictionsModel.fromMap(Map map)
-      : this.canRepeatContext = map['canRepeatContext'],
-        this.canRepeatTrack = map['canRepeatTrack'],
-        this.canSeek = map['canSeek'],
-        this.canSkipNext = map['canSkipNext'],
-        this.canSkipPrev = map['canSkipPrev'],
-        this.canToggleShuffle = map['canToggleShuffle'];
+      : canRepeatContext = map['canRepeatContext'],
+        canRepeatTrack = map['canRepeatTrack'],
+        canSeek = map['canSeek'],
+        canSkipNext = map['canSkipNext'],
+        canSkipPrev = map['canSkipPrev'],
+        canToggleShuffle = map['canToggleShuffle'];
 }

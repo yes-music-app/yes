@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:yes_music/data/spotify/playback_handler_base.dart';
-import 'package:yes_music/models/player_state_model.dart';
+import 'package:yes_music/models/spotify/player_state_model.dart';
 
 /// A class that handles playback interactions with the Spotify app.
 class SpotifyPlaybackHandler implements PlaybackHandlerBase {

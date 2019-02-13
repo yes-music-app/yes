@@ -4,6 +4,6 @@ class PlayerOptionsModel {
   final int repeatMode;
 
   PlayerOptionsModel.fromMap(Map map)
-      : this.isShuffling = map['isShuffling'],
-        this.repeatMode = map['repeatMode'];
+      : isShuffling = map['isShuffling'],
+        repeatMode = map['repeatMode'];
 }
