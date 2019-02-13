@@ -1,4 +1,10 @@
+import 'package:rxdart/rxdart.dart';
+import 'package:yes_music/models/spotify/player_state_model.dart';
+
 abstract class PlaybackHandlerBase {
+  /// A stream of player state objects.
+  BehaviorSubject<PlayerStateModel> get playerStateSubject;
+
   /// Adds a subscription to [_playerStateSubject].
   void subscribeToPlayerState();
 
@@ -25,4 +31,7 @@ abstract class PlaybackHandlerBase {
 
   /// Queues the song with the given [trackUri].
   void queue(String trackUri);
+
+  /// Closes the handler's connections.
+  void dispose();
 }

@@ -27,6 +27,7 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
   BehaviorSubject<SpotifyConnectionState> _connectionSubject =
       new BehaviorSubject(seedValue: SpotifyConnectionState.DISCONNECTED);
 
+  @override
   BehaviorSubject<SpotifyConnectionState> get connectionSubject =>
       _connectionSubject;
 
@@ -47,18 +48,20 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
     }
   }
 
-  /// Attempt to connect to the Spotify auth API.
+  @override
   void connect() {
     channel.invokeMethod('connect');
     _connectionSubject.add(SpotifyConnectionState.CONNECTING);
   }
 
+  @override
   void disconnect() {
     channel.invokeMethod("disconnect");
     _connectionSubject.add(SpotifyConnectionState.DISCONNECTED);
   }
 
-  void close() {
+  @override
+  void dispose() {
     _connectionSubject.close();
   }
 }

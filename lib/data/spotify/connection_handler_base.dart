@@ -16,4 +16,7 @@ abstract class ConnectionHandlerBase {
 
   /// Attempt to disconnect from the Spotify auth API.
   void disconnect();
+
+  /// Dispose of any resources allocated by this handler.
+  void dispose();
 }

@@ -31,6 +31,7 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
   BehaviorSubject<PlayerStateModel> _playerStateSubject =
       new BehaviorSubject(seedValue: null);
 
+  @override
   BehaviorSubject<PlayerStateModel> get playerStateSubject =>
       _playerStateSubject;
 
@@ -84,7 +85,8 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
     channel.invokeMethod("queue", trackUri);
   }
 
-  void close() {
+  @override
+  void dispose() {
     _playerStateSubject.close();
   }
 }
