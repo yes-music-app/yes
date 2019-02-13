@@ -65,7 +65,7 @@ public class SpotifyConnectionHandler implements MethodCallHandler {
       @Override
       public void onFailure(Throwable throwable) {
         playbackHandler.setRemote(null);
-        channel.invokeMethod("connectionUpdate", 0);
+        channel.invokeMethod("connectionUpdate", 3);
       }
     });
 

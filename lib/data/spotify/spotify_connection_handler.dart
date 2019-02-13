@@ -6,13 +6,7 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
   static const MethodChannel channel =
       const MethodChannel("yes.yesmusic/connection");
 
-  /// A singleton instance of the Spotify connection handler.
-  static final SpotifyConnectionHandler _instance =
-      new SpotifyConnectionHandler._internal();
-
-  factory SpotifyConnectionHandler() => _instance;
-
-  SpotifyConnectionHandler._internal() {
+  SpotifyConnectionHandler() {
     channel.setMethodCallHandler(_handleMethod);
   }
 
@@ -20,7 +14,7 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "connectionUpdate":
-        this._updateConnection(call.arguments);
+        _updateConnection(call.arguments);
         break;
       default:
         throw new UnimplementedError(
@@ -34,18 +28,21 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
       new BehaviorSubject(seedValue: SpotifyConnectionState.DISCONNECTED);
 
   BehaviorSubject<SpotifyConnectionState> get connectionSubject =>
-      this._connectionSubject;
+      _connectionSubject;
 
   void _updateConnection(int state) {
     switch (state) {
       case 0:
-        this._connectionSubject.add(SpotifyConnectionState.DISCONNECTED);
+        _connectionSubject.add(SpotifyConnectionState.DISCONNECTED);
         break;
       case 1:
-        this._connectionSubject.add(SpotifyConnectionState.CONNECTING);
+        _connectionSubject.add(SpotifyConnectionState.CONNECTING);
         break;
       case 2:
-        this._connectionSubject.add(SpotifyConnectionState.CONNECTED);
+        _connectionSubject.add(SpotifyConnectionState.CONNECTED);
+        break;
+      case 3:
+        _connectionSubject.add(SpotifyConnectionState.FAILED);
         break;
     }
   }
@@ -58,10 +55,10 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
 
   void disconnect() {
     channel.invokeMethod("disconnect");
-    this._connectionSubject.add(SpotifyConnectionState.DISCONNECTED);
+    _connectionSubject.add(SpotifyConnectionState.DISCONNECTED);
   }
 
   void close() {
-    this._connectionSubject.close();
+    _connectionSubject.close();
   }
 }

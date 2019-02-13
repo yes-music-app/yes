@@ -4,6 +4,7 @@ enum SpotifyConnectionState {
   DISCONNECTED,
   CONNECTING,
   CONNECTED,
+  FAILED,
 }
 
 abstract class ConnectionHandlerBase {

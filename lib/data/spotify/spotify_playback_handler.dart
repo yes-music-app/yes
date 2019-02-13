@@ -9,13 +9,7 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
   static const MethodChannel channel =
       const MethodChannel("yes.yesmusic/playback");
 
-  /// A singleton instance of the Spotify playback handler.
-  static final SpotifyPlaybackHandler _instance =
-      new SpotifyPlaybackHandler._internal();
-
-  factory SpotifyPlaybackHandler() => _instance;
-
-  SpotifyPlaybackHandler._internal() {
+  SpotifyPlaybackHandler() {
     channel.setMethodCallHandler(_handleMethod);
   }
 
@@ -38,11 +32,11 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
       new BehaviorSubject(seedValue: null);
 
   BehaviorSubject<PlayerStateModel> get playerStateSubject =>
-      this._playerStateSubject;
+      _playerStateSubject;
 
   /// Adds a [PlayerStateModel] to the [_playerStateSubject] stream.
   void _updatePlayerState(Map map) {
-    this._playerStateSubject?.add(new PlayerStateModel.fromMap(map));
+    _playerStateSubject?.add(new PlayerStateModel.fromMap(map));
   }
 
   @override
@@ -91,6 +85,6 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
   }
 
   void close() {
-    this._playerStateSubject.close();
+    _playerStateSubject.close();
   }
 }
