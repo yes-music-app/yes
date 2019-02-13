@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:yes_music/data/connection_handler_base.dart';
+import 'package:yes_music/data/spotify/connection_handler_base.dart';
 
 class SpotifyConnectionHandler implements ConnectionHandlerBase {
   static const MethodChannel channel =
@@ -10,9 +10,7 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
   static final SpotifyConnectionHandler _instance =
       new SpotifyConnectionHandler._internal();
 
-  factory SpotifyConnectionHandler() {
-    return _instance;
-  }
+  factory SpotifyConnectionHandler() => _instance;
 
   SpotifyConnectionHandler._internal() {
     channel.setMethodCallHandler(_handleMethod);
@@ -32,22 +30,22 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
   }
 
   /// An rxdart [BehaviorSubject] that publishes the current connection state.
-  BehaviorSubject<CONNECTION_STATE> _connectionSubject =
-      new BehaviorSubject(seedValue: CONNECTION_STATE.DISCONNECTED);
+  BehaviorSubject<SpotifyConnectionState> _connectionSubject =
+      new BehaviorSubject(seedValue: SpotifyConnectionState.DISCONNECTED);
 
-  BehaviorSubject<CONNECTION_STATE> get connectionSubject =>
+  BehaviorSubject<SpotifyConnectionState> get connectionSubject =>
       this._connectionSubject;
 
   void _updateConnection(int state) {
     switch (state) {
       case 0:
-        this._connectionSubject.add(CONNECTION_STATE.DISCONNECTED);
+        this._connectionSubject.add(SpotifyConnectionState.DISCONNECTED);
         break;
       case 1:
-        this._connectionSubject.add(CONNECTION_STATE.CONNECTING);
+        this._connectionSubject.add(SpotifyConnectionState.CONNECTING);
         break;
       case 2:
-        this._connectionSubject.add(CONNECTION_STATE.CONNECTED);
+        this._connectionSubject.add(SpotifyConnectionState.CONNECTED);
         break;
     }
   }
@@ -55,12 +53,12 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
   /// Attempt to connect to the Spotify auth API.
   void connect() {
     channel.invokeMethod('connect');
-    _connectionSubject.add(CONNECTION_STATE.CONNECTING);
+    _connectionSubject.add(SpotifyConnectionState.CONNECTING);
   }
 
   void disconnect() {
     channel.invokeMethod("disconnect");
-    this._connectionSubject.add(CONNECTION_STATE.DISCONNECTED);
+    this._connectionSubject.add(SpotifyConnectionState.DISCONNECTED);
   }
 
   void close() {

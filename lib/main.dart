@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:yes_music/data/connection_handler_base.dart';
+import 'package:yes_music/data/spotify/connection_handler_base.dart';
 import 'package:yes_music/data/spotify/spotify_connection_handler.dart';
 import 'package:yes_music/data/spotify/spotify_playback_handler.dart';
 import 'package:yes_music/models/player_state_model.dart';
@@ -28,7 +28,7 @@ class MyHomePage extends StatefulWidget {
         this.stateSubject = new SpotifyPlaybackHandler().playerStateSubject,
         super(key: key);
 
-  final BehaviorSubject<CONNECTION_STATE> connectionSubject;
+  final BehaviorSubject<SpotifyConnectionState> connectionSubject;
   final BehaviorSubject<PlayerStateModel> stateSubject;
   final String title;
 
@@ -40,9 +40,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     widget.connectionSubject.listen((state) {
-      if (state == CONNECTION_STATE.CONNECTED) {
+      if (state == SpotifyConnectionState.CONNECTED) {
         new SpotifyPlaybackHandler().subscribeToPlayerState();
-      } else if (state == CONNECTION_STATE.DISCONNECTED) {
+      } else if (state == SpotifyConnectionState.DISCONNECTED) {
         new SpotifyPlaybackHandler().unsubscribeFromPlayerState();
       }
     });
@@ -51,12 +51,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _connect() {
-    CONNECTION_STATE state = widget.connectionSubject.value;
+    SpotifyConnectionState state = widget.connectionSubject.value;
     switch (state) {
-      case CONNECTION_STATE.CONNECTED:
+      case SpotifyConnectionState.CONNECTED:
         new SpotifyConnectionHandler().disconnect();
         break;
-      case CONNECTION_STATE.DISCONNECTED:
+      case SpotifyConnectionState.DISCONNECTED:
         new SpotifyConnectionHandler().connect();
         break;
       default:
@@ -82,13 +82,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   text = "no snapshot";
                 } else {
                   switch (snapShot.data) {
-                    case CONNECTION_STATE.CONNECTED:
+                    case SpotifyConnectionState.CONNECTED:
                       text = "connected";
                       break;
-                    case CONNECTION_STATE.CONNECTING:
+                    case SpotifyConnectionState.CONNECTING:
                       text = "connecting";
                       break;
-                    case CONNECTION_STATE.DISCONNECTED:
+                    case SpotifyConnectionState.DISCONNECTED:
                       text = "disconnected";
                       break;
                   }
