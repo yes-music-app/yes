@@ -1,6 +1,7 @@
 import 'package:rxdart/rxdart.dart';
 
 enum FirebaseAuthState {
+  AUTHORIZING_SILENTLY,
   UNAUTHORIZED,
   AUTHORIZING,
   INVALID_PHONE_NUMBER,
@@ -13,6 +14,9 @@ enum FirebaseAuthState {
 abstract class AuthHandlerBase {
   /// A [BehaviorSubject] that describes the current state of the login process.
   BehaviorSubject<FirebaseAuthState> get firebaseAuthState;
+
+  /// Attempt to sign the user in silently.
+  void signInSilently();
 
   /// Attempt to sign in the user in with their Google account.
   void signInWithGoogle();

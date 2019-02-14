@@ -9,28 +9,44 @@ class FirebaseAuthHandler implements AuthHandlerBase {
   String _verificationId;
 
   BehaviorSubject<FirebaseAuthState> _firebaseAuthState =
-  new BehaviorSubject(seedValue: FirebaseAuthState.UNAUTHORIZED);
+      new BehaviorSubject(seedValue: FirebaseAuthState.UNAUTHORIZED);
 
   @override
   BehaviorSubject<FirebaseAuthState> get firebaseAuthState =>
       _firebaseAuthState;
 
   @override
+  void signInSilently() async {
+    _firebaseAuthState.add(FirebaseAuthState.AUTHORIZING_SILENTLY);
+
+    final GoogleSignInAccount googleAccount =
+        await _googleSignIn.signInSilently();
+
+    if (googleAccount == null) {
+      _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED);
+      return;
+    }
+
+    _signInWithGoogleAccount(googleAccount);
+  }
+
+  @override
   void signInWithGoogle() async {
     _firebaseAuthState.add(FirebaseAuthState.AUTHORIZING);
 
-    GoogleSignInAccount googleAccount = await _googleSignIn.signInSilently();
-    if (googleAccount == null) {
-      googleAccount = await _googleSignIn.signIn();
+    final GoogleSignInAccount googleAccount = await _googleSignIn.signIn();
 
-      if (googleAccount == null) {
-        _firebaseAuthState.add(FirebaseAuthState.FAILED);
-        return;
-      }
+    if (googleAccount == null) {
+      _firebaseAuthState.add(FirebaseAuthState.FAILED);
+      return;
     }
 
+    _signInWithGoogleAccount(googleAccount);
+  }
+
+  void _signInWithGoogleAccount(GoogleSignInAccount googleAccount) async {
     final GoogleSignInAuthentication googleAuth =
-    await googleAccount.authentication;
+        await googleAccount.authentication;
 
     if (googleAuth == null) {
       _firebaseAuthState.add(FirebaseAuthState.FAILED);
@@ -72,22 +88,23 @@ class FirebaseAuthHandler implements AuthHandlerBase {
 
     await _firebaseAuth
         .verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      timeout: const Duration(seconds: 30),
-      verificationCompleted: verificationCompleted,
-      verificationFailed: verificationFailed,
-      codeSent: codeSent,
-      codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
-    )
+          phoneNumber: phoneNumber,
+          timeout: const Duration(seconds: 30),
+          verificationCompleted: verificationCompleted,
+          verificationFailed: verificationFailed,
+          codeSent: codeSent,
+          codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
+        )
         .catchError(
           () => _firebaseAuthState.add(FirebaseAuthState.FAILED),
-    );
+        );
   }
 
   @override
   void completePhoneSignIn(String smsCode) {
     if (_verificationId == null) {
       _firebaseAuthState.add(FirebaseAuthState.FAILED);
+      return;
     }
 
     final AuthCredential credential = PhoneAuthProvider.getCredential(
@@ -100,7 +117,7 @@ class FirebaseAuthHandler implements AuthHandlerBase {
 
   void _signInWithCredentials(AuthCredential credential) async {
     final FirebaseUser user =
-    await _firebaseAuth.signInWithCredential(credential);
+        await _firebaseAuth.signInWithCredential(credential);
     final FirebaseUser currentUser = await _firebaseAuth.currentUser();
 
     if (user == null ||
