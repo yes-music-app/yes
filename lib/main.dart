@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/data/spotify/connection_handler_base.dart';
-import 'package:yes_music/data/spotify/spotify_connection_handler.dart';
-import 'package:yes_music/data/spotify/spotify_playback_handler.dart';
+import 'package:yes_music/data/spotify/playback_handler_base.dart';
+import 'package:yes_music/data/spotify/spotify_provider.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  new SpotifyProvider().setFlavor(Flavor.REMOTE);
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -23,13 +26,19 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title})
-      : this.connectionSubject =
-            new SpotifyConnectionHandler().connectionSubject,
-        this.stateSubject = new SpotifyPlaybackHandler().playerStateSubject,
+      : this._playbackHandler = new SpotifyProvider().getPlaybackHandler(),
+        this._connectionHandler = new SpotifyProvider().getConnectionHandler(),
         super(key: key);
 
-  final BehaviorSubject<SpotifyConnectionState> connectionSubject;
-  final BehaviorSubject<PlayerStateModel> stateSubject;
+  final PlaybackHandlerBase _playbackHandler;
+  final ConnectionHandlerBase _connectionHandler;
+
+  BehaviorSubject<PlayerStateModel> get _stateSubject =>
+      _playbackHandler?.playerStateSubject;
+
+  BehaviorSubject<SpotifyConnectionState> get _connectionSubject =>
+      _connectionHandler?.connectionSubject;
+
   final String title;
 
   @override
@@ -39,11 +48,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
-    widget.connectionSubject.listen((state) {
+    widget._connectionSubject.listen((state) {
       if (state == SpotifyConnectionState.CONNECTED) {
-        new SpotifyPlaybackHandler().subscribeToPlayerState();
-      } else if (state == SpotifyConnectionState.DISCONNECTED) {
-        new SpotifyPlaybackHandler().unsubscribeFromPlayerState();
+        widget._playbackHandler.subscribeToPlayerState();
       }
     });
 
@@ -51,13 +58,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _connect() {
-    SpotifyConnectionState state = widget.connectionSubject.value;
+    SpotifyConnectionState state = widget._connectionSubject.value;
     switch (state) {
       case SpotifyConnectionState.CONNECTED:
-        new SpotifyConnectionHandler().disconnect();
+        widget._connectionHandler.disconnect();
         break;
       case SpotifyConnectionState.DISCONNECTED:
-        new SpotifyConnectionHandler().connect();
+        widget._connectionHandler.connect();
+        break;
+      case SpotifyConnectionState.FAILED:
+        widget._connectionHandler.connect();
         break;
       default:
         break;
@@ -74,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: <Widget>[
             StreamBuilder(
-              stream: widget.connectionSubject,
+              stream: widget._connectionSubject,
               builder: (context, snapShot) {
                 String text = "";
 
@@ -91,6 +101,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     case SpotifyConnectionState.DISCONNECTED:
                       text = "disconnected";
                       break;
+                    case SpotifyConnectionState.FAILED:
+                      text = "connection failed";
+                      break;
                   }
                 }
                 return Text(
@@ -99,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             StreamBuilder(
-              stream: widget.stateSubject,
+              stream: widget._stateSubject,
               builder: (context, snapShot) {
                 String text = "";
 

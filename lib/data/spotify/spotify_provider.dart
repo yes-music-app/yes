@@ -10,6 +10,8 @@ enum Flavor {
 
 class SpotifyProvider {
   Flavor _flavor;
+  PlaybackHandlerBase _playbackHandler;
+  ConnectionHandlerBase _connectionHandler;
 
   /// A singleton instance of the Spotify provider.
   static final SpotifyProvider _instance = new SpotifyProvider._internal();
@@ -26,7 +28,11 @@ class SpotifyProvider {
   PlaybackHandlerBase getPlaybackHandler() {
     switch (_flavor) {
       case Flavor.REMOTE:
-        return new SpotifyPlaybackHandler();
+        if(_playbackHandler == null) {
+          _playbackHandler = new SpotifyPlaybackHandler();
+        }
+
+        return _playbackHandler;
         break;
       default:
         throw new StateError("Spotify provider flavor not set");
@@ -37,7 +43,11 @@ class SpotifyProvider {
   ConnectionHandlerBase getConnectionHandler() {
     switch (_flavor) {
       case Flavor.REMOTE:
-        return new SpotifyConnectionHandler();
+        if(_connectionHandler == null) {
+          _connectionHandler = new SpotifyConnectionHandler();
+        }
+
+        return _connectionHandler;
         break;
       default:
         throw new StateError("Spotify provider flavor not set");

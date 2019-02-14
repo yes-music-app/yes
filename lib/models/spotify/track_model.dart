@@ -16,7 +16,7 @@ class TrackModel implements SearchableModel {
       : album = new AlbumModel.fromMap(map['album']),
         artist = new ArtistModel.fromMap(map['artist']),
         artists = ArtistModel.mapArtists(map['artists']),
-        duration = map['duration'] ? map['duration'] : map['duration_ms'],
+        duration = map['duration'] != null ? map['duration'] : map['duration_ms'],
         imageUri = map['imageUri'],
         name = map['name'],
         uri = map['uri'];
