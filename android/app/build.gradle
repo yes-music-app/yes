@@ -61,4 +61,7 @@ dependencies {
     implementation project(':spotify-auth')
     implementation project(':spotify-app-remote')
     implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.firebase:firebase-core:16.0.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
