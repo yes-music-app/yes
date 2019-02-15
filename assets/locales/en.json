@@ -1,0 +1,13 @@
+{
+  "title": "Yes Music App",
+  "ok": "ok",
+  "cancel": "cancel",
+  "login": {
+    "state": {
+
+    },
+    "other": {
+      "credentialsDialog": "we use your login credentials in order to authorize you to use our app"
+    }
+  }
+}
