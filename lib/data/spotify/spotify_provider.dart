@@ -1,12 +1,8 @@
+import 'package:yes_music/data/flavor.dart';
 import 'package:yes_music/data/spotify/connection_handler_base.dart';
 import 'package:yes_music/data/spotify/playback_handler_base.dart';
 import 'package:yes_music/data/spotify/spotify_connection_handler.dart';
 import 'package:yes_music/data/spotify/spotify_playback_handler.dart';
-
-enum Flavor {
-  MOCK,
-  REMOTE,
-}
 
 class SpotifyProvider {
   Flavor _flavor;

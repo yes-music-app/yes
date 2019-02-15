@@ -6,19 +6,17 @@ abstract class BlocBase {
 }
 
 class BlocProvider<T extends BlocBase> extends StatefulWidget {
-  final T _bloc;
-  final Widget _child;
+  final T bloc;
+  final Widget child;
 
-  BlocProvider({@required T bloc, @required Widget child, Key key})
-      : this._bloc = bloc,
-        this._child = child,
-        super(key: key);
+  BlocProvider({@required this.bloc, @required this.child, Key key})
+      : super(key: key);
 
   /// Finds the nearest bloc of the given type in the widget tree.
   static T of<T extends BlocBase>(BuildContext context) {
     final type = _typeOf<BlocProvider<T>>();
     BlocProvider<T> provider = context.ancestorWidgetOfExactType(type);
-    return provider._bloc;
+    return provider.bloc;
   }
 
   static Type _typeOf<T>() => T;
@@ -30,12 +28,12 @@ class BlocProvider<T extends BlocBase> extends StatefulWidget {
 class _BlocProviderState<T> extends State<BlocProvider<BlocBase>> {
   @override
   Widget build(BuildContext context) {
-    return widget._child;
+    return widget.child;
   }
 
   @override
   void dispose() {
-    widget._bloc.dispose();
+    widget.bloc.dispose();
     super.dispose();
   }
 }

@@ -23,7 +23,7 @@ class FirebaseAuthHandler implements AuthHandlerBase {
         await _googleSignIn.signInSilently();
 
     if (googleAccount == null) {
-      _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED);
+      _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY);
       return;
     }
 
@@ -77,7 +77,7 @@ class FirebaseAuthHandler implements AuthHandlerBase {
 
     final PhoneCodeSent codeSent =
         (String verificationId, [int forceResendingToken]) {
-      _firebaseAuthState.add(FirebaseAuthState.AWAITING_PHONE_NUMBER);
+      _firebaseAuthState.add(FirebaseAuthState.AWAITING_PHONE_CODE);
       _verificationId = verificationId;
     };
 

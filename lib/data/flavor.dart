@@ -1,0 +1,4 @@
+enum Flavor {
+  REMOTE,
+  MOCK,
+}

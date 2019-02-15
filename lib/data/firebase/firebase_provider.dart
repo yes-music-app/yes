@@ -1,10 +1,6 @@
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 import 'package:yes_music/data/firebase/firebase_auth_handler.dart';
-
-enum Flavor {
-  MOCK,
-  REMOTE,
-}
+import 'package:yes_music/data/flavor.dart';
 
 class AuthProvider {
   Flavor _flavor;
@@ -32,7 +28,7 @@ class AuthProvider {
         return _authHandler;
         break;
       default:
-        throw new StateError("Spotify provider flavor not set");
+        throw new StateError("Firebase provider flavor not set");
         break;
     }
   }
