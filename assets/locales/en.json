@@ -3,8 +3,10 @@
   "ok": "ok",
   "cancel": "cancel",
   "login": {
-    "state": {
-
+    "connect": {
+      "connectPrompt": "connect with",
+      "connectGoogle": "google",
+      "connectPhoneNumber": "phone number"
     },
     "other": {
       "credentialsDialog": "we use your login credentials in order to authorize you to use our app"

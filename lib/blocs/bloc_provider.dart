@@ -9,7 +9,10 @@ class BlocProvider<T extends BlocBase> extends StatefulWidget {
   final T _bloc;
   final Widget _child;
 
-  BlocProvider(this._bloc, this._child, {Key key}) : super(key: key);
+  BlocProvider({@required T bloc, @required Widget child, Key key})
+      : this._bloc = bloc,
+        this._child = child,
+        super(key: key);
 
   /// Finds the nearest bloc of the given type in the widget tree.
   static T of<T extends BlocBase>(BuildContext context) {

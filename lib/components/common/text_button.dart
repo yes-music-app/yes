@@ -21,6 +21,7 @@ class TextButton extends StatelessWidget {
     EdgeInsetsGeometry padding = EdgeInsets.zero,
     Widget child,
     bool isPrimary = true,
+    TextStyle textStyle,
   })  : _onPressed = onPressed,
         _fillColor = isPrimary
             ? theme.buttonTheme.colorScheme.primary
@@ -28,7 +29,7 @@ class TextButton extends StatelessWidget {
         _highlightColor = isPrimary
             ? theme.buttonTheme.colorScheme.primaryVariant
             : theme.buttonTheme.colorScheme.secondaryVariant,
-        _textStyle = theme.textTheme.button,
+        _textStyle = textStyle == null ? theme.textTheme.button : textStyle,
         _radius = radius,
         _constraints = constraints,
         _padding = padding,
