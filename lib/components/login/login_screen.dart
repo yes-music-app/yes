@@ -158,6 +158,6 @@ class LoginScreen extends StatelessWidget {
   }
 
   void _pushJoinScreen(BuildContext context) {
-    Navigator.of(context).popAndPushNamed("/");
+    Navigator.of(context).pushReplacementNamed("/choose");
   }
 }

@@ -16,5 +16,9 @@
       "codeHint": "code"
     },
     "failedInfo": "failed to connect, please try again"
+  },
+  "choose": {
+    "create": "create",
+    "join": "join"
   }
 }

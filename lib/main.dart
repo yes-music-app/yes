@@ -4,8 +4,11 @@ import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yes_music/blocs/bloc_provider.dart';
 import 'package:yes_music/blocs/firebase_connect_bloc.dart';
-import 'package:yes_music/components/join/join_screen.dart';
 import 'package:yes_music/components/login/login_screen.dart';
+import 'package:yes_music/components/sessions/choose_screen.dart';
+import 'package:yes_music/components/sessions/create_screen.dart';
+import 'package:yes_music/components/sessions/join_screen.dart';
+import 'package:yes_music/components/sessions/spotify_auth_screen.dart';
 import 'package:yes_music/components/themes.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/flavor.dart';
@@ -24,8 +27,11 @@ typedef RouteCallback = Widget Function(BuildContext context);
 
 class YesApp extends StatelessWidget {
   final Map<String, RouteCallback> _routes = {
-    "/login": (BuildContext context) => new LoginScreen(),
-    "/": (context) => new JoinScreen(),
+    "/": (BuildContext context) => new LoginScreen(),
+    "/choose": (context) => new ChooseScreen(),
+    "/spotifyAuth": (context) => new SpotifyAuthScreen(),
+    "/create": (context) => new CreateScreen(),
+    "/join": (context) => new JoinScreen(),
   };
 
   @override
@@ -35,7 +41,7 @@ class YesApp extends StatelessWidget {
       child: new MaterialApp(
         title: "yes",
         theme: Themes.darkTheme,
-        initialRoute: "/login",
+        initialRoute: "/",
         routes: _routes,
         localizationsDelegates: [
           FlutterI18nDelegate(false, "en", "assets/locales"),
