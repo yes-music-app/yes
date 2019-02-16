@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class TextButton extends StatelessWidget {
+class CustomButton extends StatelessWidget {
   final VoidCallback _onPressed;
   final Color _fillColor;
   final Color _highlightColor;
@@ -10,7 +10,7 @@ class TextButton extends StatelessWidget {
   final EdgeInsetsGeometry _padding;
   final Widget _child;
 
-  TextButton.withTheme({
+  CustomButton.withTheme({
     @required VoidCallback onPressed,
     @required ThemeData theme,
     double radius = 0,

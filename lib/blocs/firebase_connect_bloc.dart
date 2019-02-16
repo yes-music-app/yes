@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/bloc_provider.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
@@ -7,8 +9,10 @@ import 'package:yes_music/data/firebase/firebase_auth_handler.dart';
 class FirebaseConnectBloc implements BlocBase {
   final FirebaseAuthHandler _authHandler;
 
-  BehaviorSubject<FirebaseAuthState> get authSubject =>
-      _authHandler.firebaseAuthState;
+  ValueObservable<FirebaseAuthState> get stream =>
+      _authHandler.firebaseAuthState.stream;
+
+  StreamSink<FirebaseAuthState> get sink => _authHandler.firebaseAuthState.sink;
 
   FirebaseConnectBloc(this._authHandler);
 
@@ -18,6 +22,14 @@ class FirebaseConnectBloc implements BlocBase {
 
   void signInWithGoogle() {
     _authHandler.signInWithGoogle();
+  }
+
+  void signInWithPhone(String phoneNumber) {
+    _authHandler.signInWithPhone(phoneNumber);
+  }
+
+  void checkCode(String code) {
+    _authHandler.completePhoneSignIn(code);
   }
 
   @override

@@ -4,10 +4,11 @@ enum FirebaseAuthState {
   UNAUTHORIZED,
   AUTHORIZING_SILENTLY,
   UNAUTHORIZED_SILENTLY,
-  AUTHORIZING,
+  AWAITING_PHONE_NUMBER,
   AWAITING_PHONE_CODE,
-  FAILED,
+  AUTHORIZING,
   AUTHORIZED,
+  FAILED,
 }
 
 /// A class that handles logging the user in to Firebase.
@@ -20,6 +21,9 @@ abstract class AuthHandlerBase {
 
   /// Attempt to sign in the user in with their Google account.
   void signInWithGoogle();
+
+  /// Determine whether the user is currently signed in with Google.
+  Future<bool> isSignedInWithGoogle();
 
   /// Attempt to sign the user in with their phone number.
   void signInWithPhone(String phoneNumber);

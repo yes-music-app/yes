@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yes_music/blocs/bloc_provider.dart';
@@ -12,7 +13,10 @@ import 'package:yes_music/data/spotify/spotify_provider.dart';
 void main() {
   new AuthProvider().setFlavor(Flavor.REMOTE);
   new SpotifyProvider().setFlavor(Flavor.REMOTE);
-  runApp(YesApp());
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) => runApp(YesApp()));
 }
 
 class YesApp extends StatelessWidget {

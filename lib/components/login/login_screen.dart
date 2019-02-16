@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/bloc_provider.dart';
 import 'package:yes_music/blocs/firebase_connect_bloc.dart';
-import 'package:yes_music/components/common/text_button.dart';
+import 'package:yes_music/components/common/custom_button.dart';
+import 'package:yes_music/components/login/phone_number_dialog.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -16,7 +17,7 @@ class LoginScreen extends StatelessWidget {
       decoration: _getBackground(overlay),
       child: new Center(
         child: new StreamBuilder(
-          stream: connectBloc.authSubject.stream,
+          stream: connectBloc.stream,
           builder: (
             BuildContext context,
             AsyncSnapshot<FirebaseAuthState> snapshot,
@@ -29,18 +30,18 @@ class LoginScreen extends StatelessWidget {
               case FirebaseAuthState.UNAUTHORIZED:
                 connectBloc.signInSilently();
                 return _loadingIndicator();
-              case FirebaseAuthState.AUTHORIZING_SILENTLY:
-                return _loadingIndicator();
               case FirebaseAuthState.UNAUTHORIZED_SILENTLY:
                 return _getConnectButtons(context, connectBloc);
-              case FirebaseAuthState.AUTHORIZING:
-                return _loadingIndicator();
-              case FirebaseAuthState.AUTHORIZED:
-                return new Text("authorized");
               case FirebaseAuthState.FAILED:
-                return new Text("failed");
+                _showFailedDialog(context);
+                return _loadingIndicator();
+              case FirebaseAuthState.AUTHORIZING_SILENTLY:
+              case FirebaseAuthState.AUTHORIZING:
+              case FirebaseAuthState.AUTHORIZED:
+              case FirebaseAuthState.AWAITING_PHONE_NUMBER:
               case FirebaseAuthState.AWAITING_PHONE_CODE:
-                return new Text("awaiting phone number");
+              default:
+                return _loadingIndicator();
             }
           },
         ),
@@ -63,42 +64,81 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _getConnectButtons(BuildContext context, FirebaseConnectBloc bloc) {
-    return new Container(
-      constraints: new BoxConstraints.tight(new Size(160, 200)),
-      child: new Column(
-        children: <Widget>[
-          new Text(
-            FlutterI18n.translate(context, "login.connect.connectPrompt"),
-            style: Theme.of(context).textTheme.headline,
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        new Text(
+          FlutterI18n.translate(context, "login.connectPrompt"),
+          style: Theme.of(context).textTheme.headline,
+        ),
+        new Container(
+          padding: new EdgeInsets.only(bottom: 20),
+        ),
+        new CustomButton.withTheme(
+          onPressed: () => bloc.signInWithGoogle(),
+          theme: Theme.of(context),
+          child: new Text(
+            FlutterI18n.translate(context, "login.connectGoogle"),
           ),
-          new Container(
-            padding: new EdgeInsets.only(bottom: 20),
+          radius: 20,
+          constraints: new BoxConstraints.tight(new Size(160, 40)),
+        ),
+        new Container(
+          padding: new EdgeInsets.only(bottom: 10),
+        ),
+        new CustomButton.withTheme(
+          onPressed: () {
+            bloc.sink.add(FirebaseAuthState.AWAITING_PHONE_NUMBER);
+            _showPhoneNumberDialog(context);
+          },
+          theme: Theme.of(context),
+          child: new Text(
+            FlutterI18n.translate(context, "login.phoneNumber.connect"),
           ),
-          new TextButton.withTheme(
-            onPressed: () => bloc.signInWithGoogle(),
-            theme: Theme.of(context),
-            child: new Text(
-              FlutterI18n.translate(context, "login.connect.connectGoogle"),
-            ),
-            radius: 20,
-            constraints: new BoxConstraints.tight(new Size(160, 40)),
-          ),
-          new Container(
-            padding: new EdgeInsets.only(bottom: 10),
-          ),
-          new TextButton.withTheme(
-            onPressed: () => {},
-            theme: Theme.of(context),
-            child: new Text(
-              FlutterI18n.translate(
-                  context, "login.connect.connectPhoneNumber"),
-            ),
-            radius: 20,
-            constraints: new BoxConstraints.tight(new Size(160, 40)),
-            textStyle: Theme.of(context).textTheme.button,
-          ),
-        ],
+          radius: 20,
+          constraints: new BoxConstraints.tight(new Size(160, 40)),
+        ),
+      ],
+    );
+  }
+
+  void _showPhoneNumberDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => phoneNumberDialog(context),
+    );
+  }
+
+  void _showFailedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => _failedAlert(context),
+    );
+  }
+
+  Widget _failedAlert(BuildContext context) {
+    FirebaseConnectBloc bloc = BlocProvider.of<FirebaseConnectBloc>(context);
+
+    return new AlertDialog(
+      content: new SingleChildScrollView(
+        child: new Text(
+          FlutterI18n.translate(context, "login.failedInfo"),
+          style: Theme.of(context).textTheme.body1,
+        ),
       ),
+      actions: <Widget>[
+        FlatButton(
+          child: new Text(
+            FlutterI18n.translate(context, "ok"),
+            style: Theme.of(context).textTheme.button,
+          ),
+          onPressed: () {
+            bloc.sink.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY);
+            Navigator.of(context).pop();
+          },
+        )
+      ],
     );
   }
 }

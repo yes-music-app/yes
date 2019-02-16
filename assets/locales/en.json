@@ -2,14 +2,19 @@
   "title": "Yes Music App",
   "ok": "ok",
   "cancel": "cancel",
+  "submit": "submit",
   "login": {
-    "connect": {
-      "connectPrompt": "connect with",
-      "connectGoogle": "google",
-      "connectPhoneNumber": "phone number"
+    "credentialsDialog": "we use your login credentials in order to authorize you to use our app",
+    "connectPrompt": "connect with",
+    "connectGoogle": "google",
+    "phoneNumber": {
+      "connect": "phone number",
+      "numberPrompt": "please enter your phone number",
+      "numberHint": "phone number",
+      "numberDisclaimer": "msg & data rates may apply",
+      "codePrompt": "please enter the code that we sent you",
+      "codeHint": "code"
     },
-    "other": {
-      "credentialsDialog": "we use your login credentials in order to authorize you to use our app"
-    }
+    "failedInfo": "failed to connect, please try again"
   }
 }

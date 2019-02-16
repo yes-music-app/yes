@@ -30,6 +30,12 @@ class FirebaseAuthHandler implements AuthHandlerBase {
     _signInWithGoogleAccount(googleAccount);
   }
 
+//  @override
+//  void signInSilently() async {
+//    await _googleSignIn.signOut();
+//    _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY);
+//  }
+
   @override
   void signInWithGoogle() async {
     _firebaseAuthState.add(FirebaseAuthState.AUTHORIZING);
@@ -42,6 +48,11 @@ class FirebaseAuthHandler implements AuthHandlerBase {
     }
 
     _signInWithGoogleAccount(googleAccount);
+  }
+
+  @override
+  Future<bool> isSignedInWithGoogle() {
+    return _googleSignIn.isSignedIn();
   }
 
   void _signInWithGoogleAccount(GoogleSignInAccount googleAccount) async {
@@ -96,12 +107,14 @@ class FirebaseAuthHandler implements AuthHandlerBase {
           codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
         )
         .catchError(
-          () => _firebaseAuthState.add(FirebaseAuthState.FAILED),
+          (e) => _firebaseAuthState.add(FirebaseAuthState.FAILED),
         );
   }
 
   @override
   void completePhoneSignIn(String smsCode) {
+    _firebaseAuthState.add(FirebaseAuthState.AUTHORIZING);
+
     if (_verificationId == null) {
       _firebaseAuthState.add(FirebaseAuthState.FAILED);
       return;
