@@ -5,19 +5,35 @@ import 'package:yes_music/blocs/firebase_connect_bloc.dart';
 import 'package:yes_music/components/common/custom_button.dart';
 import 'package:yes_music/components/login/phone_number_dialog.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
+import 'package:yes_music/feature_flags/flag_provider.dart';
 
 class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final FirebaseConnectBloc connectBloc =
+    final FirebaseConnectBloc bloc =
         BlocProvider.of<FirebaseConnectBloc>(context);
     final Color overlay = Theme.of(context).primaryColor.withAlpha(200);
+
+    bloc.stream.listen(
+      (FirebaseAuthState state) {
+        switch (state) {
+          case FirebaseAuthState.FAILED:
+            _showFailedDialog(context);
+            break;
+          case FirebaseAuthState.AUTHORIZED:
+            _pushJoinScreen(context);
+            break;
+          default:
+            break;
+        }
+      },
+    );
 
     return new Container(
       decoration: _getBackground(overlay),
       child: new Center(
         child: new StreamBuilder(
-          stream: connectBloc.stream,
+          stream: bloc.stream,
           builder: (
             BuildContext context,
             AsyncSnapshot<FirebaseAuthState> snapshot,
@@ -28,18 +44,10 @@ class LoginScreen extends StatelessWidget {
 
             switch (snapshot.data) {
               case FirebaseAuthState.UNAUTHORIZED:
-                connectBloc.signInSilently();
+                bloc.signInSilently();
                 return _loadingIndicator();
               case FirebaseAuthState.UNAUTHORIZED_SILENTLY:
-                return _getConnectButtons(context, connectBloc);
-              case FirebaseAuthState.FAILED:
-                _showFailedDialog(context);
-                return _loadingIndicator();
-              case FirebaseAuthState.AUTHORIZING_SILENTLY:
-              case FirebaseAuthState.AUTHORIZING:
-              case FirebaseAuthState.AUTHORIZED:
-              case FirebaseAuthState.AWAITING_PHONE_NUMBER:
-              case FirebaseAuthState.AWAITING_PHONE_CODE:
+                return _getConnectButtons(context, bloc);
               default:
                 return _loadingIndicator();
             }
@@ -64,27 +72,28 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _getConnectButtons(BuildContext context, FirebaseConnectBloc bloc) {
-    return new Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        new Text(
-          FlutterI18n.translate(context, "login.connectPrompt"),
-          style: Theme.of(context).textTheme.headline,
+    List<Widget> widgets = <Widget>[
+      new Text(
+        FlutterI18n.translate(context, "login.connectPrompt"),
+        style: Theme.of(context).textTheme.headline,
+      ),
+      new Padding(
+        padding: new EdgeInsets.only(bottom: 20),
+      ),
+      new CustomButton.withTheme(
+        onPressed: () => bloc.signInWithGoogle(),
+        theme: Theme.of(context),
+        child: new Text(
+          FlutterI18n.translate(context, "login.connectGoogle"),
         ),
-        new Container(
-          padding: new EdgeInsets.only(bottom: 20),
-        ),
-        new CustomButton.withTheme(
-          onPressed: () => bloc.signInWithGoogle(),
-          theme: Theme.of(context),
-          child: new Text(
-            FlutterI18n.translate(context, "login.connectGoogle"),
-          ),
-          radius: 20,
-          constraints: new BoxConstraints.tight(new Size(160, 40)),
-        ),
-        new Container(
+        radius: 20,
+        constraints: new BoxConstraints.tight(new Size(160, 40)),
+      ),
+    ];
+
+    if (new FlagProvider().getFlag("phoneAuth")) {
+      widgets.addAll(<Widget>[
+        new Padding(
           padding: new EdgeInsets.only(bottom: 10),
         ),
         new CustomButton.withTheme(
@@ -99,7 +108,13 @@ class LoginScreen extends StatelessWidget {
           radius: 20,
           constraints: new BoxConstraints.tight(new Size(160, 40)),
         ),
-      ],
+      ]);
+    }
+
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: widgets,
     );
   }
 
@@ -140,5 +155,9 @@ class LoginScreen extends StatelessWidget {
         )
       ],
     );
+  }
+
+  void _pushJoinScreen(BuildContext context) {
+    // TODO: Implement this.
   }
 }
