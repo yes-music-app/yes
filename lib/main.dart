@@ -4,6 +4,7 @@ import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yes_music/blocs/bloc_provider.dart';
 import 'package:yes_music/blocs/firebase_connect_bloc.dart';
+import 'package:yes_music/components/join/join_screen.dart';
 import 'package:yes_music/components/login/login_screen.dart';
 import 'package:yes_music/components/themes.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
@@ -19,7 +20,14 @@ void main() {
   ]).then((_) => runApp(YesApp()));
 }
 
+typedef RouteCallback = Widget Function(BuildContext context);
+
 class YesApp extends StatelessWidget {
+  final Map<String, RouteCallback> _routes = {
+    "/login": (BuildContext context) => new LoginScreen(),
+    "/": (context) => new JoinScreen(),
+  };
+
   @override
   Widget build(BuildContext context) {
     return new BlocProvider<FirebaseConnectBloc>(
@@ -27,7 +35,8 @@ class YesApp extends StatelessWidget {
       child: new MaterialApp(
         title: "yes",
         theme: Themes.darkTheme,
-        home: new LoginScreen(),
+        initialRoute: "/login",
+        routes: _routes,
         localizationsDelegates: [
           FlutterI18nDelegate(false, "en", "assets/locales"),
           GlobalMaterialLocalizations.delegate,
