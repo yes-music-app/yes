@@ -1,4 +1,4 @@
-import 'package:yes_music/models/spotify/payer_options_model.dart';
+import 'package:yes_music/models/spotify/player_options_model.dart';
 import 'package:yes_music/models/spotify/player_restrictions_model.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 

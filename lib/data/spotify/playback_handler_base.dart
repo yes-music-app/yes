@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';
 
@@ -31,6 +32,9 @@ abstract class PlaybackHandlerBase {
 
   /// Queues the song with the given [trackUri].
   void queue(String trackUri);
+
+  /// Gets the image with the given [imageUri].
+  Future<Image> getImage(String imageUri);
 
   /// Closes the handler's connections.
   void dispose();

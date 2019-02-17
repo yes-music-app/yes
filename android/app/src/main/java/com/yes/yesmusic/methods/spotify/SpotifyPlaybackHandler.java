@@ -2,8 +2,10 @@ package com.yes.yesmusic.methods.spotify;
 
 import static com.yes.yesmusic.methods.spotify.SpotifyDataMappers.mapPlayerState;
 
+import android.graphics.Bitmap;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.client.Subscription;
+import com.spotify.protocol.types.ImageUri;
 import com.spotify.protocol.types.PlayerState;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -83,6 +85,15 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
           result.error("FAILURE", "Queue received a non-string argument", null);
         }
         break;
+      case "getImage":
+        if (methodCall.arguments instanceof String) {
+          remote.getImagesApi().getImage(new ImageUri((String) methodCall.arguments))
+              .setResultCallback(
+                  (Bitmap bitmap) -> result.success(SpotifyDataMappers.mapImage(bitmap)));
+        } else {
+          result.error("FAILURE", "GetImage received a non-string argument", null);
+        }
+        break;
       default:
         result.notImplemented();
         break;
@@ -112,8 +123,6 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
       this.playerStateSubscriptions = 0;
     }
 
-    remote.getPlayerApi().getPlayerState().setResultCallback(
-        (result) -> channel.invokeMethod("updatePlayerState", mapPlayerState(result)));
     this.playerStateSubscriptions++;
   }
 
@@ -130,5 +139,13 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
       this.playerStateSubscription.cancel();
       this.playerStateSubscription = null;
     }
+  }
+
+  private void getImage(ImageUri imageUri) {
+    this.remote.getImagesApi().getImage(imageUri).setResultCallback((Bitmap bitmap) -> {
+      if (bitmap == null) {
+
+      }
+    });
   }
 }

@@ -1,11 +1,13 @@
 package com.yes.yesmusic.methods.spotify;
 
+import android.graphics.Bitmap;
 import com.spotify.protocol.types.Album;
 import com.spotify.protocol.types.Artist;
 import com.spotify.protocol.types.PlayerOptions;
 import com.spotify.protocol.types.PlayerRestrictions;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +23,7 @@ public class SpotifyDataMappers {
     return artistList;
   }
 
-  public static HashMap<String, Object> mapTrack(Track track) {
+  static HashMap<String, Object> mapTrack(Track track) {
     HashMap<String, Object> trackMap = new HashMap<>();
 
     trackMap.put("album", mapAlbum(track.album));
@@ -37,7 +39,7 @@ public class SpotifyDataMappers {
     return trackMap;
   }
 
-  public static HashMap<String, Object> mapAlbum(Album album) {
+  static HashMap<String, Object> mapAlbum(Album album) {
     HashMap<String, Object> albumMap = new HashMap<>();
 
     albumMap.put("name", album.name);
@@ -46,7 +48,7 @@ public class SpotifyDataMappers {
     return albumMap;
   }
 
-  public static HashMap<String, Object> mapArtist(Artist artist) {
+  static HashMap<String, Object> mapArtist(Artist artist) {
     HashMap<String, Object> artistMap = new HashMap<>();
 
     artistMap.put("name", artist.name);
@@ -55,7 +57,7 @@ public class SpotifyDataMappers {
     return artistMap;
   }
 
-  public static HashMap<String, Object> mapPlayerState(PlayerState playerState) {
+  static HashMap<String, Object> mapPlayerState(PlayerState playerState) {
     HashMap<String, Object> stateMap = new HashMap<>();
 
     stateMap.put("isPaused", playerState.isPaused);
@@ -68,7 +70,7 @@ public class SpotifyDataMappers {
     return stateMap;
   }
 
-  public static HashMap<String, Object> mapPlayerOptions(PlayerOptions playerOptions) {
+  static HashMap<String, Object> mapPlayerOptions(PlayerOptions playerOptions) {
     HashMap<String, Object> optionsMap = new HashMap<>();
 
     optionsMap.put("isShuffling", playerOptions.isShuffling);
@@ -77,7 +79,7 @@ public class SpotifyDataMappers {
     return optionsMap;
   }
 
-  public static HashMap<String, Object> mapPlayerRestrictions(PlayerRestrictions restrictions) {
+  static HashMap<String, Object> mapPlayerRestrictions(PlayerRestrictions restrictions) {
     HashMap<String, Object> restrictionsMap = new HashMap<>();
 
     restrictionsMap.put("canRepeatContext", restrictions.canRepeatContext);
@@ -88,5 +90,19 @@ public class SpotifyDataMappers {
     restrictionsMap.put("canToggleShuffle", restrictions.canToggleShuffle);
 
     return restrictionsMap;
+  }
+
+  static HashMap<String, Object> mapImage(Bitmap bitmap) {
+    HashMap<String, Object> imageMap = new HashMap<>();
+
+    ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
+    bitmap.copyPixelsToBuffer(buffer);
+    byte[] bytes = buffer.array();
+
+    imageMap.put("width", bitmap.getWidth());
+    imageMap.put("height", bitmap.getHeight());
+    imageMap.put("bytes", bytes);
+
+    return imageMap;
   }
 }

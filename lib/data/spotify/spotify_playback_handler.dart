@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:yes_music/data/spotify/playback_handler_base.dart';
@@ -83,6 +84,20 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
   @override
   void queue(String trackUri) {
     channel.invokeMethod("queue", trackUri);
+  }
+
+  @override
+  Future<Image> getImage(String imageUri) async {
+    Map map = await channel.invokeMethod("getImage", imageUri);
+    if (map == null) {
+      return null;
+    }
+
+    return Image.memory(
+      map['bytes'],
+      width: map['width'],
+      height: map['height'],
+    );
   }
 
   @override
