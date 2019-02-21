@@ -5,10 +5,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yes_music/blocs/bloc_provider.dart';
 import 'package:yes_music/blocs/firebase_connect_bloc.dart';
 import 'package:yes_music/components/login/login_screen.dart';
-import 'package:yes_music/components/sessions/choose_screen.dart';
-import 'package:yes_music/components/sessions/create_screen.dart';
-import 'package:yes_music/components/sessions/join_screen.dart';
-import 'package:yes_music/components/sessions/spotify_auth_screen.dart';
+import 'package:yes_music/components/route_callbacks.dart';
+import 'package:yes_music/components/setup/choose_screen.dart';
+import 'package:yes_music/components/setup/spotify_auth_screen.dart';
 import 'package:yes_music/components/themes.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/flavor.dart';
@@ -23,15 +22,14 @@ void main() {
   ]).then((_) => runApp(YesApp()));
 }
 
-typedef RouteCallback = Widget Function(BuildContext context);
-
 class YesApp extends StatelessWidget {
   final Map<String, RouteCallback> _routes = {
     "/": (BuildContext context) => new LoginScreen(),
     "/choose": (context) => new ChooseScreen(),
     "/spotifyAuth": (context) => new SpotifyAuthScreen(),
-    "/create": (context) => new CreateScreen(),
-    "/join": (context) => new JoinScreen(),
+    "/appRemote": appRemoteCallback,
+    "/create": createCallback,
+    "/join": joinCallback,
   };
 
   @override

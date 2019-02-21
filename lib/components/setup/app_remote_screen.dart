@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class CreateScreen extends StatelessWidget {
+class AppRemoteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return null;
+    return new Text("app remote screen");
   }
 }

@@ -33,7 +33,5 @@ class FirebaseConnectBloc implements BlocBase {
   }
 
   @override
-  void dispose() {
-    _authHandler.dispose();
-  }
+  void dispose() {}
 }

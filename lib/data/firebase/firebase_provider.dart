@@ -1,10 +1,13 @@
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 import 'package:yes_music/data/firebase/firebase_auth_handler.dart';
+import 'package:yes_music/data/firebase/firebase_transaction_handler.dart';
+import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 import 'package:yes_music/data/flavor.dart';
 
 class FirebaseProvider {
   Flavor _flavor;
   AuthHandlerBase _authHandler;
+  TransactionHandlerBase _transactionHandler;
 
   /// A singleton instance of the Firebase provider.
   static final FirebaseProvider _instance = new FirebaseProvider._internal();
@@ -26,6 +29,21 @@ class FirebaseProvider {
         }
 
         return _authHandler;
+        break;
+      default:
+        throw new StateError("Firebase provider flavor not set");
+        break;
+    }
+  }
+
+  TransactionHandlerBase getTransactionHandler() {
+    switch (_flavor) {
+      case Flavor.REMOTE:
+        if (_transactionHandler == null) {
+          _transactionHandler = new FirebaseTransactionHandler();
+        }
+
+        return _transactionHandler;
         break;
       default:
         throw new StateError("Firebase provider flavor not set");

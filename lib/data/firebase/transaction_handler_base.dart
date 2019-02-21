@@ -2,6 +2,9 @@ import 'package:rxdart/rxdart.dart';
 
 enum CreateSessionState {
   NOT_CREATED,
+  APP_REMOTE_CONNECTING,
+  APP_REMOTE_FAILED,
+  APP_REMOTE_CONNECTED,
   CREATING,
   CREATED,
   FAILED,

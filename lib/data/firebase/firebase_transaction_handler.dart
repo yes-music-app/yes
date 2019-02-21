@@ -111,9 +111,12 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
     SessionModel model = SessionModel.fromMap(snapshot.data);
     model.users.add(user);
-    _sessionReference.setData(model.toMap());
-
-    _joinState.add(JoinSessionState.JOINED);
+    _sessionReference.setData(model.toMap()).then((value) {
+      _joinState.add(JoinSessionState.JOINED);
+    }, onError: (e) {
+      _sessionReference = null;
+      _joinState.add(JoinSessionState.FAILED);
+    });
   }
 
   @override
