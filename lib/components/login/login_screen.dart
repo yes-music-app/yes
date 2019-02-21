@@ -14,20 +14,18 @@ class LoginScreen extends StatelessWidget {
         BlocProvider.of<FirebaseConnectBloc>(context);
     final Color overlay = Theme.of(context).primaryColor.withAlpha(200);
 
-    bloc.stream.listen(
-      (FirebaseAuthState state) {
-        switch (state) {
-          case FirebaseAuthState.FAILED:
-            _showFailedDialog(context);
-            break;
-          case FirebaseAuthState.AUTHORIZED:
-            _pushJoinScreen(context);
-            break;
-          default:
-            break;
-        }
-      },
-    );
+    bloc.stream.listen((FirebaseAuthState state) {
+      switch (state) {
+        case FirebaseAuthState.FAILED:
+          _showFailedDialog(context, bloc);
+          break;
+        case FirebaseAuthState.AUTHORIZED:
+          _pushChooseScreen(context);
+          break;
+        default:
+          break;
+      }
+    });
 
     return new Container(
       decoration: _getBackground(overlay),
@@ -125,16 +123,14 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void _showFailedDialog(BuildContext context) {
+  void _showFailedDialog(BuildContext context, FirebaseConnectBloc bloc) {
     showDialog(
       context: context,
-      builder: (BuildContext context) => _failedAlert(context),
+      builder: (BuildContext context) => _failedAlert(context, bloc),
     );
   }
 
-  Widget _failedAlert(BuildContext context) {
-    FirebaseConnectBloc bloc = BlocProvider.of<FirebaseConnectBloc>(context);
-
+  Widget _failedAlert(BuildContext context, FirebaseConnectBloc bloc) {
     return new AlertDialog(
       content: new SingleChildScrollView(
         child: new Text(
@@ -157,7 +153,7 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void _pushJoinScreen(BuildContext context) {
+  void _pushChooseScreen(BuildContext context) {
     Navigator.of(context).pushReplacementNamed("/choose");
   }
 }

@@ -12,15 +12,12 @@ import 'package:yes_music/data/spotify/spotify_provider.dart';
 typedef RouteCallback = Widget Function(BuildContext context);
 
 final RouteCallback appRemoteCallback = (context) => new BlocProvider(
-      bloc: new AppRemoteBloc(),
+      bloc: new AppRemoteBloc(new SpotifyProvider().getConnectionHandler()),
       child: new AppRemoteScreen(),
     );
 
 final RouteCallback createCallback = (context) => new BlocProvider(
-      bloc: new CreateBloc(
-        new SpotifyProvider().getConnectionHandler(),
-        new FirebaseProvider().getTransactionHandler(),
-      ),
+      bloc: new CreateBloc(new FirebaseProvider().getTransactionHandler()),
       child: new CreateScreen(),
     );
 

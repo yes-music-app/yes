@@ -12,7 +12,7 @@ class ChooseScreen extends StatelessWidget {
         children: <Widget>[
           new CustomButton.withTheme(
             onPressed: () {
-              Navigator.of(context).pushNamed("/spotifyAuth");
+              Navigator.of(context).pushNamed("/appRemote");
             },
             theme: Theme.of(context),
             child: new Text(

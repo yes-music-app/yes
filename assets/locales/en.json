@@ -20,5 +20,9 @@
   "choose": {
     "create": "create",
     "join": "join"
+  },
+  "appRemote": {
+    "failedInfo": "failed to connect to the Spotify app, please try again",
+    "connect": "connect to Spotify"
   }
 }
