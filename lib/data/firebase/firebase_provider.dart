@@ -2,16 +2,16 @@ import 'package:yes_music/data/firebase/auth_handler_base.dart';
 import 'package:yes_music/data/firebase/firebase_auth_handler.dart';
 import 'package:yes_music/data/flavor.dart';
 
-class AuthProvider {
+class FirebaseProvider {
   Flavor _flavor;
   AuthHandlerBase _authHandler;
 
   /// A singleton instance of the Firebase provider.
-  static final AuthProvider _instance = new AuthProvider._internal();
+  static final FirebaseProvider _instance = new FirebaseProvider._internal();
 
-  factory AuthProvider() => _instance;
+  factory FirebaseProvider() => _instance;
 
-  AuthProvider._internal();
+  FirebaseProvider._internal();
 
   /// Sets the [Flavor] to use when making Firebase requests.
   void setFlavor(Flavor flavor) {

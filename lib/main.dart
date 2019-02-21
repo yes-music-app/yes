@@ -15,7 +15,7 @@ import 'package:yes_music/data/flavor.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
 
 void main() {
-  new AuthProvider().setFlavor(Flavor.REMOTE);
+  new FirebaseProvider().setFlavor(Flavor.REMOTE);
   new SpotifyProvider().setFlavor(Flavor.REMOTE);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -37,7 +37,7 @@ class YesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new BlocProvider<FirebaseConnectBloc>(
-      bloc: new FirebaseConnectBloc(new AuthProvider().getAuthHandler()),
+      bloc: new FirebaseConnectBloc(new FirebaseProvider().getAuthHandler()),
       child: new MaterialApp(
         title: "yes",
         theme: Themes.darkTheme,

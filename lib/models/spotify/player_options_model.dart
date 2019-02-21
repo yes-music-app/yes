@@ -4,6 +4,13 @@ class PlayerOptionsModel {
   final int repeatMode;
 
   PlayerOptionsModel.fromMap(Map map)
-      : isShuffling = map['isShuffling'],
-        repeatMode = map['repeatMode'];
+      : isShuffling = map["isShuffling"],
+        repeatMode = map["repeatMode"];
+
+  Map<String, dynamic> toMap() {
+    return {
+      "isShuffling": isShuffling,
+      "repeatMode": repeatMode,
+    };
+  }
 }

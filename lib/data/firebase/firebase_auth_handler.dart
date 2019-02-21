@@ -16,6 +16,12 @@ class FirebaseAuthHandler implements AuthHandlerBase {
       _firebaseAuthState;
 
   @override
+  Future<String> uid() async {
+    FirebaseUser user = await _firebaseAuth?.currentUser();
+    return user?.uid;
+  }
+
+  @override
   void signInSilently() async {
     _firebaseAuthState.add(FirebaseAuthState.AUTHORIZING_SILENTLY);
 

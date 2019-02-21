@@ -8,11 +8,12 @@ class ArtistModel implements SearchableModel {
   final String id;
   final List<ImageModel> images;
 
+  @override
   ArtistModel.fromMap(Map map)
-      : name = map['name'],
-        uri = map['uri'],
-        id = map['id'],
-        images = ImageModel.mapImages(map['images']);
+      : name = map["name"],
+        uri = map["uri"],
+        id = map["id"],
+        images = ImageModel.mapImages(map["images"]);
 
   static List<ArtistModel> mapArtists(List artists) {
     if (artists == null) {
@@ -20,5 +21,19 @@ class ArtistModel implements SearchableModel {
     }
 
     return artists.map((artist) => new ArtistModel.fromMap(artist)).toList();
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      "name": name,
+      "uri": uri,
+      "id": id,
+      "images": ImageModel.toMapList(images),
+    };
+  }
+
+  static List<Map<String, dynamic>> toMapList(List<ArtistModel> models) {
+    return models.map((model) => model.toMap());
   }
 }

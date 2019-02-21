@@ -12,12 +12,26 @@ class TrackModel implements SearchableModel {
   final String name;
   final String uri;
 
+  @override
   TrackModel.fromMap(Map map)
-      : album = new AlbumModel.fromMap(map['album']),
-        artist = new ArtistModel.fromMap(map['artist']),
-        artists = ArtistModel.mapArtists(map['artists']),
-        duration = map['duration'] != null ? map['duration'] : map['duration_ms'],
-        imageUri = map['imageUri'],
-        name = map['name'],
-        uri = map['uri'];
+      : album = new AlbumModel.fromMap(map["album"]),
+        artist = new ArtistModel.fromMap(map["artist"]),
+        artists = ArtistModel.mapArtists(map["artists"]),
+        duration = map["duration"] != null ? map["duration"] : map["duration_ms"],
+        imageUri = map["imageUri"],
+        name = map["name"],
+        uri = map["uri"];
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      "album": album.toMap(),
+      "artist": artist.toMap(),
+      "artists": ArtistModel.toMapList(artists),
+      "duration": duration,
+      "imageUri": imageUri,
+      "name": name,
+      "uri": uri,
+    };
+  }
 }

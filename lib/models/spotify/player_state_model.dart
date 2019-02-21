@@ -12,12 +12,23 @@ class PlayerStateModel {
   final TrackModel track;
 
   PlayerStateModel.fromMap(Map map)
-      : isPaused = map['isPaused'],
+      : isPaused = map["isPaused"],
         playbackOptions =
-            new PlayerOptionsModel.fromMap(map['playbackOptions']),
-        playbackPosition = map['playbackPosition'],
+            new PlayerOptionsModel.fromMap(map["playbackOptions"]),
+        playbackPosition = map["playbackPosition"],
         playbackRestrictions =
-            new PlayerRestrictionsModel.fromMap(map['playbackRestrictions']),
-        playbackSpeed = map['playbackSpeed'],
-        track = new TrackModel.fromMap(map['track']);
+            new PlayerRestrictionsModel.fromMap(map["playbackRestrictions"]),
+        playbackSpeed = map["playbackSpeed"],
+        track = new TrackModel.fromMap(map["track"]);
+
+  Map<String, dynamic> toMap() {
+    return {
+      "isPaused": isPaused,
+      "playbackOptions": playbackOptions.toMap(),
+      "playbackPosition": playbackPosition,
+      "playbackRestrictions": playbackRestrictions,
+      "playbackSpeed": playbackSpeed,
+      "tracl": track.toMap(),
+    };
+  }
 }

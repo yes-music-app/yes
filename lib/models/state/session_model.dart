@@ -17,4 +17,19 @@ class SessionModel {
   final List<UserModel> users;
 
   SessionModel(this.playerState, this.queue, this.history, this.users);
+
+  SessionModel.fromMap(Map map)
+      : playerState = PlayerStateModel.fromMap(map["playerState"]),
+        queue = SongModel.fromMapList(map["queue"]),
+        history = SongModel.fromMapList(map["history"]),
+        users = UserModel.fromMapList(map["users"]);
+
+  Map<String, dynamic> toMap() {
+    return {
+      "playerState": playerState.toMap(),
+      "queue": SongModel.toMapList(queue),
+      "history": SongModel.toMapList(history),
+      "users": UserModel.toMapList(users),
+    };
+  }
 }

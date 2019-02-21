@@ -12,4 +12,25 @@ class SongModel {
   final List<String> upvotes;
 
   SongModel(this.track, this.uid, this.upvotes);
+
+  SongModel.fromMap(Map map)
+      : track = TrackModel.fromMap(map["track"]),
+        uid = map["uid"],
+        upvotes = map["upvotes"];
+
+  static List<SongModel> fromMapList(List songs) {
+    return songs?.map((song) => new SongModel.fromMap(song))?.toList();
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "track": track.toMap(),
+      "uid": uid,
+      "upvotes": upvotes,
+    };
+  }
+
+  static List<Map<String, dynamic>> toMapList(List<SongModel> models) {
+    return models?.map((model) => model.toMap());
+  }
 }

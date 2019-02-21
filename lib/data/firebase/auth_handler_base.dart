@@ -16,6 +16,9 @@ abstract class AuthHandlerBase {
   /// A [BehaviorSubject] that describes the current state of the login process.
   BehaviorSubject<FirebaseAuthState> get firebaseAuthState;
 
+  /// Get the current user's user ID.
+  Future<String> uid();
+
   /// Attempt to sign the user in silently.
   void signInSilently();
 
