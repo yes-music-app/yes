@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 import 'package:yes_music/models/state/search_model.dart';
@@ -14,26 +13,11 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   String _sid;
   DocumentReference _sessionReference;
 
-  final BehaviorSubject<CreateSessionState> _createState =
-      new BehaviorSubject<CreateSessionState>(
-          seedValue: CreateSessionState.NOT_CREATED);
-  final BehaviorSubject<JoinSessionState> _joinState =
-      new BehaviorSubject<JoinSessionState>(
-          seedValue: JoinSessionState.NOT_JOINED);
-
   @override
   String get sid => _sid;
 
   @override
-  BehaviorSubject<CreateSessionState> get createState => _createState;
-
-  @override
-  BehaviorSubject<JoinSessionState> get joinState => _joinState;
-
-  @override
-  void createSession() async {
-    _createState.add(CreateSessionState.CREATING);
-
+  Future<bool> createSession() async {
     String id;
     bool unique = false;
 
@@ -48,18 +32,22 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     String uid = await new FirebaseProvider().getAuthHandler().uid();
     if (uid == null) {
       _sessionReference = null;
-      _createState.add(CreateSessionState.FAILED);
-      return;
+      return false;
     }
 
     UserModel user = new UserModel(uid, new SearchModel("", []));
     SessionModel session = new SessionModel(null, [], [], [user]);
-    _sessionReference.setData(session.toMap()).then((value) {
-      _createState.add(CreateSessionState.CREATED);
-    }, onError: (e) {
-      _sessionReference = null;
-      _createState.add(CreateSessionState.FAILED);
-    });
+    bool success = await _sessionReference.setData(session.toMap()).then(
+      (value) {
+        return true;
+      },
+      onError: (e) {
+        _sessionReference = null;
+        return false;
+      },
+    );
+
+    return success;
   }
 
   String _generateSID() {
@@ -80,9 +68,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   }
 
   @override
-  void joinSession(String sid) async {
-    _joinState.add(JoinSessionState.JOINING);
-
+  Future<bool> joinSession(String sid) async {
     final String casedSID = sid.toUpperCase();
     _sessionReference =
         Firestore.instance.collection(SESSION_PATH).document(casedSID);
@@ -90,38 +76,34 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
     if (snap == null) {
       _sessionReference = null;
-      _joinState.add(JoinSessionState.FAILED);
-      return;
+      return false;
     }
 
     String uid = await new FirebaseProvider().getAuthHandler().uid();
     if (uid == null) {
       _sessionReference = null;
-      _joinState.add(JoinSessionState.FAILED);
-      return;
+      return false;
     }
 
     UserModel user = new UserModel(uid, new SearchModel("", []));
     DocumentSnapshot snapshot = await _sessionReference.get();
     if (snapshot == null) {
       _sessionReference = null;
-      _joinState.add(JoinSessionState.FAILED);
-      return;
+      return false;
     }
 
     SessionModel model = SessionModel.fromMap(snapshot.data);
     model.users.add(user);
-    _sessionReference.setData(model.toMap()).then((value) {
-      _joinState.add(JoinSessionState.JOINED);
-    }, onError: (e) {
-      _sessionReference = null;
-      _joinState.add(JoinSessionState.FAILED);
-    });
-  }
+    bool success = await _sessionReference.setData(model.toMap()).then(
+      (value) {
+        return true;
+      },
+      onError: (e) {
+        _sessionReference = null;
+        return false;
+      },
+    );
 
-  @override
-  void dispose() {
-    _createState.close();
-    _joinState.close();
+    return success;
   }
 }

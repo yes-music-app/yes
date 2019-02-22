@@ -10,6 +10,9 @@ class AppRemoteScreen extends StatelessWidget {
 
     bloc.stream.listen((SpotifyConnectionState state) {
       switch (state) {
+        case SpotifyConnectionState.DISCONNECTED:
+          bloc.sink.add(SpotifyConnectionState.CONNECTING);
+          break;
         case SpotifyConnectionState.FAILED:
           _showFailedDialog(context, bloc);
           break;

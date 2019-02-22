@@ -27,7 +27,7 @@ class AppRemoteBloc implements BlocBase {
   AppRemoteBloc(this._connectionHandler) {
     _subjectSub = _connectionSubject.listen((SpotifyConnectionState state) {
       switch (state) {
-        case SpotifyConnectionState.DISCONNECTED:
+        case SpotifyConnectionState.CONNECTING:
           _connect();
           break;
         default:
@@ -44,7 +44,6 @@ class AppRemoteBloc implements BlocBase {
         _connectionSubject.add(SpotifyConnectionState.FAILED);
       }
     });
-    _connectionSubject.add(SpotifyConnectionState.CONNECTING);
   }
 
   @override
