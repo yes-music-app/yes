@@ -3,9 +3,6 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/bloc_provider.dart';
 import 'package:yes_music/blocs/firebase_connect_bloc.dart';
 import 'package:yes_music/components/common/custom_button.dart';
-import 'package:yes_music/components/login/phone_number_dialog.dart';
-import 'package:yes_music/data/firebase/auth_handler_base.dart';
-import 'package:yes_music/feature_flags/flag_provider.dart';
 
 class LoginScreen extends StatelessWidget {
   @override
@@ -16,9 +13,12 @@ class LoginScreen extends StatelessWidget {
 
     bloc.stream.listen((FirebaseAuthState state) {
       switch (state) {
+        case FirebaseAuthState.UNAUTHORIZED:
+          bloc.sink.add(FirebaseAuthState.AUTHORIZING_SILENTLY);
+          break;
         case FirebaseAuthState.FAILED:
           _showFailedDialog(context, bloc);
-          break;
+          return _loadingIndicator();
         case FirebaseAuthState.AUTHORIZED:
           _pushChooseScreen(context);
           break;
@@ -41,9 +41,6 @@ class LoginScreen extends StatelessWidget {
             }
 
             switch (snapshot.data) {
-              case FirebaseAuthState.UNAUTHORIZED:
-                bloc.signInSilently();
-                return _loadingIndicator();
               case FirebaseAuthState.UNAUTHORIZED_SILENTLY:
                 return _getConnectButtons(context, bloc);
               default:
@@ -79,7 +76,7 @@ class LoginScreen extends StatelessWidget {
         padding: new EdgeInsets.only(bottom: 20),
       ),
       new CustomButton.withTheme(
-        onPressed: () => bloc.signInWithGoogle(),
+        onPressed: () => bloc.sink.add(FirebaseAuthState.AUTHORIZING),
         theme: Theme.of(context),
         child: new Text(
           FlutterI18n.translate(context, "login.connectGoogle"),
@@ -89,37 +86,10 @@ class LoginScreen extends StatelessWidget {
       ),
     ];
 
-    if (new FlagProvider().getFlag("phoneAuth")) {
-      widgets.addAll(<Widget>[
-        new Padding(
-          padding: new EdgeInsets.only(bottom: 10),
-        ),
-        new CustomButton.withTheme(
-          onPressed: () {
-            bloc.sink.add(FirebaseAuthState.AWAITING_PHONE_NUMBER);
-            _showPhoneNumberDialog(context);
-          },
-          theme: Theme.of(context),
-          child: new Text(
-            FlutterI18n.translate(context, "login.phoneNumber.connect"),
-          ),
-          radius: 20,
-          constraints: new BoxConstraints.tight(new Size(160, 40)),
-        ),
-      ]);
-    }
-
     return new Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: widgets,
-    );
-  }
-
-  void _showPhoneNumberDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => phoneNumberDialog(context),
     );
   }
 

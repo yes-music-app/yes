@@ -1,39 +1,26 @@
-import 'package:rxdart/rxdart.dart';
-
-enum FirebaseAuthState {
-  UNAUTHORIZED,
-  AUTHORIZING_SILENTLY,
-  UNAUTHORIZED_SILENTLY,
-  AWAITING_PHONE_NUMBER,
-  AWAITING_PHONE_CODE,
-  AUTHORIZING,
-  AUTHORIZED,
-  FAILED,
-}
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 /// A class that handles logging the user in to Firebase.
 abstract class AuthHandlerBase {
-  /// A [BehaviorSubject] that describes the current state of the login process.
-  BehaviorSubject<FirebaseAuthState> get firebaseAuthState;
-
   /// Get the current user's user ID.
   Future<String> uid();
-
-  /// Attempt to sign the user in silently.
-  void signInSilently();
-
-  /// Attempt to sign in the user in with their Google account.
-  void signInWithGoogle();
 
   /// Determine whether the user is currently signed in with Google.
   Future<bool> isSignedInWithGoogle();
 
-  /// Attempt to sign the user in with their phone number.
-  void signInWithPhone(String phoneNumber);
+  /// Attempt to sign the user in silently.
+  Future<GoogleSignInAccount> signInSilently();
 
-  /// Complete the phone sign-in process.
-  void completePhoneSignIn(String smsCode);
+  /// Attempt to sign the user in manually.
+  Future<GoogleSignInAccount> signInWithGoogle();
 
-  /// Dispose of this handler.
-  void dispose();
+  /// Attempt to get the user's sign in credentials with their Google account.
+  Future<AuthCredential> getCredentials(GoogleSignInAccount account);
+
+  /// Attempt to sign the user in with their Firebase auth credentials.
+  void signInWithCredential(AuthCredential credential);
+
+  /// Sign the user out of their Google account.
+  void signOut();
 }
