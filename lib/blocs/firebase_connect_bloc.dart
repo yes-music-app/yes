@@ -18,6 +18,7 @@ enum FirebaseAuthState {
 /// A bloc handling the state of the login process into Firebase.
 class FirebaseConnectBloc implements BlocBase {
   final FirebaseAuthHandler _authHandler;
+  StreamSubscription<FirebaseAuthState> _subjectSub;
 
   BehaviorSubject<FirebaseAuthState> _firebaseAuthState =
       new BehaviorSubject(seedValue: FirebaseAuthState.UNAUTHORIZED);
@@ -27,7 +28,7 @@ class FirebaseConnectBloc implements BlocBase {
   StreamSink<FirebaseAuthState> get sink => _firebaseAuthState.sink;
 
   FirebaseConnectBloc(this._authHandler) {
-    stream.listen((FirebaseAuthState state) {
+    _subjectSub = _firebaseAuthState.listen((FirebaseAuthState state) {
       switch (state) {
         case FirebaseAuthState.AUTHORIZING_SILENTLY:
           this._signInSilently();
@@ -64,9 +65,8 @@ class FirebaseConnectBloc implements BlocBase {
   }
 
   void _signInWithAccount(GoogleSignInAccount account) async {
-    AuthCredential credential = await _authHandler
-        .getCredentials(account)
-        .catchError((e) => null);
+    AuthCredential credential =
+        await _authHandler.getCredentials(account).catchError((e) => null);
 
     if (credential == null) {
       _firebaseAuthState.add(FirebaseAuthState.FAILED);
@@ -80,7 +80,8 @@ class FirebaseConnectBloc implements BlocBase {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
+    await _subjectSub.cancel();
     _firebaseAuthState.close();
   }
 }

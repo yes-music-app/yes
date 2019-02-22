@@ -1,18 +1,12 @@
 import 'package:rxdart/rxdart.dart';
-
-enum SpotifyConnectionState {
-  DISCONNECTED,
-  CONNECTING,
-  CONNECTED,
-  FAILED,
-}
+import 'package:yes_music/blocs/app_remote_bloc.dart';
 
 abstract class ConnectionHandlerBase {
-  /// An rxdart [BehaviorSubject] that publishes the current connection state.
-  BehaviorSubject<SpotifyConnectionState> get connectionSubject;
+  /// A stream of connection state information from the app remote.
+  ValueObservable<SpotifyConnectionState> get stream;
 
   /// Attempt to connect to the Spotify auth API.
-  void connect();
+  Future<bool> connect();
 
   /// Attempt to disconnect from the Spotify auth API.
   void disconnect();

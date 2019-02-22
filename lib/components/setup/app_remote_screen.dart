@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/app_remote_bloc.dart';
 import 'package:yes_music/blocs/bloc_provider.dart';
-import 'package:yes_music/components/common/custom_button.dart';
-import 'package:yes_music/data/spotify/connection_handler_base.dart';
 
 class AppRemoteScreen extends StatelessWidget {
   @override
@@ -25,25 +23,7 @@ class AppRemoteScreen extends StatelessWidget {
 
     return new Container(
       child: new Center(
-        child: new StreamBuilder(
-          stream: bloc.stream,
-          builder: (
-            BuildContext context,
-            AsyncSnapshot<SpotifyConnectionState> snapshot,
-          ) {
-            if (snapshot == null || !snapshot.hasData) {
-              return _loadingIndicator();
-            }
-
-            switch (snapshot.data) {
-              case SpotifyConnectionState.DISCONNECTED:
-                bloc.connect();
-                return _loadingIndicator();
-              default:
-                return _loadingIndicator();
-            }
-          },
-        ),
+        child: _loadingIndicator(),
       ),
     );
   }
@@ -74,7 +54,6 @@ class AppRemoteScreen extends StatelessWidget {
             style: Theme.of(context).textTheme.button,
           ),
           onPressed: () {
-            bloc.sink.add(SpotifyConnectionState.DISCONNECTED);
             Navigator.of(context).pushNamedAndRemoveUntil(
               "/choose",
               (Route<dynamic> route) => false,
