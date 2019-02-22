@@ -18,15 +18,14 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
   @override
   Future<bool> createSession() async {
-    String id;
     bool unique = false;
 
     while (!unique) {
-      id = _generateSID();
+      _sid = _generateSID();
       _sessionReference =
-          Firestore.instance.collection(SESSION_PATH).document(id);
+          Firestore.instance.collection(SESSION_PATH).document(_sid);
       DocumentSnapshot ref = await _sessionReference.get();
-      unique = ref == null;
+      unique = !ref.exists;
     }
 
     String uid = await new FirebaseProvider().getAuthHandler().uid();

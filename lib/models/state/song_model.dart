@@ -31,6 +31,6 @@ class SongModel {
   }
 
   static List<Map<String, dynamic>> toMapList(List<SongModel> models) {
-    return models?.map((model) => model.toMap());
+    return models?.map((model) => model.toMap())?.toList();
   }
 }

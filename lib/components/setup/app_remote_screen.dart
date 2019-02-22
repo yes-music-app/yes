@@ -1,73 +1,67 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/app_remote_bloc.dart';
 import 'package:yes_music/blocs/bloc_provider.dart';
+import 'package:yes_music/components/common/failed_alert.dart';
+import 'package:yes_music/components/common/loading_indicator.dart';
 
-class AppRemoteScreen extends StatelessWidget {
+class AppRemoteScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    AppRemoteBloc bloc = BlocProvider.of<AppRemoteBloc>(context);
+  State<StatefulWidget> createState() => new _AppRemoteScreen();
+}
 
-    bloc.stream.listen((SpotifyConnectionState state) {
+class _AppRemoteScreen extends State<AppRemoteScreen> {
+  AppRemoteBloc bloc;
+  StreamSubscription subscription;
+
+  @override
+  void initState() {
+    bloc = BlocProvider.of<AppRemoteBloc>(context);
+
+    subscription = bloc.stream.listen((SpotifyConnectionState state) {
       switch (state) {
         case SpotifyConnectionState.DISCONNECTED:
           bloc.sink.add(SpotifyConnectionState.CONNECTING);
           break;
         case SpotifyConnectionState.FAILED:
-          _showFailedDialog(context, bloc);
+          showFailedAlert(
+            context,
+            FlutterI18n.translate(context, "appRemote.failedInfo"),
+            () => Navigator.of(context).pushNamedAndRemoveUntil(
+                  "/choose",
+                  (Route<dynamic> route) => false,
+                ),
+          );
           break;
         case SpotifyConnectionState.CONNECTED:
-          _pushCreateScreen(context);
+          _pushCreateScreen();
           break;
         default:
           break;
       }
     });
 
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return new Container(
       child: new Center(
-        child: _loadingIndicator(),
+        child: loadingIndicator(),
       ),
     );
   }
 
-  Widget _loadingIndicator() {
-    return new CircularProgressIndicator();
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
   }
 
-  void _showFailedDialog(BuildContext context, AppRemoteBloc bloc) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => _failedAlert(context, bloc),
-    );
-  }
-
-  Widget _failedAlert(BuildContext context, AppRemoteBloc bloc) {
-    return new AlertDialog(
-      content: new SingleChildScrollView(
-        child: new Text(
-          FlutterI18n.translate(context, "appRemote.failedInfo"),
-          style: Theme.of(context).textTheme.body1,
-        ),
-      ),
-      actions: <Widget>[
-        FlatButton(
-          child: new Text(
-            FlutterI18n.translate(context, "ok"),
-            style: Theme.of(context).textTheme.button,
-          ),
-          onPressed: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              "/choose",
-              (Route<dynamic> route) => false,
-            );
-          },
-        )
-      ],
-    );
-  }
-
-  void _pushCreateScreen(BuildContext context) {
+  void _pushCreateScreen() {
     Navigator.of(context).pushReplacementNamed("/create");
   }
 }

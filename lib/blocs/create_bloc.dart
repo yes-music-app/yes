@@ -22,6 +22,8 @@ class CreateBloc implements BlocBase {
 
   StreamSink<CreateSessionState> get sink => _createState.sink;
 
+  String get sid => _transactionHandler.sid;
+
   CreateBloc(this._transactionHandler) {
     _sub = _createState.listen((CreateSessionState state) {
       switch (state) {

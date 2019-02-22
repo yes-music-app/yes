@@ -26,7 +26,7 @@ class SessionModel {
 
   Map<String, dynamic> toMap() {
     return {
-      "playerState": playerState.toMap(),
+      "playerState": playerState == null ? new Map() : playerState.toMap(),
       "queue": SongModel.toMapList(queue),
       "history": SongModel.toMapList(history),
       "users": UserModel.toMapList(users),
