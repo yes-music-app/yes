@@ -1,24 +1,38 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/bloc_provider.dart';
 import 'package:yes_music/blocs/firebase_connect_bloc.dart';
 import 'package:yes_music/components/common/custom_button.dart';
+import 'package:yes_music/components/common/failed_alert.dart';
+import 'package:yes_music/components/common/loading_indicator.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    final FirebaseConnectBloc bloc =
-        BlocProvider.of<FirebaseConnectBloc>(context);
-    final Color overlay = Theme.of(context).primaryColor.withAlpha(200);
+  State<StatefulWidget> createState() => new _LoginScreen();
+}
 
-    bloc.stream.listen((FirebaseAuthState state) {
+class _LoginScreen extends State<LoginScreen> {
+  FirebaseConnectBloc bloc;
+  StreamSubscription subscription;
+
+  @override
+  void initState() {
+    bloc = BlocProvider.of<FirebaseConnectBloc>(context);
+
+    subscription = bloc.stream.listen((FirebaseAuthState state) {
       switch (state) {
         case FirebaseAuthState.UNAUTHORIZED:
           bloc.sink.add(FirebaseAuthState.AUTHORIZING_SILENTLY);
           break;
         case FirebaseAuthState.FAILED:
-          _showFailedDialog(context, bloc);
-          return _loadingIndicator();
+          showFailedAlert(
+            context,
+            FlutterI18n.translate(context, "login.failedInfo"),
+            () => bloc.sink.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY),
+          );
+          break;
         case FirebaseAuthState.AUTHORIZED:
           _pushChooseScreen(context);
           break;
@@ -26,6 +40,13 @@ class LoginScreen extends StatelessWidget {
           break;
       }
     });
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Color overlay = Theme.of(context).primaryColor.withAlpha(200);
 
     return new Container(
       decoration: _getBackground(overlay),
@@ -37,14 +58,14 @@ class LoginScreen extends StatelessWidget {
             AsyncSnapshot<FirebaseAuthState> snapshot,
           ) {
             if (snapshot == null || !snapshot.hasData) {
-              return _loadingIndicator();
+              return loadingIndicator();
             }
 
             switch (snapshot.data) {
               case FirebaseAuthState.UNAUTHORIZED_SILENTLY:
                 return _getConnectButton(context, bloc);
               default:
-                return _loadingIndicator();
+                return loadingIndicator();
             }
           },
         ),
@@ -52,8 +73,10 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _loadingIndicator() {
-    return new CircularProgressIndicator();
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
   }
 
   BoxDecoration _getBackground(Color overlay) {
@@ -90,36 +113,6 @@ class LoginScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: widgets,
-    );
-  }
-
-  void _showFailedDialog(BuildContext context, FirebaseConnectBloc bloc) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => _failedAlert(context, bloc),
-    );
-  }
-
-  Widget _failedAlert(BuildContext context, FirebaseConnectBloc bloc) {
-    return new AlertDialog(
-      content: new SingleChildScrollView(
-        child: new Text(
-          FlutterI18n.translate(context, "login.failedInfo"),
-          style: Theme.of(context).textTheme.body1,
-        ),
-      ),
-      actions: <Widget>[
-        FlatButton(
-          child: new Text(
-            FlutterI18n.translate(context, "ok"),
-            style: Theme.of(context).textTheme.button,
-          ),
-          onPressed: () {
-            bloc.sink.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY);
-            Navigator.of(context).pop();
-          },
-        )
-      ],
     );
   }
 

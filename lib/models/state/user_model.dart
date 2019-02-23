@@ -26,6 +26,6 @@ class UserModel {
   }
 
   static List<Map<String, dynamic>> toMapList(List<UserModel> models) {
-    return models?.map((model) => model.toMap());
+    return models?.map((model) => model.toMap())?.toList();
   }
 }

@@ -18,13 +18,11 @@ import io.flutter.plugin.common.MethodChannel.Result;
 public class SpotifyConnectionHandler implements MethodCallHandler {
 
   private final Activity activity;
-  private final MethodChannel channel;
   private final SpotifyPlaybackHandler playbackHandler;
 
-  public SpotifyConnectionHandler(Activity activity, MethodChannel channel,
+  public SpotifyConnectionHandler(Activity activity,
       SpotifyPlaybackHandler playbackHandler) {
     this.activity = activity;
-    this.channel = channel;
     this.playbackHandler = playbackHandler;
   }
 
@@ -33,8 +31,7 @@ public class SpotifyConnectionHandler implements MethodCallHandler {
     switch (methodCall.method) {
       case "connect":
         disconnect();
-        connect();
-        result.success(null);
+        connect(result);
         break;
       case "disconnect":
         disconnect();
@@ -49,7 +46,7 @@ public class SpotifyConnectionHandler implements MethodCallHandler {
   /**
    * Connects to the Spotify Remote API.
    */
-  private void connect() {
+  private void connect(Result result) {
     // Get the connection parameters for this connection.
     ConnectionParams connectionParams = new ConnectionParams.Builder(CLIENT_ID)
         .setRedirectUri(REDIRECT_URI).showAuthView(true).build();
@@ -59,17 +56,15 @@ public class SpotifyConnectionHandler implements MethodCallHandler {
       @Override
       public void onConnected(SpotifyAppRemote spotifyAppRemote) {
         playbackHandler.setRemote(spotifyAppRemote);
-        channel.invokeMethod("connectionUpdate", 2);
+        result.success(true);
       }
 
       @Override
       public void onFailure(Throwable throwable) {
         playbackHandler.setRemote(null);
-        channel.invokeMethod("connectionUpdate", 3);
+        result.success(false);
       }
     });
-
-    channel.invokeMethod("connectionUpdate", 1);
   }
 
   /**
@@ -81,7 +76,5 @@ public class SpotifyConnectionHandler implements MethodCallHandler {
     if (remote != null && remote.isConnected()) {
       SpotifyAppRemote.disconnect(remote);
     }
-
-    channel.invokeMethod("connectionUpdate", 0);
   }
 }

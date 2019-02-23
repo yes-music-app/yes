@@ -34,6 +34,6 @@ class ArtistModel implements SearchableModel {
   }
 
   static List<Map<String, dynamic>> toMapList(List<ArtistModel> models) {
-    return models.map((model) => model.toMap());
+    return models?.map((model) => model.toMap())?.toList();
   }
 }

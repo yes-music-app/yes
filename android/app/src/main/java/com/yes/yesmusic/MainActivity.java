@@ -28,8 +28,7 @@ public class MainActivity extends FlutterActivity {
     MethodChannel playbackChannel = new MethodChannel(getFlutterView(), PLAYBACK_CHANNEL);
     MethodChannel connectionChannel = new MethodChannel(getFlutterView(), CONNECTION_CHANNEL);
     this.playbackHandler = new SpotifyPlaybackHandler(playbackChannel);
-    this.connectionHandler = new SpotifyConnectionHandler(this, connectionChannel,
-        this.playbackHandler);
+    this.connectionHandler = new SpotifyConnectionHandler(this, this.playbackHandler);
     playbackChannel.setMethodCallHandler(this.playbackHandler);
     connectionChannel.setMethodCallHandler(this.connectionHandler);
   }
