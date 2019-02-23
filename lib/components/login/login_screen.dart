@@ -42,7 +42,7 @@ class LoginScreen extends StatelessWidget {
 
             switch (snapshot.data) {
               case FirebaseAuthState.UNAUTHORIZED_SILENTLY:
-                return _getConnectButtons(context, bloc);
+                return _getConnectButton(context, bloc);
               default:
                 return _loadingIndicator();
             }
@@ -66,7 +66,7 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _getConnectButtons(BuildContext context, FirebaseConnectBloc bloc) {
+  Widget _getConnectButton(BuildContext context, FirebaseConnectBloc bloc) {
     List<Widget> widgets = <Widget>[
       new Text(
         FlutterI18n.translate(context, "login.connectPrompt"),
