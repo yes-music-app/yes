@@ -26,6 +26,6 @@ class ImageModel {
   }
 
   static List<Map<String, dynamic>> toMapList(List<ImageModel> models) {
-    return models.map((model) => model.toMap());
+    return models?.map((model) => model.toMap())?.toList();
   }
 }

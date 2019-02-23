@@ -24,5 +24,10 @@
   "appRemote": {
     "failedInfo": "failed to connect to the Spotify app, please try again",
     "connect": "connect to Spotify"
+  },
+  "create": {
+    "sid": "your session id is",
+    "continue": "continue",
+    "failedInfo": "failed to create a session, please try again"
   }
 }

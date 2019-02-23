@@ -1,19 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 
 class FirebaseAuthHandler implements AuthHandlerBase {
   final GoogleSignIn _googleSignIn = new GoogleSignIn();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  String _verificationId;
-
-  BehaviorSubject<FirebaseAuthState> _firebaseAuthState =
-      new BehaviorSubject(seedValue: FirebaseAuthState.UNAUTHORIZED);
-
-  @override
-  BehaviorSubject<FirebaseAuthState> get firebaseAuthState =>
-      _firebaseAuthState;
 
   @override
   Future<String> uid() async {
@@ -22,136 +13,55 @@ class FirebaseAuthHandler implements AuthHandlerBase {
   }
 
   @override
-  void signInSilently() async {
-    _firebaseAuthState.add(FirebaseAuthState.AUTHORIZING_SILENTLY);
-
-    final GoogleSignInAccount googleAccount =
-        await _googleSignIn.signInSilently();
-
-    if (googleAccount == null) {
-      _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY);
-      return;
-    }
-
-    _signInWithGoogleAccount(googleAccount);
-  }
-
-//  @override
-//  void signInSilently() async {
-//    await _googleSignIn.signOut();
-//    _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY);
-//  }
-
-  @override
-  void signInWithGoogle() async {
-    _firebaseAuthState.add(FirebaseAuthState.AUTHORIZING);
-
-    final GoogleSignInAccount googleAccount = await _googleSignIn.signIn();
-
-    if (googleAccount == null) {
-      _firebaseAuthState.add(FirebaseAuthState.FAILED);
-      return;
-    }
-
-    _signInWithGoogleAccount(googleAccount);
-  }
-
-  @override
   Future<bool> isSignedInWithGoogle() {
     return _googleSignIn.isSignedIn();
   }
 
-  void _signInWithGoogleAccount(GoogleSignInAccount googleAccount) async {
-    final GoogleSignInAuthentication googleAuth =
-        await googleAccount.authentication;
-
-    if (googleAuth == null) {
-      _firebaseAuthState.add(FirebaseAuthState.FAILED);
-      return;
-    }
-
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
-      idToken: googleAuth.idToken,
-      accessToken: googleAuth.accessToken,
-    );
-
-    _signInWithCredentials(credential);
+  @override
+  Future<GoogleSignInAccount> signInSilently() async {
+    return await _googleSignIn.signInSilently().catchError((e) => null);
   }
 
   @override
-  void signInWithPhone(String phoneNumber) async {
-    _firebaseAuthState.add(FirebaseAuthState.AUTHORIZING);
-
-    final PhoneVerificationCompleted verificationCompleted =
-        (FirebaseUser user) {
-      _firebaseAuthState.add(FirebaseAuthState.AUTHORIZED);
-    };
-
-    final PhoneVerificationFailed verificationFailed =
-        (AuthException authException) {
-      _firebaseAuthState.add(FirebaseAuthState.FAILED);
-    };
-
-    final PhoneCodeSent codeSent =
-        (String verificationId, [int forceResendingToken]) {
-      _firebaseAuthState.add(FirebaseAuthState.AWAITING_PHONE_CODE);
-      _verificationId = verificationId;
-    };
-
-    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-        (String verificationId) {
-      _verificationId = verificationId;
-    };
-
-    await _firebaseAuth
-        .verifyPhoneNumber(
-          phoneNumber: phoneNumber,
-          timeout: const Duration(seconds: 30),
-          verificationCompleted: verificationCompleted,
-          verificationFailed: verificationFailed,
-          codeSent: codeSent,
-          codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
-        )
-        .catchError(
-          (e) => _firebaseAuthState.add(FirebaseAuthState.FAILED),
-        );
+  Future<GoogleSignInAccount> signInWithGoogle() async {
+    return await _googleSignIn.signIn().catchError((e) => null);
   }
 
   @override
-  void completePhoneSignIn(String smsCode) {
-    _firebaseAuthState.add(FirebaseAuthState.AUTHORIZING);
+  Future<AuthCredential> getCredentials(GoogleSignInAccount account) async {
+    final GoogleSignInAuthentication auth = await account.authentication;
 
-    if (_verificationId == null) {
-      _firebaseAuthState.add(FirebaseAuthState.FAILED);
-      return;
+    if (auth == null || auth.idToken == null || auth.accessToken == null) {
+      throw new StateError("Received invalid auth from Google account.");
     }
 
-    final AuthCredential credential = PhoneAuthProvider.getCredential(
-      verificationId: _verificationId,
-      smsCode: smsCode,
+    return GoogleAuthProvider.getCredential(
+      idToken: auth.idToken,
+      accessToken: auth.accessToken,
     );
-
-    _signInWithCredentials(credential);
   }
 
-  void _signInWithCredentials(AuthCredential credential) async {
-    final FirebaseUser user =
-        await _firebaseAuth.signInWithCredential(credential);
-    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+  @override
+  Future<bool> signInWithCredential(AuthCredential credential) async {
+    final FirebaseUser user = await _firebaseAuth
+        .signInWithCredential(credential)
+        .catchError((e) => null);
+    final FirebaseUser currentUser =
+        await _firebaseAuth.currentUser().catchError((e) => null);
 
     if (user == null ||
         currentUser == null ||
         user.uid != currentUser.uid ||
         await user.getIdToken() == null) {
-      _firebaseAuthState.add(FirebaseAuthState.FAILED);
-      return;
+      return false;
     }
 
-    _firebaseAuthState.add(FirebaseAuthState.AUTHORIZED);
+    return true;
   }
 
   @override
-  void dispose() {
-    _firebaseAuthState.close();
+  void signOut() {
+    _googleSignIn.signOut();
+    _firebaseAuth.signOut();
   }
 }
