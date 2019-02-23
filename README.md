@@ -15,3 +15,4 @@ populate the fields with the correct information (ask Jaewon for the information
 rename it to `Items.java`, and populate the fields with the correct information.
 8. Install the `flutter` and `dart` plugins for your IDE.
 9. Add your debug SHA-1 fingerprint to Firebase and Spotify.
+10. Migrate your android project to androidx.
