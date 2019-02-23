@@ -14,3 +14,4 @@ populate the fields with the correct information (ask Jaewon for the information
 7. Make a copy of the `ExampleItems.java` file found at `android/app/src/main/java/com/yes/yesmusic/methods/spotify/`,
 rename it to `Items.java`, and populate the fields with the correct information.
 8. Install the `flutter` and `dart` plugins for your IDE.
+9. Add your debug SHA-1 fingerprint to Firebase and Spotify.
