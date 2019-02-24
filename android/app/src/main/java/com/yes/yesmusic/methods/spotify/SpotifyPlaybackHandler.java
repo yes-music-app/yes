@@ -1,7 +1,5 @@
 package com.yes.yesmusic.methods.spotify;
 
-import static com.yes.yesmusic.methods.spotify.SpotifyDataMappers.mapPlayerState;
-
 import android.graphics.Bitmap;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.client.Subscription;
@@ -11,6 +9,9 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import java.nio.ByteBuffer;
+
+import static com.yes.yesmusic.methods.spotify.SpotifyDataMappers.mapPlayerState;
 
 /**
  * A class that handles playback control in Spotify.
@@ -89,7 +90,13 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
         if (methodCall.arguments instanceof String) {
           remote.getImagesApi().getImage(new ImageUri((String) methodCall.arguments))
               .setResultCallback(
-                  (Bitmap bitmap) -> result.success(SpotifyDataMappers.mapImage(bitmap)));
+                  (Bitmap bitmap) -> {
+                    if (bitmap == null) {
+                      result.error("FAILURE", "GetImage received a null bitmap", null);
+                    } else {
+                      result.success(bitmapToBits(bitmap));
+                    }
+                  });
         } else {
           result.error("FAILURE", "GetImage received a non-string argument", null);
         }
@@ -141,11 +148,13 @@ public class SpotifyPlaybackHandler implements MethodCallHandler {
     }
   }
 
-  private void getImage(ImageUri imageUri) {
-    this.remote.getImagesApi().getImage(imageUri).setResultCallback((Bitmap bitmap) -> {
-      if (bitmap == null) {
-
-      }
-    });
+  /**
+   * Converts a bitmap into a list of bits.
+   */
+  private byte[] bitmapToBits(Bitmap bitmap) {
+    int size = bitmap.getRowBytes() * bitmap.getHeight();
+    ByteBuffer buffer = ByteBuffer.allocate(size);
+    bitmap.copyPixelsToBuffer(buffer);
+    return buffer.array();
   }
 }
