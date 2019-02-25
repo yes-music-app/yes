@@ -49,27 +49,30 @@ class _CreateScreen extends State<CreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: StreamBuilder(
-          stream: bloc.stream,
-          builder: (
-            BuildContext context,
-            AsyncSnapshot<CreateSessionState> snapshot,
-          ) {
-            if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
-              return loadingIndicator();
-            }
-
-            switch (snapshot.data) {
-              case CreateSessionState.CREATED:
-                return _getBody(bloc.sid);
-              default:
+    return WillPopScope(
+      child: Container(
+        child: Center(
+          child: StreamBuilder(
+            stream: bloc.stream,
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<CreateSessionState> snapshot,
+            ) {
+              if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
                 return loadingIndicator();
-            }
-          },
+              }
+
+              switch (snapshot.data) {
+                case CreateSessionState.CREATED:
+                  return _getBody(bloc.sid);
+                default:
+                  return loadingIndicator();
+              }
+            },
+          ),
         ),
       ),
+      onWillPop: () => Future.value(false),
     );
   }
 

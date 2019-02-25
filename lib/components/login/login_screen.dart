@@ -39,10 +39,7 @@ class _LoginScreen extends State<LoginScreen> {
         showFailedAlert(
           context,
           FlutterI18n.translate(context, message),
-          () {
-            bloc.sink.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY);
-            Navigator.of(context).pop();
-          },
+          () => bloc.sink.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY),
         );
       },
     );
