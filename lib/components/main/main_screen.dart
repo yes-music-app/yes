@@ -18,6 +18,7 @@ class MainScreen extends StatelessWidget {
 
   SliverAppBar _getAppBar(double width) {
     return new SliverAppBar(
+      automaticallyImplyLeading: false,
       elevation: 10,
       expandedHeight: width * (2 / 3),
       pinned: true,

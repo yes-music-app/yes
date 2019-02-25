@@ -8,6 +8,7 @@ import 'package:yes_music/components/common/custom_button.dart';
 import 'package:yes_music/components/common/failed_alert.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
 
+/// The screen that allows a user to create a new session.
 class CreateScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _CreateScreen();
