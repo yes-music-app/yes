@@ -73,8 +73,6 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
         Firestore.instance.collection(SESSION_PATH).document(casedSID);
     final DocumentSnapshot snap = await _sessionReference.get();
 
-    print(snap.data);
-
     if (snap == null || snap.data == null) {
       _sessionReference = null;
       throw new StateError("errors.join.sid");

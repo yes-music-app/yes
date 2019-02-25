@@ -7,21 +7,23 @@ import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_auth_handler.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 
+/// An enumeration of the potential states that a login operation can be in.
 enum FirebaseAuthState {
   UNAUTHORIZED,
   AUTHORIZING_SILENTLY,
   UNAUTHORIZED_SILENTLY,
   AUTHORIZING,
   AUTHORIZED,
-  FAILED,
 }
 
 /// A bloc handling the state of the login process into Firebase.
 class LoginBloc implements BlocBase {
+  /// The [FirebaseAuthHandler] that performs the auth operations.
   final FirebaseAuthHandler _authHandler =
       new FirebaseProvider().getAuthHandler();
-  StreamSubscription<FirebaseAuthState> _subjectSub;
 
+  /// The [BehaviorSubject] that broadcasts the current state of the user's
+  /// attempt to authenticate with Firebase.
   BehaviorSubject<FirebaseAuthState> _firebaseAuthState = new BehaviorSubject(
     seedValue: FirebaseAuthState.UNAUTHORIZED,
   );
@@ -30,14 +32,18 @@ class LoginBloc implements BlocBase {
 
   StreamSink<FirebaseAuthState> get sink => _firebaseAuthState.sink;
 
+  /// A subscription to the auth state stream.
+  StreamSubscription<FirebaseAuthState> _sub;
+
   LoginBloc() {
-    _subjectSub = _firebaseAuthState.listen((FirebaseAuthState state) {
+    _sub = _firebaseAuthState.listen((FirebaseAuthState state) {
+      // If we receive a signal to authorize from the UI, begin that process.
       switch (state) {
         case FirebaseAuthState.AUTHORIZING_SILENTLY:
-          this._signInSilently();
+          _signInSilently();
           break;
         case FirebaseAuthState.AUTHORIZING:
-          this._signInWithGoogle();
+          _signInWithGoogle();
           break;
         default:
           break;
@@ -45,6 +51,7 @@ class LoginBloc implements BlocBase {
     });
   }
 
+  /// Attempts to sign the user in without a prompt.
   void _signInSilently() async {
     GoogleSignInAccount googleAccount = await _authHandler.signInSilently();
 
@@ -56,35 +63,35 @@ class LoginBloc implements BlocBase {
     _signInWithAccount(googleAccount);
   }
 
+  /// Attempts to sign the user in with a prompt.
   void _signInWithGoogle() async {
-    GoogleSignInAccount googleAccount = await _authHandler.signInWithGoogle();
+    GoogleSignInAccount googleAccount;
 
-    if (googleAccount == null) {
-      _firebaseAuthState.add(FirebaseAuthState.FAILED);
+    try {
+      googleAccount = await _authHandler.signInWithGoogle();
+    } catch (e) {
+      _firebaseAuthState.addError(new StateError("errors.login.googleSignIn"));
       return;
     }
 
     _signInWithAccount(googleAccount);
   }
 
+  /// Attempts to sign the user in to Firebase with their Google account.
   void _signInWithAccount(GoogleSignInAccount account) async {
-    AuthCredential credential =
-        await _authHandler.getCredentials(account).catchError((e) => null);
-
-    if (credential == null) {
-      _firebaseAuthState.add(FirebaseAuthState.FAILED);
-      return;
+    try {
+      AuthCredential credential = await _authHandler.getCredential(account);
+      await _authHandler.signInWithCredential(credential);
+    } on StateError catch (e) {
+      _firebaseAuthState.addError(e);
     }
 
-    bool success = await _authHandler.signInWithCredential(credential);
-
-    _firebaseAuthState
-        .add(success ? FirebaseAuthState.AUTHORIZED : FirebaseAuthState.FAILED);
+    _firebaseAuthState.add(FirebaseAuthState.AUTHORIZED);
   }
 
   @override
   void dispose() async {
-    await _subjectSub.cancel();
+    await _sub.cancel();
     _firebaseAuthState.close();
   }
 }

@@ -2,15 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/blocs/login_bloc.dart';
+import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/custom_button.dart';
 import 'package:yes_music/components/common/failed_alert.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
 
+/// The screen that handles a user's attempt to log in to Firebase.
 class LoginScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _LoginScreen();
+  State<StatefulWidget> createState() => _LoginScreen();
 }
 
 class _LoginScreen extends State<LoginScreen> {
@@ -20,26 +21,28 @@ class _LoginScreen extends State<LoginScreen> {
   @override
   void initState() {
     bloc = BlocProvider.of<LoginBloc>(context);
-
-    subscription = bloc.stream.listen((FirebaseAuthState state) {
-      switch (state) {
-        case FirebaseAuthState.UNAUTHORIZED:
-          bloc.sink.add(FirebaseAuthState.AUTHORIZING_SILENTLY);
-          break;
-        case FirebaseAuthState.FAILED:
-          showFailedAlert(
-            context,
-            FlutterI18n.translate(context, "login.failedInfo"),
-            () => bloc.sink.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY),
-          );
-          break;
-        case FirebaseAuthState.AUTHORIZED:
-          _pushChooseScreen(context);
-          break;
-        default:
-          break;
-      }
-    });
+    subscription = bloc.stream.listen(
+      (FirebaseAuthState state) {
+        switch (state) {
+          case FirebaseAuthState.UNAUTHORIZED:
+            bloc.sink.add(FirebaseAuthState.AUTHORIZING_SILENTLY);
+            break;
+          case FirebaseAuthState.AUTHORIZED:
+            _pushChooseScreen(context);
+            break;
+          default:
+            break;
+        }
+      },
+      onError: (e) {
+        String message = e is StateError ? e.message : "errors.unknown";
+        showFailedAlert(
+          context,
+          FlutterI18n.translate(context, message),
+          () => bloc.sink.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY),
+        );
+      },
+    );
 
     super.initState();
   }
@@ -48,22 +51,22 @@ class _LoginScreen extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final Color overlay = Theme.of(context).primaryColor.withAlpha(200);
 
-    return new Container(
+    return Container(
       decoration: _getBackground(overlay),
-      child: new Center(
-        child: new StreamBuilder(
+      child: Center(
+        child: StreamBuilder(
           stream: bloc.stream,
           builder: (
             BuildContext context,
             AsyncSnapshot<FirebaseAuthState> snapshot,
           ) {
-            if (snapshot == null || !snapshot.hasData) {
+            if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
               return loadingIndicator();
             }
 
             switch (snapshot.data) {
               case FirebaseAuthState.UNAUTHORIZED_SILENTLY:
-                return _getConnectButton(context, bloc);
+                return _getConnectButton();
               default:
                 return loadingIndicator();
             }
@@ -80,39 +83,38 @@ class _LoginScreen extends State<LoginScreen> {
   }
 
   BoxDecoration _getBackground(Color overlay) {
-    return new BoxDecoration(
-      image: new DecorationImage(
+    return BoxDecoration(
+      image: DecorationImage(
         fit: BoxFit.fitHeight,
-        colorFilter: new ColorFilter.mode(overlay, BlendMode.multiply),
-        image: new AssetImage("assets/login/background.png"),
+        colorFilter: ColorFilter.mode(overlay, BlendMode.multiply),
+        image: AssetImage("assets/login/background.png"),
       ),
     );
   }
 
-  Widget _getConnectButton(BuildContext context, LoginBloc bloc) {
-    List<Widget> widgets = <Widget>[
-      new Text(
-        FlutterI18n.translate(context, "login.connectPrompt"),
-        style: Theme.of(context).textTheme.headline,
-      ),
-      new Padding(
-        padding: new EdgeInsets.only(bottom: 20),
-      ),
-      new CustomButton.withTheme(
-        onPressed: () => bloc.sink.add(FirebaseAuthState.AUTHORIZING),
-        theme: Theme.of(context),
-        child: new Text(
-          FlutterI18n.translate(context, "login.connectGoogle"),
-        ),
-        radius: 20,
-        constraints: new BoxConstraints.tight(new Size(160, 40)),
-      ),
-    ];
-
-    return new Column(
+  Widget _getConnectButton() {
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: widgets,
+      children: <Widget>[
+        Text(
+          FlutterI18n.translate(context, "login.connectPrompt"),
+          style: Theme.of(context).textTheme.headline,
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 20),
+        ),
+        CustomButton.withTheme(
+          onPressed: () => bloc.sink.add(FirebaseAuthState.AUTHORIZING),
+          theme: Theme.of(context),
+          child: Text(
+            FlutterI18n.translate(context, "login.connectGoogle"),
+            style: Theme.of(context).textTheme.button,
+          ),
+          radius: 20,
+          constraints: BoxConstraints.tight(Size(160, 40)),
+        ),
+      ],
     );
   }
 
