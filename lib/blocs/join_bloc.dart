@@ -6,19 +6,22 @@ import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/firebase_transaction_handler.dart';
 
+/// An enumeration of the potential states that a join operation can be in.
 enum JoinSessionState {
   NOT_JOINED,
   JOINING,
   JOINED,
-  FAILED,
 }
 
+/// A bloc that handles joining a session.
 class JoinBloc implements BlocBase {
-  final FirebaseTransactionHandler _transactionhandler =
-      new FirebaseProvider().getTransactionHandler();
-  StreamSubscription<JoinSessionState> _sub;
+  /// The [FirebaseTransactionHandler] that performs the join operation.
+  final FirebaseTransactionHandler _transactionHandler =
+      FirebaseProvider().getTransactionHandler();
 
-  BehaviorSubject<JoinSessionState> _joinState = new BehaviorSubject(
+  /// The [BehaviorSubject] that broadcasts the current state of the user's
+  /// attempt to join a session.
+  BehaviorSubject<JoinSessionState> _joinState = BehaviorSubject(
     seedValue: JoinSessionState.NOT_JOINED,
   );
 
@@ -26,23 +29,40 @@ class JoinBloc implements BlocBase {
 
   StreamSink<JoinSessionState> get sink => _joinState.sink;
 
-  JoinBloc() {
-    _sub = _joinState.listen((JoinSessionState state) {});
-  }
+  /// The [BehaviorSubject] that reads the session ID inputs from the UI.
+  BehaviorSubject<String> _sid = BehaviorSubject();
 
-  void _joinSession(String sid) {
-    _transactionhandler.joinSession(sid).then((bool success) {
-      if (success) {
-        _joinState.add(JoinSessionState.JOINED);
-      } else {
-        _joinState.add(JoinSessionState.FAILED);
+  StreamSink<String> get sidSink => _sid.sink;
+
+  /// A subscription to the session ID input stream.
+  StreamSubscription<String> _sub;
+
+  /// Creates a new [JoinBloc] and begins listening for sid input events.
+  JoinBloc() {
+    _sub = _sid.listen((String sid) {
+      // If we receive a session ID and we are not currently joining a room or
+      // already in one, try to join a new one.
+      if (_joinState.value == JoinSessionState.NOT_JOINED) {
+        _joinState.add(JoinSessionState.JOINING);
+        _joinSession(sid);
       }
     });
+  }
+
+  /// Attempts to join the session with the given session ID.
+  void _joinSession(String sid) async {
+    try {
+      await _transactionHandler.joinSession(sid);
+      _joinState.add(JoinSessionState.JOINED);
+    } on StateError catch (e) {
+      _joinState.addError(e);
+    }
   }
 
   @override
   void dispose() {
     _sub.cancel();
     _joinState.close();
+    _sid.close();
   }
 }

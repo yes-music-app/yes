@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/blocs/create_bloc.dart';
+import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/custom_button.dart';
 import 'package:yes_music/components/common/failed_alert.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
@@ -113,9 +113,6 @@ class _CreateScreen extends State<CreateScreen> {
   }
 
   void _pushMainScreen() {
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      "/main",
-      (Route<dynamic> route) => false,
-    );
+    Navigator.of(context).pushReplacementNamed("/main");
   }
 }

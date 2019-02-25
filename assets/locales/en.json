@@ -1,21 +1,13 @@
 {
   "title": "Yes Music App",
-  "ok": "ok",
-  "cancel": "cancel",
-  "submit": "submit",
+  "ok": "OK",
+  "cancel": "Cancel",
+  "submit": "Submit",
   "login": {
-    "credentialsDialog": "we use your login credentials in order to authorize you to use our app",
-    "connectPrompt": "connect with",
-    "connectGoogle": "google",
-    "phoneNumber": {
-      "connect": "phone number",
-      "numberPrompt": "please enter your phone number",
-      "numberHint": "phone number",
-      "numberDisclaimer": "msg & data rates may apply",
-      "codePrompt": "please enter the code that we sent you",
-      "codeHint": "code"
-    },
-    "failedInfo": "failed to connect, please try again"
+    "credentialsDialog": "We need our users to sign in with Google in order to securely communicate with our database.",
+    "connectPrompt": "Connect with",
+    "connectGoogle": "Google",
+    "failedInfo": "Failed to connect with Google, please try again"
   },
   "choose": {
     "create": "create",
@@ -29,5 +21,18 @@
     "sid": "your session id is",
     "continue": "continue",
     "failedInfo": "failed to create a session, please try again"
+  },
+  "join": {
+    "prompt": "Enter the session ID",
+    "join": "Join"
+  },
+  "errors": {
+    "title": "Error",
+    "unknown": "Unknown error.",
+    "join": {
+      "sid": "Incorrect session ID.",
+      "uid": "Could not retrieve user ID.",
+      "database": "Failed to write to the session database."
+    }
   }
 }

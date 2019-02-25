@@ -67,42 +67,33 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   }
 
   @override
-  Future<bool> joinSession(String sid) async {
+  Future joinSession(String sid) async {
     final String casedSID = sid.toUpperCase();
     _sessionReference =
         Firestore.instance.collection(SESSION_PATH).document(casedSID);
     final DocumentSnapshot snap = await _sessionReference.get();
 
-    if (snap == null) {
+    print(snap.data);
+
+    if (snap == null || snap.data == null) {
       _sessionReference = null;
-      return false;
+      throw new StateError("errors.join.sid");
     }
 
     String uid = await new FirebaseProvider().getAuthHandler().uid();
     if (uid == null) {
       _sessionReference = null;
-      return false;
+      throw new StateError("errors.join.uid");
     }
 
     UserModel user = new UserModel(uid, new SearchModel("", []));
-    DocumentSnapshot snapshot = await _sessionReference.get();
-    if (snapshot == null) {
-      _sessionReference = null;
-      return false;
-    }
-
-    SessionModel model = SessionModel.fromMap(snapshot.data);
+    SessionModel model = SessionModel.fromMap(snap.data);
     model.users.add(user);
-    bool success = await _sessionReference.setData(model.toMap()).then(
-      (value) {
-        return true;
-      },
-      onError: (e) {
+    await _sessionReference.setData(model.toMap()).catchError(
+      (e) {
         _sessionReference = null;
-        return false;
+        throw new StateError("errors.join.database");
       },
     );
-
-    return success;
   }
 }

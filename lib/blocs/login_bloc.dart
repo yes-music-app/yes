@@ -17,7 +17,7 @@ enum FirebaseAuthState {
 }
 
 /// A bloc handling the state of the login process into Firebase.
-class FirebaseConnectBloc implements BlocBase {
+class LoginBloc implements BlocBase {
   final FirebaseAuthHandler _authHandler =
       new FirebaseProvider().getAuthHandler();
   StreamSubscription<FirebaseAuthState> _subjectSub;
@@ -30,7 +30,7 @@ class FirebaseConnectBloc implements BlocBase {
 
   StreamSink<FirebaseAuthState> get sink => _firebaseAuthState.sink;
 
-  FirebaseConnectBloc() {
+  LoginBloc() {
     _subjectSub = _firebaseAuthState.listen((FirebaseAuthState state) {
       switch (state) {
         case FirebaseAuthState.AUTHORIZING_SILENTLY:

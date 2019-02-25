@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
-import 'package:yes_music/blocs/firebase_connect_bloc.dart';
+import 'package:yes_music/blocs/login_bloc.dart';
 import 'package:yes_music/components/common/custom_button.dart';
 import 'package:yes_music/components/common/failed_alert.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
@@ -14,12 +14,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreen extends State<LoginScreen> {
-  FirebaseConnectBloc bloc;
+  LoginBloc bloc;
   StreamSubscription subscription;
 
   @override
   void initState() {
-    bloc = BlocProvider.of<FirebaseConnectBloc>(context);
+    bloc = BlocProvider.of<LoginBloc>(context);
 
     subscription = bloc.stream.listen((FirebaseAuthState state) {
       switch (state) {
@@ -89,7 +89,7 @@ class _LoginScreen extends State<LoginScreen> {
     );
   }
 
-  Widget _getConnectButton(BuildContext context, FirebaseConnectBloc bloc) {
+  Widget _getConnectButton(BuildContext context, LoginBloc bloc) {
     List<Widget> widgets = <Widget>[
       new Text(
         FlutterI18n.translate(context, "login.connectPrompt"),
