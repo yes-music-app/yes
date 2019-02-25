@@ -13,13 +13,12 @@ class PlayerStateModel {
 
   PlayerStateModel.fromMap(Map map)
       : isPaused = map["isPaused"],
-        playbackOptions =
-            new PlayerOptionsModel.fromMap(map["playbackOptions"]),
+        playbackOptions = PlayerOptionsModel.fromMap(map["playbackOptions"]),
         playbackPosition = map["playbackPosition"],
         playbackRestrictions =
-            new PlayerRestrictionsModel.fromMap(map["playbackRestrictions"]),
+            PlayerRestrictionsModel.fromMap(map["playbackRestrictions"]),
         playbackSpeed = map["playbackSpeed"],
-        track = new TrackModel.fromMap(map["track"]);
+        track = TrackModel.fromMap(map["track"]);
 
   Map<String, dynamic> toMap() {
     return {

@@ -28,14 +28,14 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       unique = !ref.exists;
     }
 
-    String uid = await new FirebaseProvider().getAuthHandler().uid();
+    String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null) {
       _sessionReference = null;
       return false;
     }
 
-    UserModel user = new UserModel(uid, new SearchModel("", []));
-    SessionModel session = new SessionModel(null, [], [], [user]);
+    UserModel user = UserModel(uid, SearchModel("", []));
+    SessionModel session = SessionModel(null, [], [], [user]);
     bool success = await _sessionReference.setData(session.toMap()).then(
       (value) {
         return true;
@@ -50,7 +50,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   }
 
   String _generateSID() {
-    Random random = new Random();
+    Random random = Random();
 
     List<int> codes = [];
     for (int i = 0; i < 6; i++) {
@@ -75,22 +75,22 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
     if (snap == null || snap.data == null) {
       _sessionReference = null;
-      throw new StateError("errors.join.sid");
+      throw StateError("errors.join.sid");
     }
 
-    String uid = await new FirebaseProvider().getAuthHandler().uid();
+    String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null) {
       _sessionReference = null;
-      throw new StateError("errors.join.uid");
+      throw StateError("errors.join.uid");
     }
 
-    UserModel user = new UserModel(uid, new SearchModel("", []));
+    UserModel user = UserModel(uid, SearchModel("", []));
     SessionModel model = SessionModel.fromMap(snap.data);
     model.users.add(user);
     await _sessionReference.setData(model.toMap()).catchError(
       (e) {
         _sessionReference = null;
-        throw new StateError("errors.join.database");
+        throw StateError("errors.join.database");
       },
     );
   }

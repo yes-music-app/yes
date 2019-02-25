@@ -21,7 +21,7 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
         _updatePlayerState(call.arguments);
         break;
       default:
-        throw new UnimplementedError(
+        throw UnimplementedError(
             "Method called from native side not implemented.");
         break;
     }
@@ -30,7 +30,7 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
   /// An rxdart [BehaviorSubject] that publishes the current state of the music
   /// player in the Spotify app.
   BehaviorSubject<PlayerStateModel> _playerStateSubject =
-      new BehaviorSubject(seedValue: null);
+      BehaviorSubject(seedValue: null);
 
   @override
   BehaviorSubject<PlayerStateModel> get playerStateSubject =>
@@ -38,7 +38,7 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
 
   /// Adds a [PlayerStateModel] to the [_playerStateSubject] stream.
   void _updatePlayerState(Map map) {
-    _playerStateSubject?.add(new PlayerStateModel.fromMap(map));
+    _playerStateSubject?.add(PlayerStateModel.fromMap(map));
   }
 
   @override

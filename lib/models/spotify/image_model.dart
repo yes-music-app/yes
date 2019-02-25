@@ -14,7 +14,7 @@ class ImageModel {
       return images;
     }
 
-    return images.map((image) => new ImageModel.fromMap(image)).toList();
+    return images.map((image) => ImageModel.fromMap(image)).toList();
   }
 
   Map<String, dynamic> toMap() {

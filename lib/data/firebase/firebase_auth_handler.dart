@@ -3,7 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 
 class FirebaseAuthHandler implements AuthHandlerBase {
-  final GoogleSignIn _googleSignIn = new GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
@@ -21,7 +21,7 @@ class FirebaseAuthHandler implements AuthHandlerBase {
   Future<GoogleSignInAccount> signInWithGoogle() async {
     GoogleSignInAccount account = await _googleSignIn.signIn();
     if (account == null) {
-      throw new StateError("errors.login.googleSignIn");
+      throw StateError("errors.login.googleSignIn");
     }
 
     return account;
@@ -32,7 +32,7 @@ class FirebaseAuthHandler implements AuthHandlerBase {
     final GoogleSignInAuthentication auth = await account.authentication;
 
     if (auth == null || auth.idToken == null || auth.accessToken == null) {
-      throw new StateError("errors.login.auth");
+      throw StateError("errors.login.auth");
     }
 
     AuthCredential credential = GoogleAuthProvider.getCredential(
@@ -41,7 +41,7 @@ class FirebaseAuthHandler implements AuthHandlerBase {
     );
 
     if (credential == null) {
-      throw new StateError("errors.login.credential");
+      throw StateError("errors.login.credential");
     }
 
     return credential;
@@ -51,16 +51,16 @@ class FirebaseAuthHandler implements AuthHandlerBase {
   Future signInWithCredential(AuthCredential credential) async {
     final FirebaseUser user = await _firebaseAuth
         .signInWithCredential(credential)
-        .catchError((e) => throw new StateError("errors.login.signIn"));
+        .catchError((e) => throw StateError("errors.login.signIn"));
     final FirebaseUser currentUser = await _firebaseAuth
         .currentUser()
-        .catchError((e) => throw new StateError("errors.login.signIn"));
+        .catchError((e) => throw StateError("errors.login.signIn"));
 
     if (user == null ||
         currentUser == null ||
         user.uid != currentUser.uid ||
         await user.getIdToken() == null) {
-      throw new StateError("errors.login.signIn");
+      throw StateError("errors.login.signIn");
     }
   }
 

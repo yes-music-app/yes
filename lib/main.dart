@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/blocs/login_bloc.dart';
+import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/main/main_screen.dart';
 import 'package:yes_music/components/route_callbacks.dart';
 import 'package:yes_music/components/setup/choose_screen.dart';
@@ -16,8 +15,8 @@ import 'package:yes_music/data/flavor.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
 
 void main() async {
-  new FirebaseProvider().setFlavor(Flavor.REMOTE);
-  new SpotifyProvider().setFlavor(Flavor.REMOTE);
+  FirebaseProvider().setFlavor(Flavor.REMOTE);
+  SpotifyProvider().setFlavor(Flavor.REMOTE);
   await Firestore.instance.settings(timestampsInSnapshotsEnabled: true);
 
   SystemChrome.setPreferredOrientations([
@@ -29,19 +28,19 @@ void main() async {
 class YesApp extends StatelessWidget {
   final Map<String, RouteCallback> _routes = {
     "/": loginCallback,
-    "/choose": (context) => new ChooseScreen(),
-    "/spotifyAuth": (context) => new SpotifyAuthScreen(),
+    "/choose": (context) => ChooseScreen(),
+    "/spotifyAuth": (context) => SpotifyAuthScreen(),
     "/appRemote": appRemoteCallback,
     "/create": createCallback,
     "/join": joinCallback,
-    "/main": (context) => new MainScreen(),
+    "/main": (context) => MainScreen(),
   };
 
   @override
   Widget build(BuildContext context) {
-    return new BlocProvider<LoginBloc>(
-      bloc: new LoginBloc(),
-      child: new MaterialApp(
+    return BlocProvider<LoginBloc>(
+      bloc: LoginBloc(),
+      child: MaterialApp(
         title: "yes",
         theme: Themes.darkTheme,
         initialRoute: "/",

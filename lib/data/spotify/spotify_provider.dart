@@ -10,7 +10,7 @@ class SpotifyProvider {
   ConnectionHandlerBase _connectionHandler;
 
   /// A singleton instance of the Spotify provider.
-  static final SpotifyProvider _instance = new SpotifyProvider._internal();
+  static final SpotifyProvider _instance = SpotifyProvider._internal();
 
   factory SpotifyProvider() => _instance;
 
@@ -24,14 +24,14 @@ class SpotifyProvider {
   PlaybackHandlerBase getPlaybackHandler() {
     switch (_flavor) {
       case Flavor.REMOTE:
-        if(_playbackHandler == null) {
-          _playbackHandler = new SpotifyPlaybackHandler();
+        if (_playbackHandler == null) {
+          _playbackHandler = SpotifyPlaybackHandler();
         }
 
         return _playbackHandler;
         break;
       default:
-        throw new StateError("Spotify provider flavor not set");
+        throw StateError("Spotify provider flavor not set");
         break;
     }
   }
@@ -39,14 +39,14 @@ class SpotifyProvider {
   ConnectionHandlerBase getConnectionHandler() {
     switch (_flavor) {
       case Flavor.REMOTE:
-        if(_connectionHandler == null) {
-          _connectionHandler = new SpotifyConnectionHandler();
+        if (_connectionHandler == null) {
+          _connectionHandler = SpotifyConnectionHandler();
         }
 
         return _connectionHandler;
         break;
       default:
-        throw new StateError("Spotify provider flavor not set");
+        throw StateError("Spotify provider flavor not set");
         break;
     }
   }

@@ -19,12 +19,11 @@ enum FirebaseAuthState {
 /// A bloc handling the state of the login process into Firebase.
 class LoginBloc implements BlocBase {
   /// The [FirebaseAuthHandler] that performs the auth operations.
-  final FirebaseAuthHandler _authHandler =
-      new FirebaseProvider().getAuthHandler();
+  final FirebaseAuthHandler _authHandler = FirebaseProvider().getAuthHandler();
 
   /// The [BehaviorSubject] that broadcasts the current state of the user's
   /// attempt to authenticate with Firebase.
-  BehaviorSubject<FirebaseAuthState> _firebaseAuthState = new BehaviorSubject(
+  BehaviorSubject<FirebaseAuthState> _firebaseAuthState = BehaviorSubject(
     seedValue: FirebaseAuthState.UNAUTHORIZED,
   );
 
@@ -70,7 +69,7 @@ class LoginBloc implements BlocBase {
     try {
       googleAccount = await _authHandler.signInWithGoogle();
     } catch (e) {
-      _firebaseAuthState.addError(new StateError("errors.login.googleSignIn"));
+      _firebaseAuthState.addError(StateError("errors.login.googleSignIn"));
       return;
     }
 
