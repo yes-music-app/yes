@@ -13,11 +13,4 @@ class SearchModel {
   SearchModel.fromMap(Map map)
       : query = map["query"],
         results = [];
-
-  Map<String, dynamic> toMap() {
-    return {
-      "query": query,
-      "results": [],
-    };
-  }
 }

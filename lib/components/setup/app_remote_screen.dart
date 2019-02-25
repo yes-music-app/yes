@@ -10,10 +10,10 @@ import 'package:yes_music/components/common/loading_indicator.dart';
 /// The screen that handles connection with the Spotify app.
 class AppRemoteScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _AppRemoteScreen();
+  State<StatefulWidget> createState() => _AppRemoteScreenState();
 }
 
-class _AppRemoteScreen extends State<AppRemoteScreen> {
+class _AppRemoteScreenState extends State<AppRemoteScreen> {
   AppRemoteBloc bloc;
   StreamSubscription subscription;
 

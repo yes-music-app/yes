@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
-import 'package:yes_music/data/spotify/spotify_connection_handler.dart';
+import 'package:yes_music/data/spotify/connection_handler_base.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
 
 /// An enumeration of the potential states that a app remote connection
@@ -15,8 +15,8 @@ enum SpotifyConnectionState {
 
 /// A bloc that handles connecting to the Spotify Remote API.
 class AppRemoteBloc implements BlocBase {
-  /// The [SpotifyConnectionHandler] that performs the connection operation.
-  final SpotifyConnectionHandler _connectionHandler =
+  /// The [ConnectionHandlerBase] that performs the connection operation.
+  final ConnectionHandlerBase _connectionHandler =
       SpotifyProvider().getConnectionHandler();
 
   /// An [BehaviorSubject] that publishes the current connection state.

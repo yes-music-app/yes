@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
-import 'package:yes_music/data/firebase/firebase_transaction_handler.dart';
+import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 
 /// An enumeration of the potential states that a join operation can be in.
 enum JoinSessionState {
@@ -15,8 +15,8 @@ enum JoinSessionState {
 
 /// A bloc that handles joining a session.
 class JoinBloc implements BlocBase {
-  /// The [FirebaseTransactionHandler] that performs the join operation.
-  final FirebaseTransactionHandler _transactionHandler =
+  /// The [TransactionHandlerBase] that performs the join operation.
+  final TransactionHandlerBase _transactionHandler =
       FirebaseProvider().getTransactionHandler();
 
   /// The [BehaviorSubject] that broadcasts the current state of the user's

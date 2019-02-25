@@ -4,7 +4,7 @@ import 'package:yes_music/models/spotify/player_state_model.dart';
 
 abstract class PlaybackHandlerBase {
   /// A stream of player state objects.
-  BehaviorSubject<PlayerStateModel> get playerStateSubject;
+  ValueObservable<PlayerStateModel> get playerState;
 
   /// Adds a subscription to [_playerStateSubject].
   void subscribeToPlayerState();

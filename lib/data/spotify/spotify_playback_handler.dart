@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:yes_music/data/spotify/playback_handler_base.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';
@@ -33,8 +34,8 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
       BehaviorSubject(seedValue: null);
 
   @override
-  BehaviorSubject<PlayerStateModel> get playerStateSubject =>
-      _playerStateSubject;
+  ValueObservable<PlayerStateModel> get playerState =>
+      _playerStateSubject.stream;
 
   /// Adds a [PlayerStateModel] to the [_playerStateSubject] stream.
   void _updatePlayerState(Map map) {

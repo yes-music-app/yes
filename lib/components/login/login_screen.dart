@@ -11,10 +11,10 @@ import 'package:yes_music/components/common/loading_indicator.dart';
 /// The screen that handles a user's attempt to log in to Firebase.
 class LoginScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _LoginScreen();
+  State<StatefulWidget> createState() => _LoginScreenState();
 }
 
-class _LoginScreen extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   LoginBloc bloc;
   StreamSubscription subscription;
 

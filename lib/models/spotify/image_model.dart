@@ -28,4 +28,15 @@ class ImageModel {
   static List<Map<String, dynamic>> toMapList(List<ImageModel> models) {
     return models?.map((model) => model.toMap())?.toList();
   }
+
+  @override
+  bool operator ==(other) {
+    return other is ImageModel &&
+        other.height == height &&
+        other.width == width &&
+        other.url == url;
+  }
+
+  @override
+  int get hashCode => height.hashCode ^ width.hashCode ^ url.hashCode;
 }

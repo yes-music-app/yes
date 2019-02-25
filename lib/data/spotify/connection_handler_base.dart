@@ -6,7 +6,7 @@ abstract class ConnectionHandlerBase {
   ValueObservable<SpotifyConnectionState> get stream;
 
   /// Attempt to connect to the Spotify auth API.
-  void connect();
+  Future connect();
 
   /// Attempt to disconnect from the Spotify auth API.
   void disconnect();

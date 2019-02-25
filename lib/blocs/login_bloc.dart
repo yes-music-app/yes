@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
-import 'package:yes_music/data/firebase/firebase_auth_handler.dart';
+import 'package:yes_music/data/firebase/auth_handler_base.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 
 /// An enumeration of the potential states that a login operation can be in.
@@ -18,8 +18,8 @@ enum FirebaseAuthState {
 
 /// A bloc handling the state of the login process into Firebase.
 class LoginBloc implements BlocBase {
-  /// The [FirebaseAuthHandler] that performs the auth operations.
-  final FirebaseAuthHandler _authHandler = FirebaseProvider().getAuthHandler();
+  /// The [AuthHandlerBase] that performs the auth operations.
+  final AuthHandlerBase _authHandler = FirebaseProvider().getAuthHandler();
 
   /// The [BehaviorSubject] that broadcasts the current state of the user's
   /// attempt to authenticate with Firebase.

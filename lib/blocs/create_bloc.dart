@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
-import 'package:yes_music/data/firebase/firebase_transaction_handler.dart';
+import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 
 /// An enumeration of the potential states that a create operation can be in.
 enum CreateSessionState {
@@ -14,8 +14,8 @@ enum CreateSessionState {
 
 /// A bloc that handles creating a session.
 class CreateBloc implements BlocBase {
-  /// The [FirebaseTransactionHandler] that performs the create operation.
-  final FirebaseTransactionHandler _transactionHandler =
+  /// The [TransactionHandlerBase] that performs the create operation.
+  final TransactionHandlerBase _transactionHandler =
       new FirebaseProvider().getTransactionHandler();
 
   /// The [BehaviorSubject] that broadcasts the current state of the user's

@@ -11,10 +11,10 @@ import 'package:yes_music/components/common/loading_indicator.dart';
 /// The screen that allows a user to create a new session.
 class CreateScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _CreateScreen();
+  State<StatefulWidget> createState() => _CreateScreenState();
 }
 
-class _CreateScreen extends State<CreateScreen> {
+class _CreateScreenState extends State<CreateScreen> {
   CreateBloc bloc;
   StreamSubscription subscription;
 

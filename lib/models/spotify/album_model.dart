@@ -1,3 +1,4 @@
+import 'package:yes_music/helpers/list_compare.dart';
 import 'package:yes_music/models/spotify/image_model.dart';
 import 'package:yes_music/models/spotify/searchable_model.dart';
 
@@ -24,4 +25,17 @@ class AlbumModel implements SearchableModel {
       "images": ImageModel.toMapList(images),
     };
   }
+
+  @override
+  bool operator ==(other) {
+    return other is AlbumModel &&
+        other.name == name &&
+        other.uri == uri &&
+        other.id == id &&
+        listsEqual(other.images, images);
+  }
+
+  @override
+  int get hashCode =>
+      name.hashCode ^ uri.hashCode ^ id.hashCode ^ images.hashCode;
 }

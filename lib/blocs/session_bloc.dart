@@ -1,55 +1,40 @@
+import 'dart:typed_data';
+
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/spotify/playback_handler_base.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';
-import 'package:yes_music/models/state/song_model.dart';
-import 'package:yes_music/models/state/user_model.dart';
 
+/// A bloc that handles managing a session.
 class SessionBloc implements BlocBase {
-  final PlaybackHandlerBase _playbackHandler;
+  /// The [PlaybackHandlerBase] that performs playback operations.
+  final PlaybackHandlerBase _playbackHandler =
+      SpotifyProvider().getPlaybackHandler();
 
-  BehaviorSubject<PlayerStateModel> get playerState =>
-      _playbackHandler.playerStateSubject;
+  /// The previous [PlayerStateModel], used for determining whether to push new
+  /// information through the visible streams.
+  PlayerStateModel prevState;
 
-  List<SongModel> songQueue;
+  /// A [BehaviorSubject] that broadcasts changes in the image for the currently
+  /// playing song.
+  final BehaviorSubject<Uint8List> _imageSubject = BehaviorSubject(
+    seedValue: null,
+  );
 
-  List<SongModel> songHistory;
+  SessionBloc() {
+    _playbackHandler.playerState.listen((PlayerStateModel model) {
+      if(model.track != prevState.track) {
 
-  BehaviorSubject<UserModel> get userModel => null;
+      }
 
-  SessionBloc() : _playbackHandler = new SpotifyProvider().getPlaybackHandler();
-
-  void resume() {
-    _playbackHandler.resume();
-  }
-
-  void pause() {
-    _playbackHandler.pause();
-  }
-
-  void skipNext() {
-    _playbackHandler.skipNext();
-  }
-
-  void skipPrevious() {
-    _playbackHandler.skipPrevious();
-  }
-
-  void seekTo(int position) {
-    _playbackHandler.seekTo(position);
-  }
-
-  void play(String trackUri) {
-    _playbackHandler.play(trackUri);
-  }
-
-  void queue(String trackUri) {
-    _playbackHandler.queue(trackUri);
+      // Set the previous state to the new model for future comparisons.
+      prevState = model;
+    });
   }
 
   @override
   void dispose() {
-    _playbackHandler.dispose();
+    _imageSubject.close();
   }
 }
