@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:yes_music/blocs/bloc_provider.dart';
+import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/blocs/firebase_connect_bloc.dart';
 import 'package:yes_music/components/common/custom_button.dart';
 import 'package:yes_music/components/common/failed_alert.dart';

@@ -1,5 +1,5 @@
 import 'package:rxdart/rxdart.dart';
-import 'package:yes_music/blocs/bloc_provider.dart';
+import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/spotify/playback_handler_base.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';

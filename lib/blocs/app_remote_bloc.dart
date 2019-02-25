@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:yes_music/blocs/bloc_provider.dart';
+import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/spotify/spotify_connection_handler.dart';
+import 'package:yes_music/data/spotify/spotify_provider.dart';
 
 enum SpotifyConnectionState {
   DISCONNECTED,
@@ -12,7 +13,8 @@ enum SpotifyConnectionState {
 }
 
 class AppRemoteBloc implements BlocBase {
-  final SpotifyConnectionHandler _connectionHandler;
+  final SpotifyConnectionHandler _connectionHandler =
+      new SpotifyProvider().getConnectionHandler();
   StreamSubscription<SpotifyConnectionState> _subjectSub;
 
   /// An rxdart [BehaviorSubject] that publishes the current connection state.
@@ -24,7 +26,7 @@ class AppRemoteBloc implements BlocBase {
 
   StreamSink<SpotifyConnectionState> get sink => _connectionSubject.sink;
 
-  AppRemoteBloc(this._connectionHandler) {
+  AppRemoteBloc() {
     _subjectSub = _connectionSubject.listen((SpotifyConnectionState state) {
       switch (state) {
         case SpotifyConnectionState.CONNECTING:
@@ -38,7 +40,7 @@ class AppRemoteBloc implements BlocBase {
 
   void _connect() {
     _connectionHandler.connect().then((bool value) {
-      if(value) {
+      if (value) {
         _connectionSubject.add(SpotifyConnectionState.CONNECTED);
       } else {
         _connectionSubject.add(SpotifyConnectionState.FAILED);

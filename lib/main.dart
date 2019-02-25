@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:yes_music/blocs/bloc_provider.dart';
+import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/blocs/firebase_connect_bloc.dart';
 import 'package:yes_music/components/main/main_screen.dart';
 import 'package:yes_music/components/route_callbacks.dart';
@@ -40,7 +40,7 @@ class YesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new BlocProvider<FirebaseConnectBloc>(
-      bloc: new FirebaseConnectBloc(new FirebaseProvider().getAuthHandler()),
+      bloc: new FirebaseConnectBloc(),
       child: new MaterialApp(
         title: "yes",
         theme: Themes.darkTheme,

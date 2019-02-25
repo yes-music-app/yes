@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:yes_music/blocs/bloc_provider.dart';
+import 'package:yes_music/blocs/utils/bloc_provider.dart';
+import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/firebase_transaction_handler.dart';
 
 enum CreateSessionState {
@@ -12,11 +13,13 @@ enum CreateSessionState {
 }
 
 class CreateBloc implements BlocBase {
-  final FirebaseTransactionHandler _transactionHandler;
+  final FirebaseTransactionHandler _transactionHandler =
+      new FirebaseProvider().getTransactionHandler();
   StreamSubscription<CreateSessionState> _sub;
 
-  BehaviorSubject<CreateSessionState> _createState =
-      new BehaviorSubject(seedValue: CreateSessionState.NOT_CREATED);
+  BehaviorSubject<CreateSessionState> _createState = new BehaviorSubject(
+    seedValue: CreateSessionState.NOT_CREATED,
+  );
 
   ValueObservable<CreateSessionState> get stream => _createState.stream;
 
@@ -24,7 +27,7 @@ class CreateBloc implements BlocBase {
 
   String get sid => _transactionHandler.sid;
 
-  CreateBloc(this._transactionHandler) {
+  CreateBloc() {
     _sub = _createState.listen((CreateSessionState state) {
       switch (state) {
         case CreateSessionState.CREATING:

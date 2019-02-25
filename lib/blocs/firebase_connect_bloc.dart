@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:yes_music/blocs/bloc_provider.dart';
+import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_auth_handler.dart';
+import 'package:yes_music/data/firebase/firebase_provider.dart';
 
 enum FirebaseAuthState {
   UNAUTHORIZED,
@@ -17,17 +18,19 @@ enum FirebaseAuthState {
 
 /// A bloc handling the state of the login process into Firebase.
 class FirebaseConnectBloc implements BlocBase {
-  final FirebaseAuthHandler _authHandler;
+  final FirebaseAuthHandler _authHandler =
+      new FirebaseProvider().getAuthHandler();
   StreamSubscription<FirebaseAuthState> _subjectSub;
 
-  BehaviorSubject<FirebaseAuthState> _firebaseAuthState =
-      new BehaviorSubject(seedValue: FirebaseAuthState.UNAUTHORIZED);
+  BehaviorSubject<FirebaseAuthState> _firebaseAuthState = new BehaviorSubject(
+    seedValue: FirebaseAuthState.UNAUTHORIZED,
+  );
 
   ValueObservable<FirebaseAuthState> get stream => _firebaseAuthState.stream;
 
   StreamSink<FirebaseAuthState> get sink => _firebaseAuthState.sink;
 
-  FirebaseConnectBloc(this._authHandler) {
+  FirebaseConnectBloc() {
     _subjectSub = _firebaseAuthState.listen((FirebaseAuthState state) {
       switch (state) {
         case FirebaseAuthState.AUTHORIZING_SILENTLY:
