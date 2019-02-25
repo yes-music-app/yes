@@ -31,6 +31,9 @@ class CreateBloc implements BlocBase {
   /// A subscription to the create state.
   StreamSubscription<CreateSessionState> _sub;
 
+  /// A getter for the session sid.
+  String get sid => _transactionHandler.sid;
+
   CreateBloc() {
     _sub = _createState.listen((CreateSessionState state) {
       switch (state) {
@@ -48,8 +51,7 @@ class CreateBloc implements BlocBase {
     _transactionHandler.createSession().then((_) {
       _createState.add(CreateSessionState.CREATED);
     }).catchError((e) {
-      StateError error = e is StateError ? e : new StateError("errors.unknown");
-      _createState.addError(error);
+      _createState.addError(e);
     });
   }
 
