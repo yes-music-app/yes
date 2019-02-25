@@ -25,4 +25,23 @@ class PlayerRestrictionsModel {
       "canToggleShuffle": canToggleShuffle,
     };
   }
+
+  @override
+  bool operator ==(other) =>
+      other is PlayerRestrictionsModel &&
+      other.canRepeatContext == canRepeatContext &&
+      other.canRepeatTrack == canRepeatTrack &&
+      other.canSeek == canSeek &&
+      other.canSkipNext == canSkipNext &&
+      other.canSkipPrev == canSkipPrev &&
+      other.canToggleShuffle == canToggleShuffle;
+
+  @override
+  int get hashCode =>
+      canRepeatContext.hashCode ^
+      canRepeatTrack.hashCode ^
+      canSeek.hashCode ^
+      canSkipNext.hashCode ^
+      canSkipPrev.hashCode ^
+      canToggleShuffle.hashCode;
 }

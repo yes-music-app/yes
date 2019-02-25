@@ -27,13 +27,12 @@ class AlbumModel implements SearchableModel {
   }
 
   @override
-  bool operator ==(other) {
-    return other is AlbumModel &&
-        other.name == name &&
-        other.uri == uri &&
-        other.id == id &&
-        listsEqual(other.images, images);
-  }
+  bool operator ==(other) =>
+      other is AlbumModel &&
+      other.name == name &&
+      other.uri == uri &&
+      other.id == id &&
+      listsEqual(other.images, images);
 
   @override
   int get hashCode =>

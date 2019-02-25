@@ -39,13 +39,12 @@ class ArtistModel implements SearchableModel {
   }
 
   @override
-  bool operator ==(other) {
-    return other is ArtistModel &&
-        other.name == name &&
-        other.uri == uri &&
-        other.id == id &&
-        listsEqual(other.images, images);
-  }
+  bool operator ==(other) =>
+      other is ArtistModel &&
+      other.name == name &&
+      other.uri == uri &&
+      other.id == id &&
+      listsEqual(other.images, images);
 
   @override
   int get hashCode =>

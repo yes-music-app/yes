@@ -30,12 +30,11 @@ class ImageModel {
   }
 
   @override
-  bool operator ==(other) {
-    return other is ImageModel &&
-        other.height == height &&
-        other.width == width &&
-        other.url == url;
-  }
+  bool operator ==(other) =>
+      other is ImageModel &&
+      other.height == height &&
+      other.width == width &&
+      other.url == url;
 
   @override
   int get hashCode => height.hashCode ^ width.hashCode ^ url.hashCode;

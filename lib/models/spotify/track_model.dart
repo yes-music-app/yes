@@ -1,3 +1,4 @@
+import 'package:yes_music/helpers/list_compare.dart';
 import 'package:yes_music/models/spotify/album_model.dart';
 import 'package:yes_music/models/spotify/artist_model.dart';
 import 'package:yes_music/models/spotify/searchable_model.dart';
@@ -35,4 +36,25 @@ class TrackModel implements SearchableModel {
       "uri": uri,
     };
   }
+
+  @override
+  bool operator ==(other) =>
+      other is TrackModel &&
+      other.album == album &&
+      other.artist == artist &&
+      listsEqual(other.artists, artists) &&
+      other.duration == duration &&
+      other.imageUri == imageUri &&
+      other.name == name &&
+      other.uri == uri;
+
+  @override
+  int get hashCode =>
+      album.hashCode ^
+      artist.hashCode ^
+      artists.hashCode ^
+      duration.hashCode ^
+      imageUri.hashCode ^
+      name.hashCode ^
+      uri.hashCode;
 }

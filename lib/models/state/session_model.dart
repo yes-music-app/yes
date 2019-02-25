@@ -1,3 +1,4 @@
+import 'package:yes_music/helpers/list_compare.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
 import 'package:yes_music/models/state/user_model.dart';
@@ -34,4 +35,16 @@ class SessionModel {
       "users": UserModel.toMapList(users),
     };
   }
+
+  @override
+  bool operator ==(other) =>
+      other is SessionModel &&
+      other.playerState == playerState &&
+      listsEqual(other.queue, queue) &&
+      listsEqual(other.history, history) &&
+      listsEqual(other.users, users);
+
+  @override
+  int get hashCode =>
+      playerState.hashCode ^ queue.hashCode ^ history.hashCode ^ users.hashCode;
 }

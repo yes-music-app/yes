@@ -26,4 +26,13 @@ class UserModel {
   static List<Map<String, dynamic>> toMapList(List<UserModel> models) {
     return models?.map((model) => model.toMap())?.toList();
   }
+
+  @override
+  bool operator ==(other) =>
+      other is UserModel &&
+      other.uid == uid &&
+      other.searchQuery == searchQuery;
+
+  @override
+  int get hashCode => uid.hashCode ^ searchQuery.hashCode;
 }

@@ -13,4 +13,13 @@ class PlayerOptionsModel {
       "repeatMode": repeatMode,
     };
   }
+
+  @override
+  bool operator ==(other) =>
+      other is PlayerOptionsModel &&
+      other.isShuffling == isShuffling &&
+      other.repeatMode == repeatMode;
+
+  @override
+  int get hashCode => isShuffling.hashCode ^ repeatMode.hashCode;
 }

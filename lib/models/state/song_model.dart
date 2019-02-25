@@ -1,3 +1,4 @@
+import 'package:yes_music/helpers/list_compare.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 
 /// A song in the app's queue.
@@ -33,4 +34,14 @@ class SongModel {
   static List<Map<String, dynamic>> toMapList(List<SongModel> models) {
     return models?.map((model) => model.toMap())?.toList();
   }
+
+  @override
+  bool operator ==(other) =>
+      other is SongModel &&
+      other.track == track &&
+      other.uid == uid &&
+      listsEqual(other.upvotes, upvotes);
+
+  @override
+  int get hashCode => track.hashCode ^ uid.hashCode ^ upvotes.hashCode;
 }

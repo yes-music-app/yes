@@ -27,7 +27,17 @@ class PlayerStateModel {
       "playbackPosition": playbackPosition,
       "playbackRestrictions": playbackRestrictions,
       "playbackSpeed": playbackSpeed,
-      "tracl": track.toMap(),
+      "track": track.toMap(),
     };
   }
+
+  @override
+  bool operator ==(other) =>
+      other is PlayerStateModel &&
+      other.isPaused == isPaused &&
+      other.playbackOptions == playbackOptions &&
+      other.playbackPosition == playbackPosition &&
+      other.playbackRestrictions == playbackRestrictions &&
+      other.playbackSpeed == playbackSpeed &&
+      other.track == track;
 }
