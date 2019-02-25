@@ -5,14 +5,17 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
 
-    return new Scaffold(
-      body: new CustomScrollView(
-        slivers: <Widget>[
-          _getAppBar(width),
-          _getQueue(),
-        ],
+    return WillPopScope(
+      child: Scaffold(
+        body: new CustomScrollView(
+          slivers: <Widget>[
+            _getAppBar(width),
+            _getQueue(),
+          ],
+        ),
+        floatingActionButton: _getAddButton(),
       ),
-      floatingActionButton: _getAddButton(),
+      onWillPop: () => Future.value(false),
     );
   }
 

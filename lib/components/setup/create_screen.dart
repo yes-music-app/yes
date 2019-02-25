@@ -11,7 +11,7 @@ import 'package:yes_music/components/common/loading_indicator.dart';
 /// The screen that allows a user to create a new session.
 class CreateScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _CreateScreen();
+  State<StatefulWidget> createState() => _CreateScreen();
 }
 
 class _CreateScreen extends State<CreateScreen> {
@@ -21,53 +21,58 @@ class _CreateScreen extends State<CreateScreen> {
   @override
   void initState() {
     bloc = BlocProvider.of<CreateBloc>(context);
-
-    subscription = bloc.stream.listen((CreateSessionState state) {
-      switch (state) {
-        case CreateSessionState.NOT_CREATED:
-          bloc.sink.add(CreateSessionState.CREATING);
-          break;
-        case CreateSessionState.FAILED:
-          showFailedAlert(
-            context,
-            FlutterI18n.translate(context, "create.failedInfo"),
-            () => Navigator.of(context).pushNamedAndRemoveUntil(
-                  "/choose",
-                  (Route<dynamic> route) => false,
-                ),
-          );
-          break;
-        default:
-          break;
-      }
-    });
+    subscription = bloc.stream.listen(
+      (CreateSessionState state) {
+        switch (state) {
+          case CreateSessionState.NOT_CREATED:
+            bloc.sink.add(CreateSessionState.CREATING);
+            break;
+          default:
+            break;
+        }
+      },
+      onError: (e) {
+        String message = e is StateError ? e.message : "errors.unknown";
+        showFailedAlert(
+          context,
+          FlutterI18n.translate(context, message),
+          () => Navigator.of(context).pushNamedAndRemoveUntil(
+                "/choose",
+                (Route<dynamic> route) => false,
+              ),
+        );
+      },
+    );
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      child: new Center(
-        child: new StreamBuilder(
-          stream: bloc.stream,
-          builder: (
-            BuildContext context,
-            AsyncSnapshot<CreateSessionState> snapshot,
-          ) {
-            if (snapshot == null || !snapshot.hasData) {
-              return loadingIndicator();
-            }
-
-            switch (snapshot.data) {
-              case CreateSessionState.CREATED:
-                return _getBody(bloc.sid);
-              default:
+    return WillPopScope(
+      child: Container(
+        child: Center(
+          child: StreamBuilder(
+            stream: bloc.stream,
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<CreateSessionState> snapshot,
+            ) {
+              if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
                 return loadingIndicator();
-            }
-          },
+              }
+
+              switch (snapshot.data) {
+                case CreateSessionState.CREATED:
+                  return _getBody(bloc.sid);
+                default:
+                  return loadingIndicator();
+              }
+            },
+          ),
         ),
       ),
+      onWillPop: () => Future.value(false),
     );
   }
 
@@ -78,23 +83,23 @@ class _CreateScreen extends State<CreateScreen> {
   }
 
   Widget _getBody(String sid) {
-    return new Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        new Text(
+        Text(
           FlutterI18n.translate(context, "create.sid"),
           style: Theme.of(context).textTheme.body1,
         ),
-        new Padding(
-          padding: const EdgeInsets.only(bottom: 10),
+        Padding(
+          padding: EdgeInsets.only(bottom: 10),
         ),
-        new Text(
+        Text(
           sid,
           style: Theme.of(context).textTheme.subhead,
         ),
-        new Padding(
-          padding: const EdgeInsets.only(bottom: 40),
+        Padding(
+          padding: EdgeInsets.only(bottom: 40),
         ),
         _getContinueButton(),
       ],
@@ -102,14 +107,14 @@ class _CreateScreen extends State<CreateScreen> {
   }
 
   Widget _getContinueButton() {
-    return new CustomButton.withTheme(
+    return CustomButton.withTheme(
       onPressed: _pushMainScreen,
       theme: Theme.of(context),
-      child: new Text(
+      child: Text(
         FlutterI18n.translate(context, "create.continue"),
       ),
       radius: 20,
-      constraints: new BoxConstraints.tight(new Size(160, 40)),
+      constraints: BoxConstraints.tight(Size(160, 40)),
     );
   }
 

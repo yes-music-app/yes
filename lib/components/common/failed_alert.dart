@@ -21,12 +21,11 @@ void showFailedAlert(BuildContext context, String message, VoidCallback onOk) {
                 FlutterI18n.translate(context, "ok"),
                 style: Theme.of(context).textTheme.button,
               ),
-              onPressed: () {
-                onOk();
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
             )
           ],
         ),
-  );
+  ).then((_) {
+    onOk();
+  });
 }

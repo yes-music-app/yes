@@ -6,9 +6,6 @@ abstract class AuthHandlerBase {
   /// Get the current user's user ID.
   Future<String> uid();
 
-  /// Determine whether the user is currently signed in with Google.
-  Future<bool> isSignedInWithGoogle();
-
   /// Attempt to sign the user in silently.
   Future<GoogleSignInAccount> signInSilently();
 
@@ -16,10 +13,10 @@ abstract class AuthHandlerBase {
   Future<GoogleSignInAccount> signInWithGoogle();
 
   /// Attempt to get the user's sign in credentials with their Google account.
-  Future<AuthCredential> getCredentials(GoogleSignInAccount account);
+  Future<AuthCredential> getCredential(GoogleSignInAccount account);
 
   /// Attempt to sign the user in with their Firebase auth credentials.
-  void signInWithCredential(AuthCredential credential);
+  Future signInWithCredential(AuthCredential credential);
 
   /// Sign the user out of their Google account.
   void signOut();

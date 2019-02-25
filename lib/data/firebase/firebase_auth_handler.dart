@@ -3,7 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 
 class FirebaseAuthHandler implements AuthHandlerBase {
-  final GoogleSignIn _googleSignIn = new GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
@@ -13,50 +13,55 @@ class FirebaseAuthHandler implements AuthHandlerBase {
   }
 
   @override
-  Future<bool> isSignedInWithGoogle() {
-    return _googleSignIn.isSignedIn();
-  }
-
-  @override
   Future<GoogleSignInAccount> signInSilently() async {
     return await _googleSignIn.signInSilently().catchError((e) => null);
   }
 
   @override
   Future<GoogleSignInAccount> signInWithGoogle() async {
-    return await _googleSignIn.signIn().catchError((e) => null);
+    GoogleSignInAccount account = await _googleSignIn.signIn();
+    if (account == null) {
+      throw StateError("errors.login.googleSignIn");
+    }
+
+    return account;
   }
 
   @override
-  Future<AuthCredential> getCredentials(GoogleSignInAccount account) async {
+  Future<AuthCredential> getCredential(GoogleSignInAccount account) async {
     final GoogleSignInAuthentication auth = await account.authentication;
 
     if (auth == null || auth.idToken == null || auth.accessToken == null) {
-      throw new StateError("Received invalid auth from Google account.");
+      throw StateError("errors.login.auth");
     }
 
-    return GoogleAuthProvider.getCredential(
+    AuthCredential credential = GoogleAuthProvider.getCredential(
       idToken: auth.idToken,
       accessToken: auth.accessToken,
     );
+
+    if (credential == null) {
+      throw StateError("errors.login.credential");
+    }
+
+    return credential;
   }
 
   @override
-  Future<bool> signInWithCredential(AuthCredential credential) async {
+  Future signInWithCredential(AuthCredential credential) async {
     final FirebaseUser user = await _firebaseAuth
         .signInWithCredential(credential)
-        .catchError((e) => null);
-    final FirebaseUser currentUser =
-        await _firebaseAuth.currentUser().catchError((e) => null);
+        .catchError((e) => throw StateError("errors.login.signIn"));
+    final FirebaseUser currentUser = await _firebaseAuth
+        .currentUser()
+        .catchError((e) => throw StateError("errors.login.signIn"));
 
     if (user == null ||
         currentUser == null ||
         user.uid != currentUser.uid ||
         await user.getIdToken() == null) {
-      return false;
+      throw StateError("errors.login.signIn");
     }
-
-    return true;
   }
 
   @override

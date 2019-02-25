@@ -29,6 +29,19 @@
   "errors": {
     "title": "Error",
     "unknown": "Unknown error.",
+    "login": {
+      "googleSignIn": "Failed to sign in with Google.",
+      "auth": "Received an invalid account from Google.",
+      "credential": "Failed to create credentials.",
+      "signIn": "Failed to sign in with this Google account"
+    },
+    "remote": {
+      "connect": "Failed to connect to the Spotify app."
+    },
+    "create": {
+      "uid": "Failed to retrieve Firebase user ID.",
+      "database": "Failed to write to the session database."
+    },
     "join": {
       "sid": "Incorrect session ID.",
       "uid": "Could not retrieve user ID.",

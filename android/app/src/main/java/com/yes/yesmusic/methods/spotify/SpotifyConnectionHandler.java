@@ -56,13 +56,13 @@ public class SpotifyConnectionHandler implements MethodCallHandler {
       @Override
       public void onConnected(SpotifyAppRemote spotifyAppRemote) {
         playbackHandler.setRemote(spotifyAppRemote);
-        result.success(true);
+        result.success(null);
       }
 
       @Override
       public void onFailure(Throwable throwable) {
         playbackHandler.setRemote(null);
-        result.success(false);
+        result.error("Failed to connect", null, null);
       }
     });
   }

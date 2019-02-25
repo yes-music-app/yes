@@ -17,7 +17,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   String get sid => _sid;
 
   @override
-  Future<bool> createSession() async {
+  Future createSession() async {
     bool unique = false;
 
     while (!unique) {
@@ -28,29 +28,22 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       unique = !ref.exists;
     }
 
-    String uid = await new FirebaseProvider().getAuthHandler().uid();
+    String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null) {
       _sessionReference = null;
-      return false;
+      throw new StateError("errors.create.uid");
     }
 
-    UserModel user = new UserModel(uid, new SearchModel("", []));
-    SessionModel session = new SessionModel(null, [], [], [user]);
-    bool success = await _sessionReference.setData(session.toMap()).then(
-      (value) {
-        return true;
-      },
-      onError: (e) {
-        _sessionReference = null;
-        return false;
-      },
-    );
-
-    return success;
+    UserModel user = UserModel(uid, SearchModel("", []));
+    SessionModel session = SessionModel(null, [], [], [user]);
+    await _sessionReference.setData(session.toMap()).catchError((e) {
+      _sessionReference = null;
+      throw StateError("errors.create.database");
+    });
   }
 
   String _generateSID() {
-    Random random = new Random();
+    Random random = Random();
 
     List<int> codes = [];
     for (int i = 0; i < 6; i++) {
@@ -73,27 +66,23 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
         Firestore.instance.collection(SESSION_PATH).document(casedSID);
     final DocumentSnapshot snap = await _sessionReference.get();
 
-    print(snap.data);
-
-    if (snap == null || snap.data == null) {
+    if (!snap.exists) {
       _sessionReference = null;
-      throw new StateError("errors.join.sid");
+      throw StateError("errors.join.sid");
     }
 
-    String uid = await new FirebaseProvider().getAuthHandler().uid();
+    String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null) {
       _sessionReference = null;
-      throw new StateError("errors.join.uid");
+      throw StateError("errors.join.uid");
     }
 
-    UserModel user = new UserModel(uid, new SearchModel("", []));
+    UserModel user = UserModel(uid, SearchModel("", []));
     SessionModel model = SessionModel.fromMap(snap.data);
     model.users.add(user);
-    await _sessionReference.setData(model.toMap()).catchError(
-      (e) {
-        _sessionReference = null;
-        throw new StateError("errors.join.database");
-      },
-    );
+    await _sessionReference.setData(model.toMap()).catchError((e) {
+      _sessionReference = null;
+      throw StateError("errors.join.database");
+    });
   }
 }

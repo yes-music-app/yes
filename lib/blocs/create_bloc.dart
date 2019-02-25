@@ -5,18 +5,21 @@ import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/firebase_transaction_handler.dart';
 
+/// An enumeration of the potential states that a create operation can be in.
 enum CreateSessionState {
   NOT_CREATED,
   CREATING,
   CREATED,
-  FAILED,
 }
 
+/// A bloc that handles creating a session.
 class CreateBloc implements BlocBase {
+  /// The [FirebaseTransactionHandler] that performs the create operation.
   final FirebaseTransactionHandler _transactionHandler =
       new FirebaseProvider().getTransactionHandler();
-  StreamSubscription<CreateSessionState> _sub;
 
+  /// The [BehaviorSubject] that broadcasts the current state of the user's
+  /// attempt to create a session.
   BehaviorSubject<CreateSessionState> _createState = new BehaviorSubject(
     seedValue: CreateSessionState.NOT_CREATED,
   );
@@ -25,6 +28,10 @@ class CreateBloc implements BlocBase {
 
   StreamSink<CreateSessionState> get sink => _createState.sink;
 
+  /// A subscription to the create state.
+  StreamSubscription<CreateSessionState> _sub;
+
+  /// A getter for the session sid.
   String get sid => _transactionHandler.sid;
 
   CreateBloc() {
@@ -39,13 +46,12 @@ class CreateBloc implements BlocBase {
     });
   }
 
+  /// Attempts to create a new session.
   void _createSession() {
-    _transactionHandler.createSession().then((bool success) {
-      if (success) {
-        _createState.add(CreateSessionState.CREATED);
-      } else {
-        _createState.add(CreateSessionState.FAILED);
-      }
+    _transactionHandler.createSession().then((_) {
+      _createState.add(CreateSessionState.CREATED);
+    }).catchError((e) {
+      _createState.addError(e);
     });
   }
 

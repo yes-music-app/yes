@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/app_remote_bloc.dart';
@@ -11,15 +9,17 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
 
   /// An rxdart [BehaviorSubject] that publishes the current connection state.
   BehaviorSubject<SpotifyConnectionState> _connectionSubject =
-      new BehaviorSubject(seedValue: SpotifyConnectionState.DISCONNECTED);
+      BehaviorSubject(seedValue: SpotifyConnectionState.DISCONNECTED);
 
   @override
   ValueObservable<SpotifyConnectionState> get stream =>
       _connectionSubject.stream;
 
   @override
-  Future<bool> connect() async {
-    return await channel.invokeMethod('connect');
+  Future connect() async {
+    await channel.invokeMethod("connect").catchError((e) {
+      throw new StateError("Failed to connect to remote.");
+    });
   }
 
   @override

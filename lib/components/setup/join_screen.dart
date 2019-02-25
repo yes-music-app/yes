@@ -47,27 +47,32 @@ class _JoinScreenState extends State<JoinScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: StreamBuilder(
-          stream: bloc.stream,
-          builder: (
-            BuildContext context,
-            AsyncSnapshot<JoinSessionState> snapshot,
-          ) {
-            if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
-              return loadingIndicator();
-            }
-
-            switch (snapshot.data) {
-              case JoinSessionState.NOT_JOINED:
-                return _getContents();
-              default:
+    return WillPopScope(
+      child: Scaffold(
+        body: Center(
+          child: StreamBuilder(
+            stream: bloc.stream,
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<JoinSessionState> snapshot,
+            ) {
+              if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
                 return loadingIndicator();
-            }
-          },
+              }
+
+              switch (snapshot.data) {
+                case JoinSessionState.NOT_JOINED:
+                  return _getContents();
+                default:
+                  return loadingIndicator();
+              }
+            },
+          ),
         ),
       ),
+      onWillPop: () {
+        return Future.value(bloc.stream.value == JoinSessionState.NOT_JOINED);
+      },
     );
   }
 
