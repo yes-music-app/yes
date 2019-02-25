@@ -39,6 +39,9 @@
       "sid": "Incorrect session ID.",
       "uid": "Could not retrieve user ID.",
       "database": "Failed to write to the session database."
+    },
+    "remote": {
+      "connect": "Failed to connect to the Spotify app."
     }
   }
 }

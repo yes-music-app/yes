@@ -19,7 +19,7 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
 
   @override
   Future<bool> connect() async {
-    return await channel.invokeMethod('connect');
+    return await channel.invokeMethod("connect");
   }
 
   @override

@@ -37,7 +37,10 @@ class _JoinScreenState extends State<JoinScreen> {
         showFailedAlert(
           context,
           FlutterI18n.translate(context, message),
-          () => bloc.sink.add(JoinSessionState.NOT_JOINED),
+          () {
+            bloc.sink.add(JoinSessionState.NOT_JOINED);
+            Navigator.of(context).pop();
+          },
         );
       },
     );

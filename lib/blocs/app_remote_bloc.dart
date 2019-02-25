@@ -5,29 +5,35 @@ import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/spotify/spotify_connection_handler.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
 
+/// An enumeration of the potential states that a app remote connection
+/// operation can be in.
 enum SpotifyConnectionState {
   DISCONNECTED,
   CONNECTING,
   CONNECTED,
-  FAILED,
 }
 
+/// A bloc that handles connecting to the Spotify Remote API.
 class AppRemoteBloc implements BlocBase {
+  /// The [SpotifyConnectionHandler] that performs the connection operation.
   final SpotifyConnectionHandler _connectionHandler =
-      new SpotifyProvider().getConnectionHandler();
-  StreamSubscription<SpotifyConnectionState> _subjectSub;
+      SpotifyProvider().getConnectionHandler();
 
-  /// An rxdart [BehaviorSubject] that publishes the current connection state.
-  BehaviorSubject<SpotifyConnectionState> _connectionSubject =
-      new BehaviorSubject(seedValue: SpotifyConnectionState.DISCONNECTED);
+  /// An [BehaviorSubject] that publishes the current connection state.
+  BehaviorSubject<SpotifyConnectionState> _connectionState = BehaviorSubject(
+    seedValue: SpotifyConnectionState.DISCONNECTED,
+  );
 
-  ValueObservable<SpotifyConnectionState> get stream =>
-      _connectionSubject.stream;
+  ValueObservable<SpotifyConnectionState> get stream => _connectionState.stream;
 
-  StreamSink<SpotifyConnectionState> get sink => _connectionSubject.sink;
+  StreamSink<SpotifyConnectionState> get sink => _connectionState.sink;
 
+  /// A subscription to the connection state.
+  StreamSubscription<SpotifyConnectionState> _sub;
+
+  /// Creates a new [AppRemoteBloc] and begins listening for state changes.
   AppRemoteBloc() {
-    _subjectSub = _connectionSubject.listen((SpotifyConnectionState state) {
+    _sub = _connectionState.listen((SpotifyConnectionState state) {
       switch (state) {
         case SpotifyConnectionState.CONNECTING:
           _connect();
@@ -38,19 +44,18 @@ class AppRemoteBloc implements BlocBase {
     });
   }
 
+  /// Connects to the Spotify app remote.
   void _connect() {
-    _connectionHandler.connect().then((bool value) {
-      if (value) {
-        _connectionSubject.add(SpotifyConnectionState.CONNECTED);
-      } else {
-        _connectionSubject.add(SpotifyConnectionState.FAILED);
-      }
-    });
+    try {
+      _connectionHandler.connect();
+    } catch (e) {
+      _connectionState.addError(StateError("errors.remote.connect"));
+    }
   }
 
   @override
   void dispose() async {
-    await _subjectSub.cancel();
-    _connectionSubject.close();
+    await _sub.cancel();
+    _connectionState.close();
   }
 }

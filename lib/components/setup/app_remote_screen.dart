@@ -7,9 +7,10 @@ import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/failed_alert.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
 
+/// The screen that handles connection with the Spotify app.
 class AppRemoteScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _AppRemoteScreen();
+  State<StatefulWidget> createState() => _AppRemoteScreen();
 }
 
 class _AppRemoteScreen extends State<AppRemoteScreen> {
@@ -19,21 +20,10 @@ class _AppRemoteScreen extends State<AppRemoteScreen> {
   @override
   void initState() {
     bloc = BlocProvider.of<AppRemoteBloc>(context);
-
     subscription = bloc.stream.listen((SpotifyConnectionState state) {
       switch (state) {
         case SpotifyConnectionState.DISCONNECTED:
           bloc.sink.add(SpotifyConnectionState.CONNECTING);
-          break;
-        case SpotifyConnectionState.FAILED:
-          showFailedAlert(
-            context,
-            FlutterI18n.translate(context, "appRemote.failedInfo"),
-            () => Navigator.of(context).pushNamedAndRemoveUntil(
-                  "/choose",
-                  (Route<dynamic> route) => false,
-                ),
-          );
           break;
         case SpotifyConnectionState.CONNECTED:
           _pushCreateScreen();
@@ -41,6 +31,16 @@ class _AppRemoteScreen extends State<AppRemoteScreen> {
         default:
           break;
       }
+    }, onError: (e) {
+      String message = e is StateError ? e.message : "errors.unknown";
+      showFailedAlert(
+        context,
+        FlutterI18n.translate(context, message),
+        () => Navigator.of(context).pushNamedAndRemoveUntil(
+              "/choose",
+              (Route<dynamic> route) => false,
+            ),
+      );
     });
 
     super.initState();
@@ -48,8 +48,8 @@ class _AppRemoteScreen extends State<AppRemoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      child: new Center(
+    return Container(
+      child: Center(
         child: loadingIndicator(),
       ),
     );
