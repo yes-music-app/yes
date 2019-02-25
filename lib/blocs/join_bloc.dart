@@ -37,7 +37,6 @@ class JoinBloc implements BlocBase {
   /// A subscription to the session ID input stream.
   StreamSubscription<String> _sub;
 
-  /// Creates a new [JoinBloc] and begins listening for sid input events.
   JoinBloc() {
     _sub = _sid.listen((String sid) {
       // If we receive a session ID and we are not currently joining a room or
@@ -51,12 +50,12 @@ class JoinBloc implements BlocBase {
 
   /// Attempts to join the session with the given session ID.
   void _joinSession(String sid) async {
-    try {
-      await _transactionHandler.joinSession(sid);
+    _transactionHandler.joinSession(sid).then((_) {
       _joinState.add(JoinSessionState.JOINED);
-    } on StateError catch (e) {
-      _joinState.addError(e);
-    }
+    }).catchError((e) {
+      StateError error = e is StateError ? e : new StateError("errors.unknown");
+      _joinState.addError(error);
+    });
   }
 
   @override

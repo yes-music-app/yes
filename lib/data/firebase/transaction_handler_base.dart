@@ -4,7 +4,7 @@ abstract class TransactionHandlerBase {
   String get sid;
 
   /// Creates a session, generating a session ID for it.
-  Future<bool> createSession();
+  Future createSession();
 
   /// Joins the session with the given [sid].
   Future joinSession(String sid);
