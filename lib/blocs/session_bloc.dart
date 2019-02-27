@@ -24,8 +24,9 @@ class SessionBloc implements BlocBase {
 
   SessionBloc() {
     _playbackHandler.playerState.listen((PlayerStateModel model) {
-      if(model.track != prevState.track) {
-
+      // If there were no changes to the player state, do not send out updates.
+      if (model == prevState) {
+        return;
       }
 
       // Set the previous state to the new model for future comparisons.

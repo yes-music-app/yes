@@ -40,4 +40,13 @@ class PlayerStateModel {
       other.playbackRestrictions == playbackRestrictions &&
       other.playbackSpeed == playbackSpeed &&
       other.track == track;
+
+  @override
+  int get hashCode =>
+      isPaused.hashCode ^
+      playbackOptions.hashCode ^
+      playbackPosition.hashCode ^
+      playbackRestrictions.hashCode ^
+      playbackSpeed.hashCode ^
+      track.hashCode;
 }
