@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
@@ -17,7 +16,7 @@ import 'package:yes_music/data/spotify/spotify_provider.dart';
 void main() async {
   FirebaseProvider().setFlavor(Flavor.REMOTE);
   SpotifyProvider().setFlavor(Flavor.REMOTE);
-  await Firestore.instance.settings(timestampsInSnapshotsEnabled: true);
+
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -33,7 +32,7 @@ class YesApp extends StatelessWidget {
     "/appRemote": appRemoteCallback,
     "/create": createCallback,
     "/join": joinCallback,
-    "/main": (context) => MainScreen(),
+    "/main": mainCallback,
   };
 
   @override
