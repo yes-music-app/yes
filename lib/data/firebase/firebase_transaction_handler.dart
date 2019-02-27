@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 import 'package:yes_music/models/state/session_model.dart';
@@ -10,7 +10,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   static const String SESSION_PATH = "sessions";
 
   String _sid;
-  DocumentReference _sessionReference;
+  DatabaseReference _sessionReference;
 
   @override
   String get sid => _sid;
@@ -22,9 +22,9 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     while (!unique) {
       _sid = _generateSID();
       _sessionReference =
-          Firestore.instance.collection(SESSION_PATH).document(_sid);
-      DocumentSnapshot ref = await _sessionReference.get();
-      unique = !ref.exists;
+          FirebaseDatabase.instance.reference().child(SESSION_PATH).child(_sid);
+      DataSnapshot ref = await _sessionReference.once();
+      unique = ref.value == null;
     }
 
     String uid = await FirebaseProvider().getAuthHandler().uid();
@@ -35,7 +35,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
     UserModel user = UserModel(uid, "");
     SessionModel session = SessionModel(null, [], [], [user]);
-    await _sessionReference.setData(session.toMap()).catchError((e) {
+    await _sessionReference.set(session.toMap()).catchError((e) {
       _sessionReference = null;
       throw StateError("errors.create.database");
     });
@@ -61,11 +61,13 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   @override
   Future joinSession(String sid) async {
     final String casedSID = sid.toUpperCase();
-    _sessionReference =
-        Firestore.instance.collection(SESSION_PATH).document(casedSID);
-    final DocumentSnapshot snap = await _sessionReference.get();
+    _sessionReference = FirebaseDatabase.instance
+        .reference()
+        .child(SESSION_PATH)
+        .child(casedSID);
+    final DataSnapshot snap = await _sessionReference.once();
 
-    if (!snap.exists) {
+    if (snap.value == null) {
       _sessionReference = null;
       throw StateError("errors.join.sid");
     }
@@ -77,9 +79,9 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     }
 
     UserModel user = UserModel(uid, "");
-    SessionModel model = SessionModel.fromMap(snap.data);
+    SessionModel model = SessionModel.fromMap(snap.value);
     model.users.add(user);
-    await _sessionReference.setData(model.toMap()).catchError((e) {
+    await _sessionReference.set(model.toMap()).catchError((e) {
       _sessionReference = null;
       throw StateError("errors.join.database");
     });

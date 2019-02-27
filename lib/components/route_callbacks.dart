@@ -3,8 +3,10 @@ import 'package:yes_music/blocs/app_remote_bloc.dart';
 import 'package:yes_music/blocs/create_bloc.dart';
 import 'package:yes_music/blocs/join_bloc.dart';
 import 'package:yes_music/blocs/login_bloc.dart';
+import 'package:yes_music/blocs/session_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/login/login_screen.dart';
+import 'package:yes_music/components/main/main_screen.dart';
 import 'package:yes_music/components/setup/app_remote_screen.dart';
 import 'package:yes_music/components/setup/create_screen.dart';
 import 'package:yes_music/components/setup/join_screen.dart';
@@ -29,4 +31,9 @@ final RouteCallback createCallback = (context) => BlocProvider(
 final RouteCallback joinCallback = (context) => BlocProvider(
       bloc: JoinBloc(),
       child: JoinScreen(),
+    );
+
+final RouteCallback mainCallback = (context) => BlocProvider(
+      bloc: SessionBloc(),
+      child: MainScreen(),
     );
