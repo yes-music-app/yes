@@ -9,6 +9,8 @@ import 'package:yes_music/models/state/user_model.dart';
 class FirebaseTransactionHandler implements TransactionHandlerBase {
   static const String SESSION_PATH = "sessions";
 
+  DatabaseReference get _firebase => FirebaseDatabase.instance.reference();
+
   String _sid;
   DatabaseReference _sessionReference;
 
@@ -21,8 +23,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
     while (!unique) {
       _sid = _generateSID();
-      _sessionReference =
-          FirebaseDatabase.instance.reference().child(SESSION_PATH).child(_sid);
+      _sessionReference = _firebase.child(SESSION_PATH).child(_sid);
       DataSnapshot ref = await _sessionReference.once();
       unique = ref.value == null;
     }
@@ -61,10 +62,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   @override
   Future joinSession(String sid) async {
     final String casedSID = sid.toUpperCase();
-    _sessionReference = FirebaseDatabase.instance
-        .reference()
-        .child(SESSION_PATH)
-        .child(casedSID);
+    _sessionReference = _firebase.child(SESSION_PATH).child(casedSID);
     final DataSnapshot snap = await _sessionReference.once();
 
     if (snap.value == null) {
