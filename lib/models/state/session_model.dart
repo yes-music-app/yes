@@ -15,7 +15,7 @@ class SessionModel {
   final List<SongModel> history;
 
   /// The host of this session.
-  final UserModel host;
+  final String host;
 
   /// The list of current users.
   final List<UserModel> users;
@@ -34,7 +34,7 @@ class SessionModel {
             : PlayerStateModel.fromMap(map["playerState"]),
         queue = SongModel.fromMapList(map["queue"]),
         history = SongModel.fromMapList(map["history"]),
-        host = UserModel.fromMap(map["host"]),
+        host = map["host"],
         users = UserModel.fromMapList(map["users"]);
 
   Map<String, dynamic> toMap() {
@@ -42,7 +42,7 @@ class SessionModel {
       "playerState": playerState?.toMap(),
       "queue": SongModel.toMapList(queue),
       "history": SongModel.toMapList(history),
-      "host": host?.toMap(),
+      "host": host,
       "users": UserModel.toMapList(users),
     };
   }
