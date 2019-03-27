@@ -27,7 +27,7 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       "uid": uid,
-      "searchQuery": search.toMap(),
+      "search": search.toMap(),
     };
   }
 
