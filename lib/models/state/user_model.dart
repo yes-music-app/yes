@@ -14,8 +14,14 @@ class UserModel {
       : uid = map["uid"],
         search = new SearchModel.fromMap(map["search"]);
 
-  static List<UserModel> fromMapList(List maps) {
-    return maps?.map((map) => new UserModel.fromMap(map))?.toList();
+  static List<UserModel> fromMapList(Map maps) {
+    List<UserModel> models = List();
+
+    maps?.values?.forEach((value) {
+      models.add(UserModel.fromMap(value));
+    });
+
+    return models;
   }
 
   Map<String, dynamic> toMap() {
@@ -25,15 +31,19 @@ class UserModel {
     };
   }
 
-  static List<Map<String, dynamic>> toMapList(List<UserModel> models) {
-    return models?.map((model) => model.toMap())?.toList();
+  static Map<String, dynamic> toMapList(List<UserModel> models) {
+    final Map<String, dynamic> map = Map();
+
+    models?.forEach((UserModel model) {
+      map[model.uid] = model.toMap();
+    });
+
+    return map;
   }
 
   @override
   bool operator ==(other) =>
-      other is UserModel &&
-      other.uid == uid &&
-      other.search == search;
+      other is UserModel && other.uid == uid && other.search == search;
 
   @override
   int get hashCode => uid.hashCode ^ search.hashCode;
