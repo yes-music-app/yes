@@ -18,9 +18,9 @@ before_script:
   - ./flutter/bin/flutter packages get
   - gem install coveralls-lcov
 script:
-  - lcov/bin/lcov -c -i -d yes/ -o coverage/app_base.info
+  - lcov/bin/lcov -c -i -d yes -o coverage/app_base.info
   - ./flutter/bin/flutter test
-  - lcov/bin/lcov -c -d yes/ -o coverage/app_test.info
+  - lcov/bin/lcov -c -d yes -o coverage/app_test.info
   - lcov/bin/lcov -a app_base.info -a app_test.info -o coverage/app_total.info
 after_success:
   - coveralls-lcov coverage/app_total.info
