@@ -8,8 +8,11 @@ addons:
     packages:
       - libstdc++6
       - fonts-droid
-      - lcov
 before_script:
+  - git clone https://github.com/linux-test-project/lcov.git
+  - cd lcov
+  - make install
+  - cd ..
   - git clone https://github.com/flutter/flutter.git -b beta
   - ./flutter/bin/flutter doctor
   - ./flutter/bin/flutter packages get
