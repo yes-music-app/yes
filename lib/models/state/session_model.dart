@@ -14,10 +14,19 @@ class SessionModel {
   /// The history of songs that have been played.
   final List<SongModel> history;
 
+  /// The host of this session.
+  final UserModel host;
+
   /// The list of current users.
   final List<UserModel> users;
 
-  SessionModel(this.playerState, this.queue, this.history, this.users);
+  SessionModel(
+    this.playerState,
+    this.queue,
+    this.history,
+    this.host,
+    this.users,
+  );
 
   SessionModel.fromMap(Map map)
       : playerState = map["playerState"] == null
@@ -25,6 +34,7 @@ class SessionModel {
             : PlayerStateModel.fromMap(map["playerState"]),
         queue = SongModel.fromMapList(map["queue"]),
         history = SongModel.fromMapList(map["history"]),
+        host = UserModel.fromMap(map["host"]),
         users = UserModel.fromMapList(map["users"]);
 
   Map<String, dynamic> toMap() {
@@ -32,6 +42,7 @@ class SessionModel {
       "playerState": playerState?.toMap(),
       "queue": SongModel.toMapList(queue),
       "history": SongModel.toMapList(history),
+      "host": host?.toMap(),
       "users": UserModel.toMapList(users),
     };
   }
@@ -42,9 +53,14 @@ class SessionModel {
       other.playerState == playerState &&
       listsEqual(other.queue, queue) &&
       listsEqual(other.history, history) &&
+      other.host == host &&
       listsEqual(other.users, users);
 
   @override
   int get hashCode =>
-      playerState.hashCode ^ queue.hashCode ^ history.hashCode ^ users.hashCode;
+      playerState.hashCode ^
+      queue.hashCode ^
+      history.hashCode ^
+      host.hashCode ^
+      users.hashCode;
 }
