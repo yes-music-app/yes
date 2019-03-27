@@ -8,9 +8,6 @@ class FlagProvider {
   factory FlagProvider() => instance;
 
   bool getFlag(String key) {
-    if(flagMap.containsKey(key)) {
-      print('hello world');
-    }
     return flagMap.containsKey(key) && flagMap[key];
   }
 }
