@@ -24,6 +24,14 @@ class TrackModel implements SearchableModel {
         name = map["name"],
         uri = map["uri"];
 
+  static List<TrackModel> mapTracks(List tracks) {
+    if (tracks == null) {
+      return null;
+    }
+
+    return tracks.map((track) => new TrackModel.fromMap(track)).toList();
+  }
+
   @override
   Map<String, dynamic> toMap() {
     return {
@@ -35,6 +43,10 @@ class TrackModel implements SearchableModel {
       "name": name,
       "uri": uri,
     };
+  }
+
+  static List<Map<String, dynamic>> toMapList(List<TrackModel> models) {
+    return models?.map((model) => model.toMap())?.toList();
   }
 
   @override
