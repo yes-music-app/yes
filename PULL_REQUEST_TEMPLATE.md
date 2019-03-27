@@ -4,4 +4,4 @@ Please provide a description of the changes that are included in this pull reque
 
 ### Issue
 
-Addresses # (issue)
+Closes # (issue)
