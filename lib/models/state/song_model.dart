@@ -1,4 +1,4 @@
-import 'package:yes_music/helpers/list_compare.dart';
+import 'package:yes_music/helpers/list_utils.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 
 /// A song in the app's queue.
