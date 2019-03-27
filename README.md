@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/yes-music-app/yes/badge.svg?branch=master)](https://coveralls.io/github/yes-music-app/yes?branch=master)
+
 # Yes Music
 
 The Yes music app.
