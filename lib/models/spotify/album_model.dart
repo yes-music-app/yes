@@ -26,6 +26,9 @@ class AlbumModel implements SearchableModel {
     };
   }
 
+  // LCOV code coverage exclusion.
+  // LCOV_EXCL_START
+
   @override
   bool operator ==(other) =>
       other is AlbumModel &&
@@ -37,4 +40,6 @@ class AlbumModel implements SearchableModel {
   @override
   int get hashCode =>
       name.hashCode ^ uri.hashCode ^ id.hashCode ^ images.hashCode;
+
+  // LCOV_EXCL_STOP
 }

@@ -16,10 +16,20 @@ before_script:
   - gem install coveralls-lcov
 script:
   - ls
+  - cd ..
+  - ls
+  - cd ..
+  - ls
+  - cd ..
+  - ls
+  - cd ..
+  - ls
+  - cd ..
+  - ls
   - strace lcov -c -i -d test -o coverage/app_base.info
   - ./flutter/bin/flutter test
   - sudo lcov -c -d test -o coverage/app_test.info
-  - sudo lcov -a ./coverage/app_base.info -a ./coverage/app_test.info -o ./coverage/app_total.info
+  - sudo lcov -a coverage/app_base.info -a coverage/app_test.info -o coverage/app_total.info
 after_success:
   - coveralls-lcov coverage/app_total.info
 cache:
