@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/yes-music-app/yes/badge.svg?branch=master)](https://coveralls.io/github/yes-music-app/yes?branch=master)
+[![Build Status](https://travis-ci.com/yes-music-app/yes.svg?branch=master)](https://travis-ci.com/yes-music-app/yes) [![Coverage Status](https://coveralls.io/repos/github/yes-music-app/yes/badge.svg?branch=master)](https://coveralls.io/github/yes-music-app/yes?branch=master)
 
 # Yes Music
 
