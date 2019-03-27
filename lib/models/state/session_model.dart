@@ -1,4 +1,4 @@
-import 'package:yes_music/helpers/list_compare.dart';
+import 'package:yes_music/helpers/list_utils.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
 import 'package:yes_music/models/state/user_model.dart';

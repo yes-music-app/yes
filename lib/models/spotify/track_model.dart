@@ -1,4 +1,4 @@
-import 'package:yes_music/helpers/list_compare.dart';
+import 'package:yes_music/helpers/list_utils.dart';
 import 'package:yes_music/models/spotify/album_model.dart';
 import 'package:yes_music/models/spotify/artist_model.dart';
 import 'package:yes_music/models/spotify/searchable_model.dart';
