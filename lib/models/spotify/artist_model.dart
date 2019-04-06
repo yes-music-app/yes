@@ -21,7 +21,7 @@ class ArtistModel implements SearchableModel {
       return null;
     }
 
-    return artists.map((artist) => new ArtistModel.fromMap(artist)).toList();
+    return artists.map((artist) => ArtistModel.fromMap(artist)).toList();
   }
 
   @override

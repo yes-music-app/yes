@@ -32,7 +32,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null) {
       _sessionReference = null;
-      throw new StateError("errors.create.uid");
+      throw StateError("errors.create.uid");
     }
 
     UserModel user = UserModel(uid, SearchModel.empty());

@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
 
     return WillPopScope(
       child: Scaffold(
-        body: new CustomScrollView(
+        body: CustomScrollView(
           slivers: <Widget>[
             _getAppBar(width, Uint8List(0)),
             _getQueue(),
@@ -39,13 +39,13 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   SliverAppBar _getAppBar(double width, Uint8List bytes) {
-    return new SliverAppBar(
+    return SliverAppBar(
       automaticallyImplyLeading: false,
       centerTitle: true,
       elevation: 10,
       expandedHeight: width * (2 / 3),
       pinned: true,
-      flexibleSpace: new FlexibleSpaceBar(
+      flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
         background: _getAppBarImage(bytes),
       ),
@@ -65,17 +65,17 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   SliverList _getQueue() {
-    return new SliverList(
+    return SliverList(
       delegate: _queueDelegate(),
     );
   }
 
   SliverChildBuilderDelegate _queueDelegate() {
-    return new SliverChildBuilderDelegate(
+    return SliverChildBuilderDelegate(
       (BuildContext context, int index) {
-        return new Container(
+        return Container(
           padding: const EdgeInsets.all(10),
-          child: new Text("hello world"),
+          child: Text("hello world"),
         );
       },
       childCount: 50,
@@ -83,8 +83,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _getAddButton() {
-    return new FloatingActionButton(
-      child: new Icon(Icons.add),
+    return FloatingActionButton(
+      child: Icon(Icons.add),
       onPressed: () => {},
     );
   }
