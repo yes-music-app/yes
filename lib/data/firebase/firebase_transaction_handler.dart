@@ -21,10 +21,11 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   @override
   Future createSession() async {
     bool unique = false;
+    String tempSID;
 
     while (!unique) {
-      _sid = _generateSID();
-      _sessionReference = _firebase.child(SESSION_PATH).child(_sid);
+      tempSID = _generateSID();
+      _sessionReference = _firebase.child(SESSION_PATH).child(tempSID);
       DataSnapshot ref = await _sessionReference.once();
       unique = ref.value == null;
     }
@@ -41,6 +42,8 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       _sessionReference = null;
       throw StateError("errors.create.database");
     });
+
+    _sid = tempSID;
   }
 
   String _generateSID() {
@@ -66,7 +69,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     _sessionReference = _firebase.child(SESSION_PATH).child(casedSID);
     final DataSnapshot snap = await _sessionReference.once();
 
-    if (snap.value == null || sid.isEmpty) {
+    if (sid.isEmpty || snap.value == null) {
       _sessionReference = null;
       throw StateError("errors.join.sid");
     }
@@ -84,5 +87,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       _sessionReference = null;
       throw StateError("errors.join.database");
     });
+
+    _sid = sid;
   }
 }
