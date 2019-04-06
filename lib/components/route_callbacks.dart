@@ -14,10 +14,7 @@ import 'package:yes_music/components/setup/join_screen.dart';
 
 typedef RouteCallback = Widget Function(BuildContext context);
 
-final RouteCallback loginCallback = (context) => BlocProvider(
-      bloc: LoginBloc(),
-      child: LoginScreen(),
-    );
+final RouteCallback loginCallback = (context) => LoginScreen();
 
 final RouteCallback chooseCallback = (context) => ChooseScreen();
 

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:yes_music/blocs/login_bloc.dart';
 import 'package:yes_music/blocs/session_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/confirmation_dialog.dart';
@@ -18,17 +19,32 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  SessionBloc _bloc;
+  SessionBloc _sessionBloc;
+  LoginBloc _loginBloc;
   StreamSubscription<SessionState> _stateSubscription;
+  StreamSubscription<FirebaseAuthState> _loginSubscription;
+  bool _signingOut = false;
 
   @override
   void initState() {
-    _bloc = BlocProvider.of<SessionBloc>(context);
+    _sessionBloc = BlocProvider.of<SessionBloc>(context);
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
 
-    _stateSubscription = _bloc.sessionStream.listen((SessionState state) {
+    _stateSubscription =
+        _sessionBloc.sessionStream.listen((SessionState state) {
       switch (state) {
         case SessionState.LEFT:
           _pushLoginScreen();
+          break;
+        default:
+          break;
+      }
+    });
+
+    _loginSubscription = _loginBloc.stream.listen((FirebaseAuthState state) {
+      switch (state) {
+        case FirebaseAuthState.UNAUTHORIZED:
+          _sessionBloc.sessionSink.add(SessionState.LEAVING);
           break;
         default:
           break;
@@ -42,12 +58,15 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       child: StreamBuilder(
-        stream: _bloc.sessionStream,
+        stream: _sessionBloc.sessionStream,
         builder: (
           BuildContext context,
           AsyncSnapshot<SessionState> snapshot,
         ) {
-          if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
+          if (snapshot == null ||
+              !snapshot.hasData ||
+              snapshot.hasError ||
+              _signingOut) {
             return loadingIndicator();
           }
 
@@ -66,6 +85,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void dispose() {
     _stateSubscription?.cancel();
+    _loginSubscription?.cancel();
     super.dispose();
   }
 
@@ -136,7 +156,10 @@ class _MainScreenState extends State<MainScreen> {
       "confirm",
       "cancel",
       () {
-        _bloc.sessionSink.add(SessionState.SIGNING_OUT);
+        _loginBloc.sink.add(FirebaseAuthState.SIGNING_OUT);
+        setState(() {
+          _signingOut = true;
+        });
       },
       () {},
     );
