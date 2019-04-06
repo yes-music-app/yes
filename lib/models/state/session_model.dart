@@ -20,13 +20,12 @@ class SessionModel {
   /// The list of current users.
   final List<UserModel> users;
 
-  SessionModel(
-    this.playerState,
-    this.queue,
-    this.history,
-    this.host,
-    this.users,
-  );
+  SessionModel.empty(UserModel creator)
+      : playerState = null,
+        queue = [],
+        history = [],
+        host = creator.uid,
+        users = [creator];
 
   SessionModel.fromMap(Map map)
       : playerState = map["playerState"] == null
