@@ -8,6 +8,7 @@ import 'package:yes_music/blocs/utils/bloc_provider.dart';
 /// not the host of, the session will persist without them.
 enum SessionState {
   ACTIVE,
+  SIGNING_OUT,
   LEAVING,
   LEFT,
 }

@@ -66,7 +66,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     _sessionReference = _firebase.child(SESSION_PATH).child(casedSID);
     final DataSnapshot snap = await _sessionReference.once();
 
-    if (snap.value == null) {
+    if (snap.value == null || sid.isEmpty) {
       _sessionReference = null;
       throw StateError("errors.join.sid");
     }

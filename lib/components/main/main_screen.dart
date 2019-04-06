@@ -2,16 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/login_bloc.dart';
 import 'package:yes_music/blocs/session_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
-import 'package:yes_music/components/common/confirmation_dialog.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
-
-enum BarActions {
-  LOGOUT,
-}
+import 'package:yes_music/components/main/bar_actions.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -23,7 +18,6 @@ class _MainScreenState extends State<MainScreen> {
   LoginBloc _loginBloc;
   StreamSubscription<SessionState> _stateSubscription;
   StreamSubscription<FirebaseAuthState> _loginSubscription;
-  bool _signingOut = false;
 
   @override
   void initState() {
@@ -43,6 +37,9 @@ class _MainScreenState extends State<MainScreen> {
 
     _loginSubscription = _loginBloc.stream.listen((FirebaseAuthState state) {
       switch (state) {
+        case FirebaseAuthState.SIGNING_OUT:
+          _sessionBloc.sessionSink.add(SessionState.SIGNING_OUT);
+          break;
         case FirebaseAuthState.UNAUTHORIZED:
           _sessionBloc.sessionSink.add(SessionState.LEAVING);
           break;
@@ -63,10 +60,7 @@ class _MainScreenState extends State<MainScreen> {
           BuildContext context,
           AsyncSnapshot<SessionState> snapshot,
         ) {
-          if (snapshot == null ||
-              !snapshot.hasData ||
-              snapshot.hasError ||
-              _signingOut) {
+          if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
             return loadingIndicator();
           }
 
@@ -105,7 +99,11 @@ class _MainScreenState extends State<MainScreen> {
 
   SliverAppBar _getAppBar(double width, Uint8List bytes) {
     return SliverAppBar(
-      actions: _getAppBarActions(),
+      actions: getAppBarActions(
+        context,
+        sessionBloc: _sessionBloc,
+        loginBloc: _loginBloc,
+      ),
       automaticallyImplyLeading: false,
       centerTitle: true,
       elevation: 10,
@@ -116,52 +114,6 @@ class _MainScreenState extends State<MainScreen> {
         background: _getAppBarImage(bytes),
       ),
       title: Text("Now playing"),
-    );
-  }
-
-  List<Widget> _getAppBarActions() {
-    return [
-      PopupMenuButton<BarActions>(
-        onSelected: (BarActions result) {
-          switch (result) {
-            case BarActions.LOGOUT:
-              _logout();
-              break;
-            default:
-              break;
-          }
-        },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<BarActions>>[
-              PopupMenuItem<BarActions>(
-                value: BarActions.LOGOUT,
-                child: Row(
-                  children: <Widget>[
-                    Icon(Icons.exit_to_app),
-                    Padding(
-                      padding: EdgeInsets.only(left: 10),
-                    ),
-                    Text(FlutterI18n.translate(context, "main.logout")),
-                  ],
-                ),
-              ),
-            ],
-      ),
-    ];
-  }
-
-  void _logout() {
-    showConfirmationDialog(
-      context,
-      "main.logoutMessage",
-      "confirm",
-      "cancel",
-      () {
-        _loginBloc.sink.add(FirebaseAuthState.SIGNING_OUT);
-        setState(() {
-          _signingOut = true;
-        });
-      },
-      () {},
     );
   }
 

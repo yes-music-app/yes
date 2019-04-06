@@ -19,5 +19,5 @@ abstract class AuthHandlerBase {
   Future signInWithCredential(AuthCredential credential);
 
   /// Sign the user out of their Google account.
-  void signOut();
+  Future signOut();
 }

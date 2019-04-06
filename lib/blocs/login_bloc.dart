@@ -93,8 +93,13 @@ class LoginBloc implements BlocBase {
   }
 
   /// Signs the user out of their Google account.
-  void _signOut() {
-    _authHandler.signOut();
+  void _signOut() async {
+    try {
+      await _authHandler.signOut();
+    } on StateError catch (e) {
+      _firebaseAuthState.addError(e);
+    }
+
     _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED);
   }
 
