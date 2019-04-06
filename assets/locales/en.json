@@ -2,6 +2,7 @@
   "title": "Yes Music App",
   "ok": "OK",
   "cancel": "Cancel",
+  "confirm": "Confirm",
   "submit": "Submit",
   "login": {
     "credentialsDialog": "We need our users to sign in with Google in order to securely communicate with our database.",
@@ -25,6 +26,10 @@
   "join": {
     "prompt": "Enter the session ID",
     "join": "Join"
+  },
+  "main": {
+    "logout": "Log out",
+    "logoutMessage": "Are you sure you want to log out of your Google account? You will leave your current session.",
   },
   "errors": {
     "title": "Error",
