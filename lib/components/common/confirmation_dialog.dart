@@ -3,7 +3,7 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 
 void showConfirmationDialog(
   BuildContext context,
-  String message,
+  String messageKey,
   String confirmationKey,
   String cancelKey,
   VoidCallback onConfirm,
@@ -14,7 +14,7 @@ void showConfirmationDialog(
     builder: (BuildContext context) => AlertDialog(
           content: SingleChildScrollView(
             child: Text(
-              message,
+              FlutterI18n.translate(context, messageKey),
               style: Theme.of(context).textTheme.body1,
             ),
           ),
