@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/transaction_handler_base.dart';
+import 'package:yes_music/models/state/search_model.dart';
 import 'package:yes_music/models/state/session_model.dart';
 import 'package:yes_music/models/state/user_model.dart';
 
@@ -34,8 +35,8 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       throw new StateError("errors.create.uid");
     }
 
-    UserModel user = UserModel(uid, "");
-    SessionModel session = SessionModel(null, [], [], [user]);
+    UserModel user = UserModel(uid, new SearchModel("", []));
+    SessionModel session = SessionModel.empty(user);
     await _sessionReference.set(session.toMap()).catchError((e) {
       _sessionReference = null;
       throw StateError("errors.create.database");
@@ -76,7 +77,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       throw StateError("errors.join.uid");
     }
 
-    UserModel user = UserModel(uid, "");
+    UserModel user = UserModel(uid, new SearchModel("", []));
     SessionModel model = SessionModel.fromMap(snap.value);
     model.users.add(user);
     await _sessionReference.set(model.toMap()).catchError((e) {
