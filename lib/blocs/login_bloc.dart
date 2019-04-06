@@ -39,8 +39,6 @@ class LoginBloc implements BlocBase {
     _sub = _firebaseAuthState.listen((FirebaseAuthState state) {
       // If we receive a signal to authorize from the UI, begin that process.
       switch (state) {
-        case FirebaseAuthState.UNAUTHORIZED:
-          break;
         case FirebaseAuthState.AUTHORIZING_SILENTLY:
           _signInSilently();
           break;
