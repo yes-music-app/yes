@@ -78,6 +78,9 @@ class _MainScreenState extends State<MainScreen> {
                 child: Row(
                   children: <Widget>[
                     Icon(Icons.exit_to_app),
+                    Padding(
+                      padding: EdgeInsets.only(left: 10),
+                    ),
                     Text(FlutterI18n.translate(context, "main.logout")),
                   ],
                 ),
@@ -93,7 +96,9 @@ class _MainScreenState extends State<MainScreen> {
       "main.logoutMessage",
       "confirm",
       "cancel",
-      () {},
+      () {
+        bloc.sessionSink.add(SessionState.ENDED);
+      },
       () {},
     );
   }
