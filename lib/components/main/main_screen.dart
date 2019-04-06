@@ -24,24 +24,62 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     _bloc = BlocProvider.of<SessionBloc>(context);
+
+    _stateSubscription = _bloc.sessionStream.listen((SessionState state) {
+      switch (state) {
+        case SessionState.LEFT:
+          _pushLoginScreen();
+          break;
+        default:
+          break;
+      }
+    });
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-
     return WillPopScope(
-      child: Scaffold(
-        body: CustomScrollView(
-          slivers: <Widget>[
-            _getAppBar(width, Uint8List(0)),
-            _getQueue(),
-          ],
-        ),
-        floatingActionButton: _getAddButton(),
+      child: StreamBuilder(
+        stream: _bloc.sessionStream,
+        builder: (
+          BuildContext context,
+          AsyncSnapshot<SessionState> snapshot,
+        ) {
+          if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
+            return loadingIndicator();
+          }
+
+          switch (snapshot.data) {
+            case SessionState.ACTIVE:
+              return _getContent();
+            default:
+              return loadingIndicator();
+          }
+        },
       ),
       onWillPop: () => Future.value(false),
+    );
+  }
+
+  @override
+  void dispose() {
+    _stateSubscription?.cancel();
+    super.dispose();
+  }
+
+  Widget _getContent() {
+    double width = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: <Widget>[
+          _getAppBar(width, Uint8List(0)),
+          _getQueue(),
+        ],
+      ),
+      floatingActionButton: _getAddButton(),
     );
   }
 
@@ -59,12 +97,6 @@ class _MainScreenState extends State<MainScreen> {
       ),
       title: Text("Now playing"),
     );
-  }
-
-  @override
-  void dispose() {
-    _stateSubscription?.cancel();
-    super.dispose();
   }
 
   List<Widget> _getAppBarActions() {
@@ -104,7 +136,7 @@ class _MainScreenState extends State<MainScreen> {
       "confirm",
       "cancel",
       () {
-        _bloc.sessionSink.add(SessionState.ENDED);
+        _bloc.sessionSink.add(SessionState.SIGNING_OUT);
       },
       () {},
     );
