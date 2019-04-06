@@ -1,7 +1,7 @@
 import 'package:yes_music/feature_flags/index.dart';
 
 class FlagProvider {
-  static final FlagProvider instance = new FlagProvider._internal();
+  static final FlagProvider instance = FlagProvider._internal();
 
   FlagProvider._internal();
 

@@ -20,7 +20,7 @@ class SongModel {
         upvotes = map["upvotes"];
 
   static List<SongModel> fromMapList(List songs) {
-    return songs?.map((song) => new SongModel.fromMap(song))?.toList();
+    return songs?.map((song) => SongModel.fromMap(song))?.toList();
   }
 
   Map<String, dynamic> toMap() {

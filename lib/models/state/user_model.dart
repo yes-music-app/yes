@@ -12,7 +12,7 @@ class UserModel {
 
   UserModel.fromMap(Map map)
       : uid = map["uid"],
-        search = new SearchModel.fromMap(map["search"]);
+        search = SearchModel.fromMap(map["search"]);
 
   static List<UserModel> fromMapList(Map maps) {
     List<UserModel> models = List();

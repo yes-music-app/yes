@@ -19,7 +19,7 @@ class ArtistModel {
       return null;
     }
 
-    return artists.map((artist) => new ArtistModel.fromMap(artist)).toList();
+    return artists.map((artist) => ArtistModel.fromMap(artist)).toList();
   }
 
   Map<String, dynamic> toMap() {

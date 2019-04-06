@@ -37,13 +37,13 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new RawMaterialButton(
+    return RawMaterialButton(
       onPressed: _onPressed,
       fillColor: _fillColor,
       highlightColor: _highlightColor,
       textStyle: _textStyle,
-      shape: new RoundedRectangleBorder(
-        borderRadius: new BorderRadius.circular(_radius),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(_radius),
       ),
       constraints: _constraints,
       padding: _padding,

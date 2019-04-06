@@ -13,8 +13,8 @@ class TrackModel {
   final String uri;
 
   TrackModel.fromMap(Map map)
-      : album = new AlbumModel.fromMap(map["album"]),
-        artist = new ArtistModel.fromMap(map["artist"]),
+      : album = AlbumModel.fromMap(map["album"]),
+        artist = ArtistModel.fromMap(map["artist"]),
         artists = ArtistModel.mapArtists(map["artists"]),
         duration =
             map["duration"] != null ? map["duration"] : map["duration_ms"],
@@ -27,7 +27,7 @@ class TrackModel {
       return null;
     }
 
-    return tracks.map((track) => new TrackModel.fromMap(track)).toList();
+    return tracks.map((track) => TrackModel.fromMap(track)).toList();
   }
 
   Map<String, dynamic> toMap() {

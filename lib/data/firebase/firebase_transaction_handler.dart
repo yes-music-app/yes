@@ -32,10 +32,10 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null) {
       _sessionReference = null;
-      throw new StateError("errors.create.uid");
+      throw StateError("errors.create.uid");
     }
 
-    UserModel user = UserModel(uid, new SearchModel("", []));
+    UserModel user = UserModel(uid, SearchModel.empty());
     SessionModel session = SessionModel.empty(user);
     await _sessionReference.set(session.toMap()).catchError((e) {
       _sessionReference = null;
@@ -77,7 +77,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       throw StateError("errors.join.uid");
     }
 
-    UserModel user = UserModel(uid, new SearchModel("", []));
+    UserModel user = UserModel(uid, SearchModel.empty());
     SessionModel model = SessionModel.fromMap(snap.value);
     model.users.add(user);
     await _sessionReference.set(model.toMap()).catchError((e) {

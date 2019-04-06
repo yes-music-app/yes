@@ -3,6 +3,6 @@ import 'package:yes_music/feature_flags/flag_provider.dart';
 
 void main() {
   test("Null key returns false", () {
-    expect(new FlagProvider().getFlag(null), false);
+    expect(FlagProvider().getFlag(null), false);
   });
 }

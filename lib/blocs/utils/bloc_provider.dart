@@ -22,7 +22,7 @@ class BlocProvider<T extends BlocBase> extends StatefulWidget {
   static Type _typeOf<T>() => T;
 
   @override
-  State<StatefulWidget> createState() => new _BlocProviderState();
+  State<StatefulWidget> createState() => _BlocProviderState();
 }
 
 class _BlocProviderState<T> extends State<BlocProvider<BlocBase>> {

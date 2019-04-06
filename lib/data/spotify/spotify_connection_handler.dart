@@ -18,7 +18,7 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
   @override
   Future connect() async {
     await channel.invokeMethod("connect").catchError((e) {
-      throw new StateError("Failed to connect to remote.");
+      throw StateError("Failed to connect to remote.");
     });
   }
 
