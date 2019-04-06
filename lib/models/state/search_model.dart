@@ -9,7 +9,9 @@ class SearchModel {
   /// The results returned by Spotify.
   final List<TrackModel> results;
 
-  SearchModel(this.query, this.results);
+  SearchModel.empty()
+      : query = "",
+        results = [];
 
   SearchModel.fromMap(Map map)
       : query = map["query"],
