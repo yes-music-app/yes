@@ -36,7 +36,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     }
 
     UserModel user = UserModel(uid, SearchModel.empty());
-    SessionModel session = SessionModel(null, [], [], [user]);
+    SessionModel session = SessionModel.empty(user);
     await _sessionReference.set(session.toMap()).catchError((e) {
       _sessionReference = null;
       throw StateError("errors.create.database");

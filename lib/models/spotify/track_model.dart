@@ -1,10 +1,9 @@
 import 'package:yes_music/helpers/list_utils.dart';
 import 'package:yes_music/models/spotify/album_model.dart';
 import 'package:yes_music/models/spotify/artist_model.dart';
-import 'package:yes_music/models/spotify/searchable_model.dart';
 
 /// A data model for an track as returned by the Spotify API.
-class TrackModel implements SearchableModel {
+class TrackModel {
   final AlbumModel album;
   final ArtistModel artist;
   final List<ArtistModel> artists;
@@ -13,7 +12,6 @@ class TrackModel implements SearchableModel {
   final String name;
   final String uri;
 
-  @override
   TrackModel.fromMap(Map map)
       : album = AlbumModel.fromMap(map["album"]),
         artist = ArtistModel.fromMap(map["artist"]),
@@ -32,7 +30,6 @@ class TrackModel implements SearchableModel {
     return tracks.map((track) => TrackModel.fromMap(track)).toList();
   }
 
-  @override
   Map<String, dynamic> toMap() {
     return {
       "album": album.toMap(),
