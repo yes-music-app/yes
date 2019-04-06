@@ -40,6 +40,7 @@ class _MainScreenState extends State<MainScreen> {
 
   SliverAppBar _getAppBar(double width, Uint8List bytes) {
     return SliverAppBar(
+      actions: _getAppBarActions(),
       automaticallyImplyLeading: false,
       centerTitle: true,
       elevation: 10,
@@ -51,6 +52,17 @@ class _MainScreenState extends State<MainScreen> {
       ),
       title: Text("Now playing"),
     );
+  }
+
+  List<Widget> _getAppBarActions() {
+    return [
+      PopupMenuButton(
+        onSelected: (result) {},
+        itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+          
+        ],
+      ),
+    ];
   }
 
   Widget _getAppBarImage(Uint8List bytes) {
