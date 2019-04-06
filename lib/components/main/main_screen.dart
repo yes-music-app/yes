@@ -18,11 +18,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  SessionBloc bloc;
+  SessionBloc _bloc;
+  StreamSubscription<SessionState> _stateSubscription;
 
   @override
   void initState() {
-    bloc = BlocProvider.of<SessionBloc>(context);
+    _bloc = BlocProvider.of<SessionBloc>(context);
     super.initState();
   }
 
@@ -58,6 +59,12 @@ class _MainScreenState extends State<MainScreen> {
       ),
       title: Text("Now playing"),
     );
+  }
+
+  @override
+  void dispose() {
+    _stateSubscription?.cancel();
+    super.dispose();
   }
 
   List<Widget> _getAppBarActions() {
@@ -97,7 +104,7 @@ class _MainScreenState extends State<MainScreen> {
       "confirm",
       "cancel",
       () {
-        bloc.sessionSink.add(SessionState.ENDED);
+        _bloc.sessionSink.add(SessionState.ENDED);
       },
       () {},
     );
@@ -137,5 +144,9 @@ class _MainScreenState extends State<MainScreen> {
       child: Icon(Icons.add),
       onPressed: () => {},
     );
+  }
+
+  void _pushLoginScreen() {
+    Navigator.of(context).pushReplacementNamed("/");
   }
 }
