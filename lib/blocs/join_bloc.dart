@@ -21,8 +21,9 @@ class JoinBloc implements BlocBase {
 
   /// The [BehaviorSubject] that broadcasts the current state of the user's
   /// attempt to join a session.
-  BehaviorSubject<JoinSessionState> _joinState =
-      BehaviorSubject.seeded(JoinSessionState.NOT_JOINED);
+  BehaviorSubject<JoinSessionState> _joinState = BehaviorSubject(
+    seedValue: JoinSessionState.NOT_JOINED,
+  );
 
   ValueObservable<JoinSessionState> get stream => _joinState.stream;
 

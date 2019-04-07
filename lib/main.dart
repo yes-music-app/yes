@@ -42,11 +42,7 @@ class YesApp extends StatelessWidget {
         initialRoute: "/",
         routes: _routes,
         localizationsDelegates: [
-          FlutterI18nDelegate(
-            useCountryCode: false,
-            fallbackFile: "en",
-            path: "assets/locales",
-          ),
+          FlutterI18nDelegate(false, "en", "assets/locales"),
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
