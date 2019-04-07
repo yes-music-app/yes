@@ -34,10 +34,10 @@ List<Widget> getAppBarActions(
       onSelected: (BarActions result) {
         switch (result) {
           case BarActions.LEAVE:
-            _leave(context, BlocProvider.of<SessionBloc>(context));
+            _leave(context);
             break;
           case BarActions.LOGOUT:
-            _logout(context, BlocProvider.of<LoginBloc>(context));
+            _logout(context);
             break;
           default:
             break;
@@ -63,14 +63,16 @@ PopupMenuItem<BarActions> _getLeaveItem(BuildContext context) {
 }
 
 /// Initiate the action of the user leaving a session.
-void _leave(BuildContext context, SessionBloc sessionBloc) {
+void _leave(BuildContext context) {
   showConfirmationDialog(
     context,
     "main.leaveMessage",
     "confirm",
     "cancel",
     () {
-      sessionBloc.sessionSink.add(SessionState.LEAVING);
+      BlocProvider.of<SessionBloc>(context)
+          .sessionSink
+          .add(SessionState.LEAVING);
     },
     () {},
   );
@@ -91,14 +93,16 @@ PopupMenuItem<BarActions> _getLogoutItem(BuildContext context) {
 }
 
 /// Initiate the action of the user logging out of their Google account.
-void _logout(BuildContext context, LoginBloc loginBloc) {
+void _logout(BuildContext context) {
   showConfirmationDialog(
     context,
     "main.logoutMessage",
     "confirm",
     "cancel",
     () {
-      loginBloc.sink.add(FirebaseAuthState.SIGNING_OUT);
+      BlocProvider.of<LoginBloc>(context)
+          .sink
+          .add(FirebaseAuthState.SIGNING_OUT);
     },
     () {},
   );

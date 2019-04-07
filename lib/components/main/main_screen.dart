@@ -6,7 +6,7 @@ import 'package:yes_music/blocs/login_bloc.dart';
 import 'package:yes_music/blocs/session_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
-import 'package:yes_music/components/main/bar_actions.dart';
+import 'package:yes_music/components/common/bar_actions.dart';
 
 class MainScreen extends StatefulWidget {
   @override

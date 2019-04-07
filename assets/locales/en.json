@@ -29,7 +29,7 @@
   },
   "main": {
     "logout": "Log out",
-    "logoutMessage": "Are you sure you want to log out of your Google account? You will leave your current session.",
+    "logoutMessage": "Are you sure you want to log out of your Google account?",
     "leave": "Leave session",
     "leaveMessage": "Are you sure you want to leave the current session? If you are the host, this will end the session"
   },
