@@ -10,7 +10,6 @@ import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 /// not the host of, the session will persist without them.
 enum SessionState {
   ACTIVE,
-  SIGNING_OUT,
   LEAVING,
   LEFT,
 }

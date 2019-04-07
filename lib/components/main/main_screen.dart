@@ -15,33 +15,17 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   SessionBloc _sessionBloc;
-  LoginBloc _loginBloc;
   StreamSubscription<SessionState> _stateSubscription;
-  StreamSubscription<FirebaseAuthState> _loginSubscription;
 
   @override
   void initState() {
     _sessionBloc = BlocProvider.of<SessionBloc>(context);
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
 
     _stateSubscription =
         _sessionBloc.sessionStream.listen((SessionState state) {
       switch (state) {
         case SessionState.LEFT:
           _pushLoginScreen();
-          break;
-        default:
-          break;
-      }
-    });
-
-    _loginSubscription = _loginBloc.stream.listen((FirebaseAuthState state) {
-      switch (state) {
-        case FirebaseAuthState.SIGNING_OUT:
-          _sessionBloc.sessionSink.add(SessionState.SIGNING_OUT);
-          break;
-        case FirebaseAuthState.UNAUTHORIZED:
-          _sessionBloc.sessionSink.add(SessionState.LEAVING);
           break;
         default:
           break;
@@ -79,7 +63,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void dispose() {
     _stateSubscription?.cancel();
-    _loginSubscription?.cancel();
     super.dispose();
   }
 
