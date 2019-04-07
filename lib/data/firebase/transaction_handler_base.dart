@@ -8,4 +8,7 @@ abstract class TransactionHandlerBase {
 
   /// Joins the session with the given [sid].
   Future joinSession(String sid);
+
+  /// Leaves the current session.
+  Future leaveSession();
 }

@@ -14,6 +14,7 @@ enum FirebaseAuthState {
   UNAUTHORIZED_SILENTLY,
   AUTHORIZING,
   AUTHORIZED,
+  SIGNING_OUT,
 }
 
 /// A bloc handling the state of the login process into Firebase.
@@ -43,6 +44,9 @@ class LoginBloc implements BlocBase {
           break;
         case FirebaseAuthState.AUTHORIZING:
           _signInWithGoogle();
+          break;
+        case FirebaseAuthState.SIGNING_OUT:
+          _signOut();
           break;
         default:
           break;
@@ -86,6 +90,17 @@ class LoginBloc implements BlocBase {
     }
 
     _firebaseAuthState.add(FirebaseAuthState.AUTHORIZED);
+  }
+
+  /// Signs the user out of their Google account.
+  void _signOut() async {
+    try {
+      await _authHandler.signOut();
+    } on StateError catch (e) {
+      _firebaseAuthState.addError(e);
+    }
+
+    _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED);
   }
 
   @override

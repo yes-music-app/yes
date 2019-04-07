@@ -1,41 +1,63 @@
-import 'dart:typed_data';
+import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
-import 'package:yes_music/data/spotify/playback_handler_base.dart';
-import 'package:yes_music/data/spotify/spotify_provider.dart';
-import 'package:yes_music/models/spotify/player_state_model.dart';
+import 'package:yes_music/data/firebase/firebase_provider.dart';
+import 'package:yes_music/data/firebase/transaction_handler_base.dart';
+
+/// An enumeration of the states that a session can be in. Note that the
+/// "ENDED" value is purely client-side; if a user ends a session that they are
+/// not the host of, the session will persist without them.
+enum SessionState {
+  ACTIVE,
+  LEAVING,
+  LEFT,
+}
 
 /// A bloc that handles managing a session.
 class SessionBloc implements BlocBase {
-  /// The [PlaybackHandlerBase] that performs playback operations.
-  final PlaybackHandlerBase _playbackHandler =
-      SpotifyProvider().getPlaybackHandler();
+  final TransactionHandlerBase transactionHandler =
+      FirebaseProvider().getTransactionHandler();
 
-  /// The previous [PlayerStateModel], used for determining whether to push new
-  /// information through the visible streams.
-  PlayerStateModel prevState;
-
-  /// A [BehaviorSubject] that broadcasts changes in the image for the currently
-  /// playing song.
-  final BehaviorSubject<Uint8List> _imageSubject = BehaviorSubject(
-    seedValue: null,
+  /// A [BehaviorSubject] that broadcasts the current state of the session.
+  final BehaviorSubject<SessionState> _sessionSubject = BehaviorSubject(
+    seedValue: SessionState.ACTIVE,
   );
 
-  SessionBloc() {
-    _playbackHandler.playerState.listen((PlayerStateModel model) {
-      // If there were no changes to the player state, do not send out updates.
-      if (model == prevState) {
-        return;
-      }
+  ValueObservable<SessionState> get sessionStream => _sessionSubject.stream;
 
-      // Set the previous state to the new model for future comparisons.
-      prevState = model;
+  StreamSink<SessionState> get sessionSink => _sessionSubject.sink;
+
+  /// A subscription to the session state.
+  StreamSubscription<SessionState> _sessionSub;
+
+  SessionBloc() {
+    _sessionSub = _sessionSubject.listen((SessionState state) {
+      switch (state) {
+        case SessionState.LEAVING:
+          // Handle the user attempting to leave the session.
+          _leaveSession();
+          break;
+        default:
+          break;
+      }
     });
+  }
+
+  /// Leaves the current session.
+  void _leaveSession() async {
+    try {
+      await transactionHandler.leaveSession();
+    } on StateError catch (e) {
+      _sessionSubject.addError(e);
+    }
+
+    _sessionSubject.add(SessionState.LEFT);
   }
 
   @override
   void dispose() {
-    _imageSubject.close();
+    _sessionSub.cancel();
+    _sessionSubject.close();
   }
 }

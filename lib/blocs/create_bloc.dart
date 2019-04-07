@@ -16,11 +16,11 @@ enum CreateSessionState {
 class CreateBloc implements BlocBase {
   /// The [TransactionHandlerBase] that performs the create operation.
   final TransactionHandlerBase _transactionHandler =
-      new FirebaseProvider().getTransactionHandler();
+      FirebaseProvider().getTransactionHandler();
 
   /// The [BehaviorSubject] that broadcasts the current state of the user's
   /// attempt to create a session.
-  BehaviorSubject<CreateSessionState> _createState = new BehaviorSubject(
+  BehaviorSubject<CreateSessionState> _createState = BehaviorSubject(
     seedValue: CreateSessionState.NOT_CREATED,
   );
 

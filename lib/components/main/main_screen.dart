@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:yes_music/blocs/login_bloc.dart';
 import 'package:yes_music/blocs/session_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
+import 'package:yes_music/components/common/bar_actions.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -12,40 +14,84 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  SessionBloc bloc;
+  SessionBloc _sessionBloc;
+  StreamSubscription<SessionState> _stateSubscription;
 
   @override
   void initState() {
-    bloc = BlocProvider.of<SessionBloc>(context);
+    _sessionBloc = BlocProvider.of<SessionBloc>(context);
+
+    _stateSubscription =
+        _sessionBloc.sessionStream.listen((SessionState state) {
+      switch (state) {
+        case SessionState.LEFT:
+          _pushLoginScreen();
+          break;
+        default:
+          break;
+      }
+    });
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-
     return WillPopScope(
-      child: Scaffold(
-        body: new CustomScrollView(
-          slivers: <Widget>[
-            _getAppBar(width, Uint8List(0)),
-            _getQueue(),
-          ],
-        ),
-        floatingActionButton: _getAddButton(),
+      child: StreamBuilder(
+        stream: _sessionBloc.sessionStream,
+        builder: (
+          BuildContext context,
+          AsyncSnapshot<SessionState> snapshot,
+        ) {
+          if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
+            return loadingIndicator();
+          }
+
+          switch (snapshot.data) {
+            case SessionState.ACTIVE:
+              return _getContent();
+            default:
+              return loadingIndicator();
+          }
+        },
       ),
       onWillPop: () => Future.value(false),
     );
   }
 
+  @override
+  void dispose() {
+    _stateSubscription?.cancel();
+    super.dispose();
+  }
+
+  Widget _getContent() {
+    double width = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: <Widget>[
+          _getAppBar(width, Uint8List(0)),
+          _getQueue(),
+        ],
+      ),
+      floatingActionButton: _getAddButton(),
+    );
+  }
+
   SliverAppBar _getAppBar(double width, Uint8List bytes) {
-    return new SliverAppBar(
+    return SliverAppBar(
+      actions: getAppBarActions(
+        context,
+        [BarActions.LEAVE],
+      ),
       automaticallyImplyLeading: false,
       centerTitle: true,
       elevation: 10,
       expandedHeight: width * (2 / 3),
       pinned: true,
-      flexibleSpace: new FlexibleSpaceBar(
+      flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
         background: _getAppBarImage(bytes),
       ),
@@ -65,17 +111,17 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   SliverList _getQueue() {
-    return new SliverList(
+    return SliverList(
       delegate: _queueDelegate(),
     );
   }
 
   SliverChildBuilderDelegate _queueDelegate() {
-    return new SliverChildBuilderDelegate(
+    return SliverChildBuilderDelegate(
       (BuildContext context, int index) {
-        return new Container(
+        return Container(
           padding: const EdgeInsets.all(10),
-          child: new Text("hello world"),
+          child: Text("hello world"),
         );
       },
       childCount: 50,
@@ -83,9 +129,13 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _getAddButton() {
-    return new FloatingActionButton(
-      child: new Icon(Icons.add),
+    return FloatingActionButton(
+      child: Icon(Icons.add),
       onPressed: () => {},
     );
+  }
+
+  void _pushLoginScreen() {
+    Navigator.of(context).pushReplacementNamed("/");
   }
 }

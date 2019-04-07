@@ -1,38 +1,50 @@
+import 'package:yes_music/models/state/search_model.dart';
+
 /// A user in a session.
 class UserModel {
   /// This user's user ID.
   final String uid;
 
   /// The current search for this user.
-  final String searchQuery;
+  final SearchModel search;
 
-  UserModel(this.uid, this.searchQuery);
+  UserModel(this.uid, this.search);
 
   UserModel.fromMap(Map map)
       : uid = map["uid"],
-        searchQuery = map["searchQuery"];
+        search = SearchModel.fromMap(map["search"]);
 
-  static List<UserModel> fromMapList(List maps) {
-    return maps?.map((map) => new UserModel.fromMap(map))?.toList();
+  static List<UserModel> fromMapList(Map maps) {
+    List<UserModel> models = List();
+
+    maps?.values?.forEach((value) {
+      models.add(UserModel.fromMap(value));
+    });
+
+    return models;
   }
 
   Map<String, dynamic> toMap() {
     return {
       "uid": uid,
-      "searchQuery": searchQuery,
+      "search": search.toMap(),
     };
   }
 
-  static List<Map<String, dynamic>> toMapList(List<UserModel> models) {
-    return models?.map((model) => model.toMap())?.toList();
+  static Map<String, dynamic> toMapList(List<UserModel> models) {
+    final Map<String, dynamic> map = Map();
+
+    models?.forEach((UserModel model) {
+      map[model.uid] = model.toMap();
+    });
+
+    return map;
   }
 
   @override
   bool operator ==(other) =>
-      other is UserModel &&
-      other.uid == uid &&
-      other.searchQuery == searchQuery;
+      other is UserModel && other.uid == uid && other.search == search;
 
   @override
-  int get hashCode => uid.hashCode ^ searchQuery.hashCode;
+  int get hashCode => uid.hashCode ^ search.hashCode;
 }

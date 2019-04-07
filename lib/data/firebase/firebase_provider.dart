@@ -10,7 +10,7 @@ class FirebaseProvider {
   TransactionHandlerBase _transactionHandler;
 
   /// A singleton instance of the Firebase provider.
-  static final FirebaseProvider _instance = new FirebaseProvider._internal();
+  static final FirebaseProvider _instance = FirebaseProvider._internal();
 
   factory FirebaseProvider() => _instance;
 
@@ -25,13 +25,13 @@ class FirebaseProvider {
     switch (_flavor) {
       case Flavor.REMOTE:
         if (_authHandler == null) {
-          _authHandler = new FirebaseAuthHandler();
+          _authHandler = FirebaseAuthHandler();
         }
 
         return _authHandler;
         break;
       default:
-        throw new StateError("Firebase provider flavor not set");
+        throw StateError("Firebase provider flavor not set");
         break;
     }
   }
@@ -40,13 +40,13 @@ class FirebaseProvider {
     switch (_flavor) {
       case Flavor.REMOTE:
         if (_transactionHandler == null) {
-          _transactionHandler = new FirebaseTransactionHandler();
+          _transactionHandler = FirebaseTransactionHandler();
         }
 
         return _transactionHandler;
         break;
       default:
-        throw new StateError("Firebase provider flavor not set");
+        throw StateError("Firebase provider flavor not set");
         break;
     }
   }

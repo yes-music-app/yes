@@ -15,17 +15,17 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  LoginBloc bloc;
-  StreamSubscription subscription;
+  LoginBloc _bloc;
+  StreamSubscription _subscription;
 
   @override
   void initState() {
-    bloc = BlocProvider.of<LoginBloc>(context);
-    subscription = bloc.stream.listen(
+    _bloc = BlocProvider.of<LoginBloc>(context);
+    _subscription = _bloc.stream.listen(
       (FirebaseAuthState state) {
         switch (state) {
           case FirebaseAuthState.UNAUTHORIZED:
-            bloc.sink.add(FirebaseAuthState.AUTHORIZING_SILENTLY);
+            _bloc.sink.add(FirebaseAuthState.AUTHORIZING_SILENTLY);
             break;
           case FirebaseAuthState.AUTHORIZED:
             _pushChooseScreen(context);
@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         showFailedAlert(
           context,
           FlutterI18n.translate(context, message),
-          () => bloc.sink.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY),
+          () => _bloc.sink.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY),
         );
       },
     );
@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
       decoration: _getBackground(overlay),
       child: Center(
         child: StreamBuilder(
-          stream: bloc.stream,
+          stream: _bloc.stream,
           builder: (
             BuildContext context,
             AsyncSnapshot<FirebaseAuthState> snapshot,
@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    subscription.cancel();
+    _subscription?.cancel();
     super.dispose();
   }
 
@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: EdgeInsets.only(bottom: 20),
         ),
         CustomButton.withTheme(
-          onPressed: () => bloc.sink.add(FirebaseAuthState.AUTHORIZING),
+          onPressed: () => _bloc.sink.add(FirebaseAuthState.AUTHORIZING),
           theme: Theme.of(context),
           child: Text(
             FlutterI18n.translate(context, "login.connectGoogle"),

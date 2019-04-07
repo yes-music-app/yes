@@ -65,8 +65,10 @@ class FirebaseAuthHandler implements AuthHandlerBase {
   }
 
   @override
-  void signOut() {
-    _googleSignIn.signOut();
-    _firebaseAuth.signOut();
+  Future signOut() async {
+    await Future.wait([
+      _googleSignIn.signOut(),
+      _firebaseAuth.signOut(),
+    ]).catchError((e) => throw StateError("errors.login.signOut"));
   }
 }
