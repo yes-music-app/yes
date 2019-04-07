@@ -25,9 +25,6 @@ class _RejoinScreenState extends State<RejoinScreen> {
           case RejoinState.NO_SESSION:
             _pushChooseScreen();
             break;
-          case RejoinState.SESSION_FOUND:
-            _rejoinBloc.stateSink.add(RejoinState.JOINING_SESSION);
-            break;
           case RejoinState.SESSION_JOINED:
             _pushMainScreen();
             break;

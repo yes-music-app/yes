@@ -10,10 +10,6 @@
     "connectGoogle": "Google",
     "failedInfo": "Failed to connect with Google, please try again"
   },
-  "rejoin": {
-    "rejoinPrompt": "Would you like to rejoin session {sid}?",
-    "rejoin": "Rejoin"
-  },
   "choose": {
     "create": "create",
     "join": "join"
@@ -52,7 +48,7 @@
     },
     "database": {
       "operation": "Failed to connect to the database. Please make sure that your device is connected to the internet.",
-      "uid": "Failed to retrieve the user ID when writing session ID.n"
+      "uid": "Failed to retrieve the user ID when writing session ID."
     },
     "create": {
       "uid": "Failed to retrieve Firebase user ID."

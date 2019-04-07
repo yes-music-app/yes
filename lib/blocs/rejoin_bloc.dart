@@ -42,7 +42,7 @@ class RejoinBloc implements BlocBase {
         case RejoinState.NOT_REJOINED:
           _findSession();
           break;
-        case RejoinState.JOINING_SESSION:
+        case RejoinState.SESSION_FOUND:
           _joinSession();
           break;
         default:
