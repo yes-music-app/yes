@@ -71,7 +71,7 @@ void _leave(BuildContext context) {
     "cancel",
     () {
       BlocProvider.of<SessionBloc>(context)
-          .sessionSink
+          .stateSink
           .add(SessionState.LEAVING);
     },
     () {},

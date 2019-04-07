@@ -151,18 +151,29 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
   @override
   Future<String> findSession() async {
+    if(sid != null && sid.isNotEmpty) {
+      return sid;
+    }
+
     String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null || uid.isEmpty) {
       throw StateError("errors.database.uid");
     }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String sid = prefs.getString(uid);
+    String oldSID = prefs.getString(uid);
 
-    if (sid == null || sid.isEmpty) {
+    if (oldSID == null || oldSID.isEmpty) {
       return null;
     }
 
-    return sid;
+    DatabaseReference sessionReference =
+    _firebase.child(SESSION_PATH).child(oldSID);
+    if (await sessionReference.once() == null) {
+      // If the session doesn't exist, just return null.
+      return null;
+    }
+
+    return oldSID;
   }
 }

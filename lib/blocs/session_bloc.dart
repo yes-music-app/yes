@@ -20,18 +20,18 @@ class SessionBloc implements BlocBase {
       FirebaseProvider().getTransactionHandler();
 
   /// A [BehaviorSubject] that broadcasts the current state of the session.
-  final BehaviorSubject<SessionState> _sessionSubject =
+  final BehaviorSubject<SessionState> _stateSubject =
       BehaviorSubject.seeded(SessionState.ACTIVE);
 
-  ValueObservable<SessionState> get sessionStream => _sessionSubject.stream;
+  ValueObservable<SessionState> get stateStream => _stateSubject.stream;
 
-  StreamSink<SessionState> get sessionSink => _sessionSubject.sink;
+  StreamSink<SessionState> get stateSink => _stateSubject.sink;
 
   /// A subscription to the session state.
-  StreamSubscription<SessionState> _sessionSub;
+  StreamSubscription<SessionState> _stateSub;
 
   SessionBloc() {
-    _sessionSub = _sessionSubject.listen((SessionState state) {
+    _stateSub = _stateSubject.listen((SessionState state) {
       switch (state) {
         case SessionState.LEAVING:
           // Handle the user attempting to leave the session.
@@ -48,15 +48,15 @@ class SessionBloc implements BlocBase {
     try {
       await transactionHandler.leaveSession();
     } on StateError catch (e) {
-      _sessionSubject.addError(e);
+      _stateSubject.addError(e);
     }
 
-    _sessionSubject.add(SessionState.LEFT);
+    _stateSubject.add(SessionState.LEFT);
   }
 
   @override
   void dispose() {
-    _sessionSub.cancel();
-    _sessionSubject.close();
+    _stateSub.cancel();
+    _stateSubject.close();
   }
 }
