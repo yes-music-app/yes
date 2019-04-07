@@ -105,13 +105,17 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   }
 
   @override
-  Future leaveSession() async {
-    if (_sid == null || _sid.isEmpty) {
+  Future leaveSession({leaveID}) async {
+    if (leaveID == null || leaveID.isEmpty) {
+      leaveID = _sid;
+    }
+
+    if (leaveID == null || leaveID.isEmpty) {
       // If there is no current session, just return.
       return;
     }
 
-    final String casedSid = _sid.toUpperCase();
+    final String casedSid = leaveID.toUpperCase();
 
     String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null || uid.isEmpty) {
@@ -151,7 +155,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
   @override
   Future<String> findSession() async {
-    if(sid != null && sid.isNotEmpty) {
+    if (sid != null && sid.isNotEmpty) {
       return sid;
     }
 
@@ -168,7 +172,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     }
 
     DatabaseReference sessionReference =
-    _firebase.child(SESSION_PATH).child(oldSID);
+        _firebase.child(SESSION_PATH).child(oldSID);
     if (await sessionReference.once() == null) {
       // If the session doesn't exist, just return null.
       return null;

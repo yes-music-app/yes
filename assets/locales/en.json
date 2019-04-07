@@ -10,6 +10,10 @@
     "connectGoogle": "Google",
     "failedInfo": "Failed to connect with Google, please try again"
   },
+  "rejoin": {
+    "rejoinPrompt": "Would you like to rejoin session {sid}?",
+    "rejoin": "Rejoin"
+  },
   "choose": {
     "create": "create",
     "join": "join"

@@ -5,12 +5,15 @@ import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 
+/// The states that a rejoin attempt could be in.
 enum RejoinState {
   NOT_REJOINED,
   NO_SESSION,
   SESSION_FOUND,
   JOINING_SESSION,
   SESSION_JOINED,
+  LEAVING_SESSION,
+  SESSION_LEFT,
 }
 
 /// Handles the re-joining of an old session that the user was in.
@@ -38,10 +41,13 @@ class RejoinBloc implements BlocBase {
     _stateSub = _stateSubject.listen((RejoinState state) {
       switch (state) {
         case RejoinState.NOT_REJOINED:
-          _rejoinSession();
+          _findSession();
           break;
         case RejoinState.JOINING_SESSION:
           _joinSession();
+          break;
+        case RejoinState.LEAVING_SESSION:
+          _leaveSession();
           break;
         default:
           break;
@@ -49,8 +55,8 @@ class RejoinBloc implements BlocBase {
     });
   }
 
-  /// Attempts to rejoin an old session.
-  void _rejoinSession() async {
+  /// Attempts to find an old session.
+  void _findSession() async {
     try {
       String oldSID = await transactionHandler.findSession();
       if (oldSID == null || oldSID.isEmpty) {
@@ -65,6 +71,7 @@ class RejoinBloc implements BlocBase {
     _stateSubject.add(RejoinState.SESSION_FOUND);
   }
 
+  /// Attempts to find an old session.
   void _joinSession() async {
     try {
       await transactionHandler.joinSession(_sid);
@@ -73,6 +80,17 @@ class RejoinBloc implements BlocBase {
     }
 
     _stateSubject.add(RejoinState.SESSION_JOINED);
+  }
+
+  /// Attempts to leave an old session.
+  void _leaveSession() async {
+    try {
+      await transactionHandler.leaveSession(leaveID: _sid);
+    } on StateError catch (e) {
+      _stateSubject.addError(e);
+    }
+
+    _stateSubject.add(RejoinState.SESSION_LEFT);
   }
 
   @override
