@@ -9,7 +9,7 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
 
   /// An rxdart [BehaviorSubject] that publishes the current connection state.
   BehaviorSubject<SpotifyConnectionState> _connectionSubject =
-      BehaviorSubject.seeded(SpotifyConnectionState.DISCONNECTED);
+      BehaviorSubject(seedValue: SpotifyConnectionState.DISCONNECTED);
 
   @override
   ValueObservable<SpotifyConnectionState> get stream =>
