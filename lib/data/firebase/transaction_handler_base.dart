@@ -10,7 +10,7 @@ abstract class TransactionHandlerBase {
   Future joinSession(String sid);
 
   /// Leaves the current session.
-  Future leaveSession({leaveID});
+  Future leaveSession();
 
   /// Finds a session that the current user is already in.
   Future<String> findSession();

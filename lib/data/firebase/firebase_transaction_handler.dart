@@ -25,7 +25,6 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
     // Persist the new SID so that it can be accessed the next time we load
     // into the app.
-
     String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null || uid.isEmpty) {
       throw StateError("errors.database.uid");
@@ -111,17 +110,8 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   }
 
   @override
-  Future leaveSession({leaveID}) async {
-    if (leaveID == null || leaveID.isEmpty) {
-      leaveID = _sid;
-    }
-
-    if (leaveID == null || leaveID.isEmpty) {
-      // If there is no current session, just return.
-      return;
-    }
-
-    final String casedSid = leaveID.toUpperCase();
+  Future leaveSession() async {
+    final String casedSid = _sid?.toUpperCase();
 
     String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null || uid.isEmpty) {
