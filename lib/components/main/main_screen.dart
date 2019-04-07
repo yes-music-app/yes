@@ -101,8 +101,7 @@ class _MainScreenState extends State<MainScreen> {
     return SliverAppBar(
       actions: getAppBarActions(
         context,
-        sessionBloc: _sessionBloc,
-        loginBloc: _loginBloc,
+        [BarActions.LEAVE],
       ),
       automaticallyImplyLeading: false,
       centerTitle: true,
