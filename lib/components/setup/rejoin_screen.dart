@@ -68,7 +68,13 @@ class _RejoinScreenState extends State<RejoinScreen> {
       builder: (BuildContext context) => AlertDialog(
             content: SingleChildScrollView(
               child: Text(
-                FlutterI18n.translate(context, "rejoin.rejoinPrompt"),
+                FlutterI18n.translate(
+                  context,
+                  "rejoin.rejoinPrompt",
+                  {
+                    "sid": _rejoinBloc.sid,
+                  },
+                ),
                 style: Theme.of(context).textTheme.body1,
               ),
             ),

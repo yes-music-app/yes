@@ -20,8 +20,9 @@ class SessionBloc implements BlocBase {
       FirebaseProvider().getTransactionHandler();
 
   /// A [BehaviorSubject] that broadcasts the current state of the session.
-  final BehaviorSubject<SessionState> _stateSubject =
-      BehaviorSubject.seeded(SessionState.ACTIVE);
+  final BehaviorSubject<SessionState> _stateSubject = BehaviorSubject(
+    seedValue: SessionState.ACTIVE,
+  );
 
   ValueObservable<SessionState> get stateStream => _stateSubject.stream;
 

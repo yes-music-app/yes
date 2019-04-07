@@ -24,6 +24,7 @@ void main() async {
 class YesApp extends StatelessWidget {
   final Map<String, RouteCallback> _routes = {
     "/": loginCallback,
+    "/rejoin": rejoinCallback,
     "/choose": chooseCallback,
     "/spotifyAuth": (context) => SpotifyAuthScreen(),
     "/appRemote": appRemoteCallback,
