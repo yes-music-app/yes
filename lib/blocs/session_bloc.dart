@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
+import 'package:yes_music/data/firebase/firebase_provider.dart';
+import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 
 /// An enumeration of the states that a session can be in. Note that the
 /// "ENDED" value is purely client-side; if a user ends a session that they are
@@ -14,6 +16,9 @@ enum SessionState {
 
 /// A bloc that handles managing a session.
 class SessionBloc implements BlocBase {
+  final TransactionHandlerBase transactionHandler =
+      FirebaseProvider().getTransactionHandler();
+
   /// A [BehaviorSubject] that broadcasts the current state of the session.
   final BehaviorSubject<SessionState> _sessionSubject = BehaviorSubject(
     seedValue: SessionState.ACTIVE,
@@ -40,7 +45,13 @@ class SessionBloc implements BlocBase {
   }
 
   /// Leaves the current session.
-  void _leaveSession() {
+  void _leaveSession() async {
+    try {
+      await transactionHandler.leaveSession();
+    } on StateError catch (e) {
+      _sessionSubject.addError(e);
+    }
+
     _sessionSubject.add(SessionState.LEFT);
   }
 
