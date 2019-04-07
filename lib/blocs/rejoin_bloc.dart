@@ -12,8 +12,6 @@ enum RejoinState {
   SESSION_FOUND,
   JOINING_SESSION,
   SESSION_JOINED,
-  LEAVING_SESSION,
-  SESSION_LEFT,
 }
 
 /// Handles the re-joining of an old session that the user was in.
@@ -47,9 +45,6 @@ class RejoinBloc implements BlocBase {
         case RejoinState.JOINING_SESSION:
           _joinSession();
           break;
-        case RejoinState.LEAVING_SESSION:
-          _leaveSession();
-          break;
         default:
           break;
       }
@@ -62,14 +57,13 @@ class RejoinBloc implements BlocBase {
       String oldSID = await transactionHandler.findSession();
       if (oldSID == null || oldSID.isEmpty) {
         _stateSubject.add(RejoinState.NO_SESSION);
-        return;
+      } else {
+        _stateSubject.add(RejoinState.SESSION_FOUND);
       }
       _sid = oldSID;
     } on StateError catch (e) {
       _stateSubject.addError(e);
     }
-
-    _stateSubject.add(RejoinState.SESSION_FOUND);
   }
 
   /// Attempts to find an old session.
@@ -81,17 +75,6 @@ class RejoinBloc implements BlocBase {
     }
 
     _stateSubject.add(RejoinState.SESSION_JOINED);
-  }
-
-  /// Attempts to leave an old session.
-  void _leaveSession() async {
-    try {
-      await transactionHandler.leaveSession(leaveID: _sid);
-    } on StateError catch (e) {
-      _stateSubject.addError(e);
-    }
-
-    _stateSubject.add(RejoinState.SESSION_LEFT);
   }
 
   @override

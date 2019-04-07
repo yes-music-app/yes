@@ -48,11 +48,10 @@ class SessionBloc implements BlocBase {
   void _leaveSession() async {
     try {
       await transactionHandler.leaveSession();
+      _stateSubject.add(SessionState.LEFT);
     } on StateError catch (e) {
       _stateSubject.addError(e);
     }
-
-    _stateSubject.add(SessionState.LEFT);
   }
 
   @override

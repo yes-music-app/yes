@@ -26,13 +26,10 @@ class _RejoinScreenState extends State<RejoinScreen> {
             _pushChooseScreen();
             break;
           case RejoinState.SESSION_FOUND:
-            _requestRejoin();
+            _rejoinBloc.stateSink.add(RejoinState.JOINING_SESSION);
             break;
           case RejoinState.SESSION_JOINED:
             _pushMainScreen();
-            break;
-          case RejoinState.SESSION_LEFT:
-            _pushChooseScreen();
             break;
           default:
             break;
@@ -60,48 +57,6 @@ class _RejoinScreenState extends State<RejoinScreen> {
   void dispose() {
     _stateSub.cancel();
     super.dispose();
-  }
-
-  void _requestRejoin() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-            content: SingleChildScrollView(
-              child: Text(
-                FlutterI18n.translate(
-                  context,
-                  "rejoin.rejoinPrompt",
-                  {
-                    "sid": _rejoinBloc.sid,
-                  },
-                ),
-                style: Theme.of(context).textTheme.body1,
-              ),
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text(
-                  FlutterI18n.translate(context, "cancel"),
-                  style: Theme.of(context).textTheme.button,
-                ),
-                onPressed: () {
-                  _rejoinBloc.stateSink.add(RejoinState.LEAVING_SESSION);
-                  Navigator.of(context).pop();
-                },
-              ),
-              FlatButton(
-                child: Text(
-                  FlutterI18n.translate(context, "rejoin.rejoin"),
-                  style: Theme.of(context).textTheme.button,
-                ),
-                onPressed: () {
-                  _rejoinBloc.stateSink.add(RejoinState.JOINING_SESSION);
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          ),
-    );
   }
 
   void _pushMainScreen() {
