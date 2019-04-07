@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 import 'package:yes_music/models/state/search_model.dart';
@@ -17,7 +18,21 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   String _sid;
 
   @override
-  String get sid => _sid;
+  String get sid => _sid?.toUpperCase();
+
+  void _setSID(String sid) async {
+    _sid = sid.toUpperCase();
+
+    // Persist the new SID so that it can be accessed the next time we load
+    // into the app.
+
+    String uid = await FirebaseProvider().getAuthHandler().uid();
+    if (uid == null || uid.isEmpty) {
+      throw StateError("errors.database.uid");
+    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(uid, _sid);
+  }
 
   @override
   Future createSession() async {
@@ -43,7 +58,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       throw StateError("errors.database.connect");
     });
 
-    _sid = tempSID;
+    _setSID(tempSID);
   }
 
   String _generateSID() {
@@ -86,7 +101,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       throw StateError("errors.database.connect");
     });
 
-    _sid = sid;
+    _setSID(sid);
   }
 
   @override
@@ -127,8 +142,27 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       return;
     }
 
-    await userReference.remove().catchError((e) {
+    await userReference.remove().then((val) {
+      _setSID(null);
+    }).catchError((e) {
       throw StateError("errors.database.operation");
     });
+  }
+
+  @override
+  Future<String> findSession() async {
+    String uid = await FirebaseProvider().getAuthHandler().uid();
+    if (uid == null || uid.isEmpty) {
+      throw StateError("errors.database.uid");
+    }
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String sid = prefs.getString(uid);
+
+    if (sid == null || sid.isEmpty) {
+      return null;
+    }
+
+    return sid;
   }
 }

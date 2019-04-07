@@ -11,4 +11,7 @@ abstract class TransactionHandlerBase {
 
   /// Leaves the current session.
   Future leaveSession();
+
+  /// Finds a session that the current user is already in.
+  Future<String> findSession();
 }
