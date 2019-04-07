@@ -91,7 +91,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
   @override
   Future leaveSession() async {
-    if (_sid.isEmpty) {
+    if (_sid == null || _sid.isEmpty) {
       // If there is no current session, just return.
       return;
     }
@@ -99,7 +99,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     final String casedSid = _sid.toUpperCase();
 
     String uid = await FirebaseProvider().getAuthHandler().uid();
-    if (uid.isEmpty) {
+    if (uid == null || uid.isEmpty) {
       // If there is no current user, just return.
       return;
     }
@@ -115,7 +115,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     if (hostSnap?.value == uid) {
       // If the user is the host, delete the entire session.
       await sessionReference.remove().catchError((e) {
-        throw new StateError("errors.database.operation");
+        throw StateError("errors.database.operation");
       });
       return;
     }
@@ -128,7 +128,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     }
 
     await userReference.remove().catchError((e) {
-      throw new StateError("errors.database.operation");
+      throw StateError("errors.database.operation");
     });
   }
 }

@@ -69,6 +69,6 @@ class FirebaseAuthHandler implements AuthHandlerBase {
     await Future.wait([
       _googleSignIn.signOut(),
       _firebaseAuth.signOut(),
-    ]).catchError((e) => throw new StateError("errors.login.signOut"));
+    ]).catchError((e) => throw StateError("errors.login.signOut"));
   }
 }
