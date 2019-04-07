@@ -20,9 +20,8 @@ class CreateBloc implements BlocBase {
 
   /// The [BehaviorSubject] that broadcasts the current state of the user's
   /// attempt to create a session.
-  BehaviorSubject<CreateSessionState> _createState = BehaviorSubject(
-    seedValue: CreateSessionState.NOT_CREATED,
-  );
+  BehaviorSubject<CreateSessionState> _createState =
+      BehaviorSubject.seeded(CreateSessionState.NOT_CREATED);
 
   ValueObservable<CreateSessionState> get stream => _createState.stream;
 
