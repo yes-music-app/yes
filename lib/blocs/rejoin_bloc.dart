@@ -37,12 +37,15 @@ class RejoinBloc implements BlocBase {
   String get sid => _sid;
 
   RejoinBloc() {
+    // Create a subscription to the rejoin bloc's state stream.
     _stateSub = _stateSubject.listen((RejoinState state) {
       switch (state) {
         case RejoinState.NOT_REJOINED:
+          // If we receive a zero state event, search for a session to rejoin.
           _findSession();
           break;
         case RejoinState.SESSION_FOUND:
+           // If we were able to find a session, rejoin it.
           _joinSession();
           break;
         default:
@@ -54,14 +57,22 @@ class RejoinBloc implements BlocBase {
   /// Attempts to find an old session.
   void _findSession() async {
     try {
+      // Attempt to fetch a session ID to rejoin with.
       String oldSID = await transactionHandler.findSession();
+
       if (oldSID == null || oldSID.isEmpty) {
+        // If we were unable to find a session to rejoin, push the no session
+        // state.
         _stateSubject.add(RejoinState.NO_SESSION);
       } else {
+        // If we found a session to rejoin, push the session found state.
         _stateSubject.add(RejoinState.SESSION_FOUND);
       }
+
+      // Set this rejoin bloc's cached SID to the fetched SID.
       _sid = oldSID;
-    } on StateError catch (e) {
+    } catch (e) {
+      // If a call throws an error, push the error through the state stream.
       _stateSubject.addError(e);
     }
   }
