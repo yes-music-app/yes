@@ -8,10 +8,6 @@ import 'package:yes_music/models/state/search_model.dart';
 import 'package:yes_music/models/state/session_model.dart';
 import 'package:yes_music/models/state/user_model.dart';
 
-const String SESSION_PATH = "sessions";
-const String HOST_PATH = "host";
-const String USER_PATH = "users";
-
 class FirebaseTransactionHandler implements TransactionHandlerBase {
   DatabaseReference get _firebase => FirebaseDatabase.instance.reference();
 
@@ -52,7 +48,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     }
 
     UserModel user = UserModel(uid, SearchModel.empty());
-    SessionModel session = SessionModel.empty(user);
+    SessionModel session = SessionModel.empty(tempSID, user);
     await sessionReference.set(session.toMap()).catchError((e) {
       throw StateError("errors.database.connect");
     });
@@ -138,7 +134,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
     }
 
     DatabaseReference userReference =
-        sessionReference.child(USER_PATH).child(uid);
+        sessionReference.child(USERS_PATH).child(uid);
     snapshot = await userReference.once();
     if (snapshot == null || snapshot.value == null) {
       // If the user is not in the session, just return.

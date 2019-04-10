@@ -1,9 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:yes_music/data/firebase/session_handler_base.dart';
-
-const String SESSION_PATH = "sessions";
-const String HOST_PATH = "host";
-const String USER_PATH = "users";
+import 'package:yes_music/models/state/session_model.dart';
 
 class FirebaseSessionHandler implements SessionHandlerBase {
   DatabaseReference get _firebase => FirebaseDatabase.instance.reference();
