@@ -56,6 +56,9 @@
     "join": {
       "sid": "Incorrect session ID.",
       "uid": "Could not retrieve user ID."
+    },
+    "main": {
+      "sid": "Could not find the session."
     }
   }
 }
