@@ -119,6 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _pushChooseScreen(BuildContext context) {
-    Navigator.of(context).pushReplacementNamed("/choose");
+    Navigator.of(context).pushReplacementNamed("/rejoin");
   }
 }

@@ -35,9 +35,11 @@ class CreateBloc implements BlocBase {
   String get sid => _transactionHandler.sid;
 
   CreateBloc() {
+    // Create a subscription to the state stream.
     _sub = _createState.listen((CreateSessionState state) {
       switch (state) {
         case CreateSessionState.CREATING:
+          // If the UI tells us to create a session, begin to create one.
           _createSession();
           break;
         default:
@@ -48,9 +50,12 @@ class CreateBloc implements BlocBase {
 
   /// Attempts to create a new session.
   void _createSession() {
+    // Create a new session.
     _transactionHandler.createSession().then((_) {
+      // When the new session is created, push the created state.
       _createState.add(CreateSessionState.CREATED);
     }).catchError((e) {
+      // If an error occurs, push it to the state stream.
       _createState.addError(e);
     });
   }

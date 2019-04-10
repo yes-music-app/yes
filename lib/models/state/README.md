@@ -17,9 +17,7 @@ The schema for this database is as follows:
       "history": [
         ...
       ],
-      "host": {
-        "$host-uid": ...
-      },
+      "host": ...,
       "users": {
         "$user-uid-0": ...,
         "$user-uid-1": ...,

@@ -20,11 +20,15 @@ class _CreateScreenState extends State<CreateScreen> {
 
   @override
   void initState() {
+    // Get a reference to the create bloc for this context.
     bloc = BlocProvider.of<CreateBloc>(context);
+
+    // Create a subscription to the bloc's state stream.
     subscription = bloc.stream.listen(
       (CreateSessionState state) {
         switch (state) {
           case CreateSessionState.NOT_CREATED:
+            // If we are in the "zero state", tell the bloc to create a session.
             bloc.sink.add(CreateSessionState.CREATING);
             break;
           default:
@@ -32,14 +36,15 @@ class _CreateScreenState extends State<CreateScreen> {
         }
       },
       onError: (e) {
+        // If the error was produced by the bloc, retrieve the error message.
         String message = e is StateError ? e.message : "errors.unknown";
+
+        // Show the user an error message.
         showFailedAlert(
           context,
           FlutterI18n.translate(context, message),
-          () => Navigator.of(context).pushNamedAndRemoveUntil(
-                "/choose",
-                (Route<dynamic> route) => false,
-              ),
+          // Return to the choose screen when the user acknowledges the error.
+          _pushChooseScreen,
         );
       },
     );
@@ -58,14 +63,19 @@ class _CreateScreenState extends State<CreateScreen> {
               BuildContext context,
               AsyncSnapshot<CreateSessionState> snapshot,
             ) {
+              // If there is no stream data or there is an error, show a
+              // loading indicator.
               if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
                 return loadingIndicator();
               }
 
               switch (snapshot.data) {
                 case CreateSessionState.CREATED:
-                  return _getBody(bloc.sid);
+                  // If the session has been created, show the user their
+                  // session ID.
+                  return _getBody();
                 default:
+                  // If the session is being created, show a loading indicator.
                   return loadingIndicator();
               }
             },
@@ -82,7 +92,7 @@ class _CreateScreenState extends State<CreateScreen> {
     super.dispose();
   }
 
-  Widget _getBody(String sid) {
+  Widget _getBody() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,7 +105,7 @@ class _CreateScreenState extends State<CreateScreen> {
           padding: EdgeInsets.only(bottom: 10),
         ),
         Text(
-          sid,
+          bloc.sid,
           style: Theme.of(context).textTheme.subhead,
         ),
         Padding(
@@ -115,6 +125,13 @@ class _CreateScreenState extends State<CreateScreen> {
       ),
       radius: 20,
       constraints: BoxConstraints.tight(Size(160, 40)),
+    );
+  }
+
+  void _pushChooseScreen() {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      "/choose",
+      (Route<dynamic> route) => false,
     );
   }
 

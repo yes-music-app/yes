@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 import 'package:yes_music/models/state/search_model.dart';
@@ -17,7 +18,20 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
   String _sid;
 
   @override
-  String get sid => _sid;
+  String get sid => _sid?.toUpperCase();
+
+  void _setSID(String sid) async {
+    _sid = sid?.toUpperCase();
+
+    // Persist the new SID so that it can be accessed the next time we load
+    // into the app.
+    String uid = await FirebaseProvider().getAuthHandler().uid();
+    if (uid == null || uid.isEmpty) {
+      throw StateError("errors.database.uid");
+    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(uid, _sid);
+  }
 
   @override
   Future createSession() async {
@@ -29,7 +43,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       tempSID = _generateSID();
       sessionReference = _firebase.child(SESSION_PATH).child(tempSID);
       DataSnapshot ref = await sessionReference.once();
-      unique = ref.value == null;
+      unique = ref == null || ref.value == null;
     }
 
     String uid = await FirebaseProvider().getAuthHandler().uid();
@@ -43,7 +57,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       throw StateError("errors.database.connect");
     });
 
-    _sid = tempSID;
+    _setSID(tempSID);
   }
 
   String _generateSID() {
@@ -70,7 +84,7 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
         _firebase.child(SESSION_PATH).child(casedSID);
     final DataSnapshot snap = await sessionReference.once();
 
-    if (sid.isEmpty || snap.value == null) {
+    if (sid.isEmpty || snap == null || snap.value == null) {
       throw StateError("errors.join.sid");
     }
 
@@ -81,22 +95,23 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
     UserModel user = UserModel(uid, SearchModel.empty());
     SessionModel model = SessionModel.fromMap(snap.value);
-    model.users.add(user);
+    if (model.users.indexWhere(
+          (UserModel model) => model.uid == user.uid,
+        ) <
+        0) {
+      // If the user is not already in this session, add them.
+      model.users.add(user);
+    }
     await sessionReference.set(model.toMap()).catchError((e) {
       throw StateError("errors.database.connect");
     });
 
-    _sid = sid;
+    _setSID(sid);
   }
 
   @override
   Future leaveSession() async {
-    if (_sid == null || _sid.isEmpty) {
-      // If there is no current session, just return.
-      return;
-    }
-
-    final String casedSid = _sid.toUpperCase();
+    final String casedSid = _sid?.toUpperCase();
 
     String uid = await FirebaseProvider().getAuthHandler().uid();
     if (uid == null || uid.isEmpty) {
@@ -106,7 +121,8 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
 
     DatabaseReference sessionReference =
         _firebase.child(SESSION_PATH).child(casedSid);
-    if (await sessionReference.once() == null) {
+    DataSnapshot snapshot = await sessionReference.once();
+    if (snapshot == null || snapshot.value == null) {
       // If the session doesn't exist, just return.
       return;
     }
@@ -117,18 +133,47 @@ class FirebaseTransactionHandler implements TransactionHandlerBase {
       await sessionReference.remove().catchError((e) {
         throw StateError("errors.database.operation");
       });
+      _setSID(null);
       return;
     }
 
     DatabaseReference userReference =
         sessionReference.child(USER_PATH).child(uid);
-    if (await userReference.once() == null) {
+    snapshot = await userReference.once();
+    if (snapshot == null || snapshot.value == null) {
       // If the user is not in the session, just return.
       return;
     }
 
-    await userReference.remove().catchError((e) {
+    await userReference.remove().then((val) {
+      _setSID(null);
+    }).catchError((e) {
       throw StateError("errors.database.operation");
     });
+  }
+
+  @override
+  Future<String> findSession() async {
+    String uid = await FirebaseProvider().getAuthHandler().uid();
+    if (uid == null || uid.isEmpty) {
+      throw StateError("errors.database.uid");
+    }
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String oldSID = prefs.getString(uid);
+
+    if (oldSID == null || oldSID.isEmpty) {
+      return null;
+    }
+
+    DataSnapshot snapshot =
+        await _firebase.child(SESSION_PATH).child(oldSID).once();
+    if (snapshot == null || snapshot.value == null) {
+      // If the session doesn't exist, just return null.
+      _setSID(null);
+      return null;
+    }
+
+    return oldSID;
   }
 }
