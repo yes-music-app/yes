@@ -18,6 +18,7 @@ class FirebaseSessionHandler implements SessionHandlerBase {
   String _sid;
 
   /// A public getter that returns the current SID.
+  @override
   String get sid => _sid?.toUpperCase();
 
   /// Sets the SID and commits the SID to the system memory for rejoin attempts.
@@ -37,6 +38,7 @@ class FirebaseSessionHandler implements SessionHandlerBase {
   }
 
   /// Creates a session from the given session model.
+  @override
   Future createSession(final SessionModel sessionModel) async {
     // If we are already in a session, throw an error.
     if (_sid != null && _sid.isNotEmpty) {
@@ -76,6 +78,7 @@ class FirebaseSessionHandler implements SessionHandlerBase {
   }
 
   /// Joins a session that is already in progress.
+  @override
   Future joinSession(String sid, UserModel user) async {
     // If the session ID is not valid, throw an error.
     if (sid == null || sid.isEmpty) {
@@ -98,6 +101,7 @@ class FirebaseSessionHandler implements SessionHandlerBase {
   }
 
   /// Attempts to rejoin a cached session for the user with the given [uid].
+  @override
   Future<bool> rejoinSession(String uid) async {
     // Throw an error if we received an invalid UID.
     if (uid == null || uid.isEmpty) {
@@ -136,12 +140,14 @@ class FirebaseSessionHandler implements SessionHandlerBase {
   }
 
   /// Sets the queue for the current session to [queue].
+  @override
   Future setQueue(List<SongModel> queue) async {
     await _setItem(QUEUE_PATH, SongModel.toMapList(queue));
     return;
   }
 
   /// Sets the history for the current session to [history].
+  @override
   Future setHistory(List<SongModel> history) async {
     await _setItem(HISTORY_PATH, SongModel.toMapList(history));
     return;
