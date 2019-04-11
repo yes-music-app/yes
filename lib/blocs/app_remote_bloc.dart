@@ -20,9 +20,8 @@ class AppRemoteBloc implements BlocBase {
       SpotifyProvider().getConnectionHandler();
 
   /// An [BehaviorSubject] that publishes the current connection state.
-  BehaviorSubject<SpotifyConnectionState> _connectionState = BehaviorSubject(
-    seedValue: SpotifyConnectionState.DISCONNECTED,
-  );
+  BehaviorSubject<SpotifyConnectionState> _connectionState =
+      BehaviorSubject.seeded(SpotifyConnectionState.DISCONNECTED);
 
   ValueObservable<SpotifyConnectionState> get stream => _connectionState.stream;
 

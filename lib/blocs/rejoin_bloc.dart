@@ -20,9 +20,8 @@ class RejoinBloc implements BlocBase {
       FirebaseProvider().getTransactionHandler();
 
   /// A [BehaviorSubject] that broadcasts the current state of rejoining.
-  final BehaviorSubject<RejoinState> _stateSubject = BehaviorSubject(
-    seedValue: RejoinState.NOT_REJOINED,
-  );
+  final BehaviorSubject<RejoinState> _stateSubject =
+      BehaviorSubject.seeded(RejoinState.NOT_REJOINED);
 
   ValueObservable<RejoinState> get stateStream => _stateSubject.stream;
 
@@ -45,7 +44,7 @@ class RejoinBloc implements BlocBase {
           _findSession();
           break;
         case RejoinState.SESSION_FOUND:
-           // If we were able to find a session, rejoin it.
+          // If we were able to find a session, rejoin it.
           _joinSession();
           break;
         default:

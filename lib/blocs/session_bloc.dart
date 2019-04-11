@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
+import 'package:yes_music/data/firebase/session_handler_base.dart';
 import 'package:yes_music/data/firebase/transaction_handler_base.dart';
 
 /// An enumeration of the states that a session can be in. Note that the
@@ -19,10 +20,12 @@ class SessionBloc implements BlocBase {
   final TransactionHandlerBase transactionHandler =
       FirebaseProvider().getTransactionHandler();
 
+  final SessionHandlerBase sessionHandler =
+      FirebaseProvider().getSessionHandler();
+
   /// A [BehaviorSubject] that broadcasts the current state of the session.
-  final BehaviorSubject<SessionState> _stateSubject = BehaviorSubject(
-    seedValue: SessionState.ACTIVE,
-  );
+  final BehaviorSubject<SessionState> _stateSubject =
+      BehaviorSubject.seeded(SessionState.ACTIVE);
 
   ValueObservable<SessionState> get stateStream => _stateSubject.stream;
 

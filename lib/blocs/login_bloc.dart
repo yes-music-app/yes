@@ -24,9 +24,8 @@ class LoginBloc implements BlocBase {
 
   /// The [BehaviorSubject] that broadcasts the current state of the user's
   /// attempt to authenticate with Firebase.
-  BehaviorSubject<FirebaseAuthState> _firebaseAuthState = BehaviorSubject(
-    seedValue: FirebaseAuthState.UNAUTHORIZED,
-  );
+  BehaviorSubject<FirebaseAuthState> _firebaseAuthState =
+      BehaviorSubject.seeded(FirebaseAuthState.UNAUTHORIZED);
 
   ValueObservable<FirebaseAuthState> get stream => _firebaseAuthState.stream;
 
