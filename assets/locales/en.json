@@ -59,6 +59,16 @@
     },
     "main": {
       "sid": "Could not find the session."
+    },
+    "session": {
+      "already_joined": "Tried to create or join a session while already in one.",
+      "create_malformed": "Received incomplete session data when trying to create a new session.",
+      "create_exists": "Tried to create a session with a session ID that is already in use.",
+      "join_sid": "Tried to join a session with an invalid session ID.",
+      "join_exists": "Tried to join a session that does not exist.",
+      "session_write": "Failed to write to the session database.",
+      "no_local_session": "Failed to perform a session operation as the user is not in a session.",
+      "no_remote_session": "Failed to perform a session operation as the database does not contain the session."
     }
   }
 }
