@@ -18,10 +18,10 @@ class FirebaseSessionHandler implements SessionHandlerBase {
   String _sid;
 
   /// A public getter that returns the current SID.
-  String get sid => _sid;
+  String get sid => _sid?.toUpperCase();
 
   /// Sets the SID and commits the SID to the system memory for rejoin attempts.
-  Future _setSid(String sid, String uid) async {
+  Future _setSID(String sid, String uid) async {
     // Check to ensure that we have a valid SID and UID.
     if (sid == null || sid.isEmpty || uid == null || uid.isEmpty) {
       throw StateError("errors.database.uid");
@@ -70,7 +70,8 @@ class FirebaseSessionHandler implements SessionHandlerBase {
     }
 
     // If we have successfully joined the session, set our local SID.
-    await _setSid(sessionModel.sid, sessionModel.host);
+    await _setSID(sessionModel.sid, sessionModel.host);
+    // TODO: Initialize output streams here.
     return;
   }
 
@@ -82,32 +83,71 @@ class FirebaseSessionHandler implements SessionHandlerBase {
     }
 
     // Set the SID to the SID that is to be joined.
-    await _setSid(sid, user.uid);
+    await _setSID(sid, user.uid);
 
     // Attempt to write the new user to the session database.
     try {
       _setItem(USERS_PATH + "/" + user.uid, user.toMap());
     } catch (e) {
-      await _setSid(null, user.uid);
+      await _setSID(null, user.uid);
       throw e;
     }
 
+    // TODO: Initialize output streams here.
     return;
   }
 
-  /// Sets the queue for the current session.
+  /// Attempts to rejoin a cached session for the user with the given [uid].
+  Future<bool> rejoinSession(String uid) async {
+    // Throw an error if we received an invalid UID.
+    if (uid == null || uid.isEmpty) {
+      throw StateError("errors.database.uid");
+    }
+
+    // Retrieve an old SID from the shared preferences, if it exists.
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String oldSID = prefs.getString(uid);
+
+    // If there is no old session ID, return false.
+    if (oldSID == null || oldSID.isEmpty) {
+      return false;
+    }
+
+    // If the session doesn't exist, return false.
+    DatabaseReference sessionReference =
+        _firebase.child(SESSION_PATH).child(oldSID);
+    DataSnapshot snapshot = await sessionReference.once();
+    if (snapshot == null || snapshot.value == null) {
+      return false;
+    }
+
+    // If the user is not part of the session, return false.
+    DatabaseReference userReference =
+        sessionReference.child(USERS_PATH).child(uid);
+    snapshot = await userReference.once();
+    if (snapshot == null || snapshot.value == null) {
+      return false;
+    }
+
+    // Rejoin the session.
+    await _setSID(oldSID, uid);
+    // TODO: Initialize output streams here.
+    return true;
+  }
+
+  /// Sets the queue for the current session to [queue].
   Future setQueue(List<SongModel> queue) async {
     await _setItem(QUEUE_PATH, SongModel.toMapList(queue));
     return;
   }
 
-  /// Sets the history for the current session.
+  /// Sets the history for the current session to [history].
   Future setHistory(List<SongModel> history) async {
     await _setItem(HISTORY_PATH, SongModel.toMapList(history));
     return;
   }
 
-  /// Sets an attribute of a session.
+  /// Sets the child of the current session at [path] to [value].
   Future _setItem(String path, dynamic value) async {
     // If we are not in a session, throw an error.
     if (_sid == null || _sid.isEmpty) {
