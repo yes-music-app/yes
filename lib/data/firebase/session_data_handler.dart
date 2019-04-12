@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:yes_music/data/firebase/data_utils.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/session_data_handler_base.dart';
 import 'package:yes_music/data/firebase/session_state_handler.dart';
@@ -34,13 +35,12 @@ class SessionDataHandler implements SessionDataHandlerBase {
 
     // Retrieve a reference to the new session's database path, and check if a
     // session exists there.
-    DatabaseReference sessionReference = _firebase.child(sid);
-    DataSnapshot sessionSnap = await sessionReference.once();
-    if (sessionSnap?.value == null) {
+    if (!await sessionExists(sid)) {
       throw StateError("errors.session.no_remote_session");
     }
 
     // Attempt to write the new value to the session database.
+    DatabaseReference sessionReference = _firebase.child(sid);
     try {
       sessionReference.child(path).set(value);
     } catch (e) {

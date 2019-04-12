@@ -22,7 +22,7 @@ enum SessionState {
 /// A bloc that handles managing session state.
 class SessionStateBloc implements BlocBase {
   /// A reference to the session handler.
-  final SessionStateHandlerBase sessionHandler =
+  final SessionStateHandlerBase _stateHandler =
       FirebaseProvider().getSessionStateHandler();
 
   /// A [BehaviorSubject] that broadcasts the current state of the session.
@@ -52,7 +52,7 @@ class SessionStateBloc implements BlocBase {
   /// Leaves the current session.
   void _leaveSession() async {
     try {
-      await transactionHandler.leaveSession();
+      await _stateHandler.leaveSession();
       _stateSubject.add(SessionState.LEFT);
     } on StateError catch (e) {
       _stateSubject.addError(e);

@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
-import 'package:yes_music/data/firebase/transaction_handler_base.dart';
+import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 
 /// An enumeration of the potential states that a join operation can be in.
 enum JoinSessionState {
@@ -15,9 +15,9 @@ enum JoinSessionState {
 
 /// A bloc that handles joining a session.
 class JoinBloc implements BlocBase {
-  /// The [TransactionHandlerBase] that performs the join operation.
-  final TransactionHandlerBase _transactionHandler =
-      FirebaseProvider().getTransactionHandler();
+  /// The [SessionStateHandlerBase] that performs the join operation.
+  final SessionStateHandlerBase _stateHandler =
+      FirebaseProvider().getSessionStateHandler();
 
   /// The [BehaviorSubject] that broadcasts the current state of the user's
   /// attempt to join a session.
@@ -49,7 +49,7 @@ class JoinBloc implements BlocBase {
 
   /// Attempts to join the session with the given session ID.
   void _joinSession(String sid) async {
-    _transactionHandler.joinSession(sid).then((_) {
+    _stateHandler.joinSession(sid).then((_) {
       _joinState.add(JoinSessionState.JOINED);
     }).catchError((e) {
       StateError error = e is StateError ? e : StateError("errors.unknown");

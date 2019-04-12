@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
+import 'package:yes_music/data/firebase/data_utils.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 import 'package:yes_music/models/state/search_model.dart';
@@ -36,17 +37,8 @@ class SessionStateHandler implements SessionStateHandlerBase {
   }
 
   /// A private getter for the user's Firebase ID.
-  Future<String> _uid({bool checked = true}) async {
-    // Retrieve the current uid.
-    String uid = await _authHandler.uid();
-
-    // If the uid should be checked, ensure that it is not null or empty.
-    if (checked && (uid == null || uid.isEmpty)) {
-      throw StateError("errors.database.uid");
-    }
-
-    return uid;
-  }
+  Future<String> _uid({bool checked = true}) async =>
+      await _authHandler.uid(checked: checked);
 
   /// Sets the SID and commits the SID to the system memory for rejoin attempts.
   Future _setSID(String sid) async {
@@ -81,15 +73,13 @@ class SessionStateHandler implements SessionStateHandlerBase {
       throw StateError("errors.session.create_malformed");
     }
 
-    // Retrieve a reference to the new session's database path, and check if a
-    // session already exists there.
-    DatabaseReference sessionReference = _firebase.child(sessionModel.sid);
-    DataSnapshot sessionSnap = await sessionReference.once();
-    if (sessionSnap?.value != null) {
+    // Check if the session already exists.
+    if (await sessionExists(sessionModel.sid)) {
       throw StateError("errors.session.create_exists");
     }
 
     // Attempt to write the new session to the session database.
+    DatabaseReference sessionReference = _firebase.child(sessionModel.sid);
     sessionReference.set(sessionModel.toMap()).catchError((e) {
       throw StateError("errors.session.session_write");
     });
@@ -111,12 +101,9 @@ class SessionStateHandler implements SessionStateHandlerBase {
       throw StateError("errors.session.join_sid");
     }
 
-    // Retrieve a reference to the new session's database path, and check if a
-    // session exists there.
-    DatabaseReference sessionReference = _firebase.child(sid);
-    DataSnapshot sessionSnap = await sessionReference.once();
-    if (sessionSnap?.value == null) {
-      throw StateError("errors.session.no_remote_session");
+    // Ensure that the session exists.
+    if (!await sessionExists(sid)) {
+      throw StateError("errors.session.join_exists");
     }
 
     // Set a path that points to the new user's entry in the database.
@@ -124,7 +111,7 @@ class SessionStateHandler implements SessionStateHandlerBase {
 
     // Attempt to write the new value to the session database.
     UserModel model = UserModel(uid, SearchModel.empty());
-    sessionReference.child(path).set(model.toMap()).catchError(() {
+    _firebase.child(sid).child(path).set(model.toMap()).catchError(() {
       throw StateError("errors.session.session_write");
     });
 
@@ -150,17 +137,14 @@ class SessionStateHandler implements SessionStateHandlerBase {
     }
 
     // If the session doesn't exist, return false.
-    DatabaseReference sessionReference =
-        _firebase.child(SESSION_PATH).child(oldSID);
-    DataSnapshot snapshot = await sessionReference.once();
-    if (snapshot == null || snapshot.value == null) {
+    if (!await sessionExists(oldSID)) {
       return false;
     }
 
     // If the user is not part of the session, return false.
     DatabaseReference userReference =
-        sessionReference.child(USERS_PATH).child(uid);
-    snapshot = await userReference.once();
+        _firebase.child(oldSID).child(USERS_PATH).child(uid);
+    DataSnapshot snapshot = await userReference.once();
     if (snapshot == null || snapshot.value == null) {
       return false;
     }

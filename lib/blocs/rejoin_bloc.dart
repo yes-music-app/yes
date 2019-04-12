@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
-import 'package:yes_music/data/firebase/transaction_handler_base.dart';
+import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 
 /// The states that a rejoin attempt could be in.
 enum RejoinState {
@@ -16,8 +16,8 @@ enum RejoinState {
 
 /// Handles the re-joining of an old session that the user was in.
 class RejoinBloc implements BlocBase {
-  final TransactionHandlerBase transactionHandler =
-      FirebaseProvider().getTransactionHandler();
+  final SessionStateHandlerBase _stateHandler =
+      FirebaseProvider().getSessionStateHandler();
 
   /// A [BehaviorSubject] that broadcasts the current state of rejoining.
   final BehaviorSubject<RejoinState> _stateSubject =
@@ -57,7 +57,7 @@ class RejoinBloc implements BlocBase {
   void _findSession() async {
     try {
       // Attempt to fetch a session ID to rejoin with.
-      String oldSID = await transactionHandler.findSession();
+      String oldSID = await _stateHandler.findSession();
 
       if (oldSID == null || oldSID.isEmpty) {
         // If we were unable to find a session to rejoin, push the no session
@@ -79,7 +79,7 @@ class RejoinBloc implements BlocBase {
   /// Attempts to find an old session.
   void _joinSession() async {
     try {
-      await transactionHandler.joinSession(_sid);
+      await _stateHandler.joinSession(_sid);
     } on StateError catch (e) {
       _stateSubject.addError(e);
     }
