@@ -9,8 +9,6 @@ import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 enum RejoinState {
   NOT_REJOINED,
   NO_SESSION,
-  SESSION_FOUND,
-  JOINING_SESSION,
   SESSION_JOINED,
 }
 
@@ -41,11 +39,7 @@ class RejoinBloc implements BlocBase {
       switch (state) {
         case RejoinState.NOT_REJOINED:
           // If we receive a zero state event, search for a session to rejoin.
-          _findSession();
-          break;
-        case RejoinState.SESSION_FOUND:
-          // If we were able to find a session, rejoin it.
-          _joinSession();
+          _rejoinSession();
           break;
         default:
           break;
@@ -54,37 +48,21 @@ class RejoinBloc implements BlocBase {
   }
 
   /// Attempts to find an old session.
-  void _findSession() async {
+  void _rejoinSession() async {
+    bool joined = false;
+
     try {
-      // Attempt to fetch a session ID to rejoin with.
-      String oldSID = await _stateHandler.findSession();
-
-      if (oldSID == null || oldSID.isEmpty) {
-        // If we were unable to find a session to rejoin, push the no session
-        // state.
-        _stateSubject.add(RejoinState.NO_SESSION);
-      } else {
-        // If we found a session to rejoin, push the session found state.
-        _stateSubject.add(RejoinState.SESSION_FOUND);
-      }
-
-      // Set this rejoin bloc's cached SID to the fetched SID.
-      _sid = oldSID;
+      // Attempt to rejoin a session.
+      joined = await _stateHandler.rejoinSession();
     } catch (e) {
       // If a call throws an error, push the error through the state stream.
       _stateSubject.addError(e);
-    }
-  }
-
-  /// Attempts to find an old session.
-  void _joinSession() async {
-    try {
-      await _stateHandler.joinSession(_sid);
-    } on StateError catch (e) {
-      _stateSubject.addError(e);
+      return;
     }
 
-    _stateSubject.add(RejoinState.SESSION_JOINED);
+    _stateSubject.add(
+      joined ? RejoinState.SESSION_JOINED : RejoinState.NO_SESSION,
+    );
   }
 
   @override
