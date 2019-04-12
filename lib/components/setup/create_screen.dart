@@ -124,6 +124,7 @@ class _CreateScreenState extends State<CreateScreen> {
   }
 
   void _pushMainScreen() {
+    _stateBloc.sink.add(SessionState.ACTIVE);
     Navigator.of(context).pushReplacementNamed("/main");
   }
 }
