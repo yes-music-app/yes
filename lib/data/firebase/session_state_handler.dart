@@ -14,7 +14,8 @@ import 'package:yes_music/models/state/user_model.dart';
 /// session state.
 class SessionStateHandler implements SessionStateHandlerBase {
   /// A reference to the root of the Firebase database.
-  final DatabaseReference _firebase = FirebaseDatabase.instance.reference();
+  final DatabaseReference _firebase =
+      FirebaseDatabase.instance.reference().child(SESSION_PATH);
 
   /// A reference to the Firebase auth handler so that we can retrieve the uid.
   final AuthHandlerBase _authHandler = FirebaseProvider().getAuthHandler();
@@ -162,16 +163,16 @@ class SessionStateHandler implements SessionStateHandlerBase {
     String uid = await _uid();
 
     // Check to ensure that the session exists.
-    DatabaseReference sessionReference =
-        _firebase.child(SESSION_PATH).child(_sid);
-    DataSnapshot snapshot = await sessionReference.once();
-    if (snapshot == null || snapshot.value == null) {
+    if (!await sessionExists(_sid)) {
       throw StateError("errors.session.no_remote_session");
     }
 
+    // Get a reference to the session.
+    DatabaseReference sessionReference = _firebase.child(_sid);
+
     // Check to see whether the user is the host of the session.
-    DataSnapshot hostSnap = await sessionReference.child(HOST_PATH).once();
-    if (hostSnap?.value == uid) {
+    DataSnapshot snapshot = await sessionReference.child(HOST_PATH).once();
+    if (snapshot?.value == uid) {
       // If the user is the host, delete the entire session.
       await sessionReference.remove().catchError((e) {
         throw StateError("errors.database.operation");

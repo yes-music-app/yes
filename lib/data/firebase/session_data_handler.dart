@@ -8,7 +8,8 @@ import 'package:yes_music/models/state/song_model.dart';
 
 class SessionDataHandler implements SessionDataHandlerBase {
   /// A reference to the root of the Firebase database.
-  final DatabaseReference _firebase = FirebaseDatabase.instance.reference();
+  final DatabaseReference _firebase =
+      FirebaseDatabase.instance.reference().child(SESSION_PATH);
 
   /// A reference to the session state handler for the sid.
   final SessionStateHandler _stateHandler =

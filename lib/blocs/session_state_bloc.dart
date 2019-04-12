@@ -14,6 +14,7 @@ enum SessionState {
   CHOOSING,
   JOINING,
   CREATING,
+  CREATED,
   ACTIVE,
   LEAVING,
   LEFT,
@@ -51,12 +52,11 @@ class SessionStateBloc implements BlocBase {
 
   /// Leaves the current session.
   void _leaveSession() async {
-    try {
-      await _stateHandler.leaveSession();
-      _stateSubject.add(SessionState.LEFT);
-    } on StateError catch (e) {
+    await _stateHandler.leaveSession().catchError((e) {
       _stateSubject.addError(e);
-    }
+    });
+
+    _stateSubject.add(SessionState.LEFT);
   }
 
   @override
