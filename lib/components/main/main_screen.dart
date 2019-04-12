@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:yes_music/blocs/session_bloc.dart';
+import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
 import 'package:yes_music/components/common/bar_actions.dart';
@@ -13,12 +13,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  SessionBloc _sessionBloc;
+  SessionStateBloc _sessionBloc;
   StreamSubscription<SessionState> _stateSubscription;
 
   @override
   void initState() {
-    _sessionBloc = BlocProvider.of<SessionBloc>(context);
+    _sessionBloc = BlocProvider.of<SessionStateBloc>(context);
 
     _stateSubscription =
         _sessionBloc.stateStream.listen((SessionState state) {

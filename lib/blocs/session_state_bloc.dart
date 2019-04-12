@@ -3,25 +3,27 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
-import 'package:yes_music/data/firebase/session_handler_base.dart';
-import 'package:yes_music/data/firebase/transaction_handler_base.dart';
+import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 
 /// An enumeration of the states that a session can be in. Note that the
 /// "ENDED" value is purely client-side; if a user ends a session that they are
 /// not the host of, the session will persist without them.
 enum SessionState {
+  INACTIVE,
+  REJOINING,
+  CHOOSING,
+  JOINING,
+  CREATING,
   ACTIVE,
   LEAVING,
   LEFT,
 }
 
-/// A bloc that handles managing a session.
-class SessionBloc implements BlocBase {
-  final TransactionHandlerBase transactionHandler =
-      FirebaseProvider().getTransactionHandler();
-
-  final SessionHandlerBase sessionHandler =
-      FirebaseProvider().getSessionHandler();
+/// A bloc that handles managing session state.
+class SessionStateBloc implements BlocBase {
+  /// A reference to the session handler.
+  final SessionStateHandlerBase sessionHandler =
+      FirebaseProvider().getSessionStateHandler();
 
   /// A [BehaviorSubject] that broadcasts the current state of the session.
   final BehaviorSubject<SessionState> _stateSubject =
@@ -34,7 +36,7 @@ class SessionBloc implements BlocBase {
   /// A subscription to the session state.
   StreamSubscription<SessionState> _stateSub;
 
-  SessionBloc() {
+  SessionStateBloc() {
     _stateSub = _stateSubject.listen((SessionState state) {
       switch (state) {
         case SessionState.LEAVING:

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/login_bloc.dart';
-import 'package:yes_music/blocs/session_bloc.dart';
+import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/confirmation_dialog.dart';
 
@@ -70,7 +70,7 @@ void _leave(BuildContext context) {
     "confirm",
     "cancel",
     () {
-      BlocProvider.of<SessionBloc>(context)
+      BlocProvider.of<SessionStateBloc>(context)
           .stateSink
           .add(SessionState.LEAVING);
     },

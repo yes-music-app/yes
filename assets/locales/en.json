@@ -48,17 +48,8 @@
     },
     "database": {
       "operation": "Failed to connect to the database. Please make sure that your device is connected to the internet.",
-      "uid": "Failed to retrieve the user ID when writing session ID."
-    },
-    "create": {
-      "uid": "Failed to retrieve Firebase user ID."
-    },
-    "join": {
-      "sid": "Incorrect session ID.",
-      "uid": "Could not retrieve user ID."
-    },
-    "main": {
-      "sid": "Could not find the session."
+      "uid": "Failed to retrieve the user ID.",
+      "sid": "Failed to retrieve the session ID."
     },
     "session": {
       "already_joined": "Tried to create or join a session while already in one.",
