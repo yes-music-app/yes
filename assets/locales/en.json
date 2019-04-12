@@ -28,6 +28,8 @@
     "join": "Join"
   },
   "main": {
+    "sid": "Session ID",
+    "sidMessage": "Session ID copied to the clipboard",
     "logout": "Log out",
     "logoutMessage": "Are you sure you want to log out of your Google account?",
     "leave": "Leave session",

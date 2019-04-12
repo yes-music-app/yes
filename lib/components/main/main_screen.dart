@@ -20,8 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     _sessionBloc = BlocProvider.of<SessionStateBloc>(context);
 
-    _stateSubscription =
-        _sessionBloc.stream.listen((SessionState state) {
+    _stateSubscription = _sessionBloc.stream.listen((SessionState state) {
       switch (state) {
         case SessionState.INACTIVE:
           _pushLoginScreen();
@@ -71,7 +70,10 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
-          _getAppBar(width, Uint8List(0)),
+          Builder(
+            builder: (BuildContext context) =>
+                _getAppBar(width, Uint8List(0), context),
+          ),
           _getQueue(),
         ],
       ),
@@ -79,11 +81,14 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  SliverAppBar _getAppBar(double width, Uint8List bytes) {
+  SliverAppBar _getAppBar(double width, Uint8List bytes, BuildContext context) {
     return SliverAppBar(
       actions: getAppBarActions(
         context,
-        [BarActions.LEAVE],
+        [
+          BarActions.SID,
+          BarActions.LEAVE,
+        ],
       ),
       automaticallyImplyLeading: false,
       centerTitle: true,
