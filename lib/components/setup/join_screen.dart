@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/join_bloc.dart';
+import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/custom_button.dart';
 import 'package:yes_music/components/common/failed_alert.dart';
@@ -15,17 +16,17 @@ class JoinScreen extends StatefulWidget {
 }
 
 class _JoinScreenState extends State<JoinScreen> {
-  JoinBloc bloc;
-  StreamSubscription subscription;
-  final TextEditingController sidController = TextEditingController();
+  SessionStateBloc _stateBloc;
+  StreamSubscription _stateSub;
+  final TextEditingController _sidController = TextEditingController();
 
   @override
   void initState() {
-    bloc = BlocProvider.of<JoinBloc>(context);
-    subscription = bloc.stream.listen(
-      (JoinSessionState state) {
+    _stateBloc = BlocProvider.of<SessionStateBloc>(context);
+    _stateSub = _stateBloc.stream.listen(
+      (SessionState state) {
         switch (state) {
-          case JoinSessionState.JOINED:
+          case SessionState.ACTIVE:
             _pushMainScreen();
             break;
           default:
@@ -37,7 +38,7 @@ class _JoinScreenState extends State<JoinScreen> {
         showFailedAlert(
           context,
           FlutterI18n.translate(context, message),
-          () => bloc.sink.add(JoinSessionState.NOT_JOINED),
+          () => _stateBloc.sink.add(SessionState.AWAITING_SID),
         );
       },
     );
@@ -51,17 +52,17 @@ class _JoinScreenState extends State<JoinScreen> {
       child: Scaffold(
         body: Center(
           child: StreamBuilder(
-            stream: bloc.stream,
+            stream: _stateBloc.stream,
             builder: (
               BuildContext context,
-              AsyncSnapshot<JoinSessionState> snapshot,
+              AsyncSnapshot<SessionState> snapshot,
             ) {
               if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
                 return loadingIndicator();
               }
 
               switch (snapshot.data) {
-                case JoinSessionState.NOT_JOINED:
+                case SessionState.AWAITING_SID:
                   return _getContents();
                 default:
                   return loadingIndicator();
@@ -71,14 +72,16 @@ class _JoinScreenState extends State<JoinScreen> {
         ),
       ),
       onWillPop: () {
-        return Future.value(bloc.stream.value == JoinSessionState.NOT_JOINED);
+        return Future.value(
+          _stateBloc.stream.value == SessionState.AWAITING_SID,
+        );
       },
     );
   }
 
   @override
   void dispose() {
-    subscription.cancel();
+    _stateSub.cancel();
     super.dispose();
   }
 
@@ -95,7 +98,7 @@ class _JoinScreenState extends State<JoinScreen> {
           padding: EdgeInsets.only(top: 10),
         ),
         TextField(
-          controller: sidController,
+          controller: _sidController,
         ),
         Padding(
           padding: EdgeInsets.only(top: 10),
@@ -106,7 +109,7 @@ class _JoinScreenState extends State<JoinScreen> {
             style: Theme.of(context).textTheme.button,
           ),
           onPressed: () {
-            bloc.sidSink.add(sidController.value.text);
+            _stateBloc.joinSession(_sidController.value.text);
           },
           theme: Theme.of(context),
         ),

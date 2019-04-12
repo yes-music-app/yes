@@ -54,12 +54,14 @@ class SessionStateBloc implements BlocBase {
 
   /// Joins a session with the given sid.
   void joinSession(String sid) {
-    _stateSubject.add(SessionState.JOINING);
-    _joinSession(sid);
+    if (_stateSubject.value == SessionState.AWAITING_SID) {
+      _stateSubject.add(SessionState.JOINING);
+      _joinSession(sid);
+    }
   }
 
   /// A getter for the session ID.
-  String get sid => _stateHandler.sid(checked: false);
+  String sid({bool checked = false}) => _stateHandler.sid(checked: checked);
 
   /// Attempts to rejoin a session.
   void _rejoinSession() async {
