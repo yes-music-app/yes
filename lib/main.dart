@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yes_music/blocs/login_bloc.dart';
+import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/route_callbacks.dart';
 import 'package:yes_music/components/setup/spotify_auth_screen.dart';
@@ -35,9 +36,8 @@ class YesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<LoginBloc>(
-      bloc: LoginBloc(),
-      child: MaterialApp(
+    return _wrappedApp(
+      MaterialApp(
         title: "yes",
         theme: Themes.darkTheme,
         initialRoute: "/",
@@ -54,4 +54,15 @@ class YesApp extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Wrap the given [child] widget in the global blocs.
+Widget _wrappedApp(Widget child) {
+  return BlocProvider<LoginBloc>(
+    bloc: LoginBloc(),
+    child: BlocProvider<SessionStateBloc>(
+      bloc: SessionStateBloc(),
+      child: child,
+    ),
+  );
 }

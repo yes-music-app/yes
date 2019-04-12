@@ -1,3 +1,5 @@
+const String SIGN_OUT = "sign_out";
+
 const Map<String, bool> flagMap = <String, bool>{
-  "phoneAuth": false,
+  SIGN_OUT: true,
 };

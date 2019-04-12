@@ -28,6 +28,8 @@
     "join": "Join"
   },
   "main": {
+    "sid": "Session ID",
+    "sidMessage": "Session ID copied to the clipboard",
     "logout": "Log out",
     "logoutMessage": "Are you sure you want to log out of your Google account?",
     "leave": "Leave session",
@@ -48,14 +50,18 @@
     },
     "database": {
       "operation": "Failed to connect to the database. Please make sure that your device is connected to the internet.",
-      "uid": "Failed to retrieve the user ID when writing session ID."
+      "uid": "Failed to retrieve the user ID.",
+      "sid": "Failed to retrieve the session ID."
     },
-    "create": {
-      "uid": "Failed to retrieve Firebase user ID."
-    },
-    "join": {
-      "sid": "Incorrect session ID.",
-      "uid": "Could not retrieve user ID."
+    "session": {
+      "already_joined": "Tried to create or join a session while already in one.",
+      "create_malformed": "Received incomplete session data when trying to create a new session.",
+      "create_exists": "Tried to create a session with a session ID that is already in use.",
+      "join_sid": "Tried to join a session with an invalid session ID.",
+      "join_exists": "Tried to join a session that does not exist.",
+      "session_write": "Failed to write to the session database.",
+      "no_local_session": "Failed to perform a session operation as the user is not in a session.",
+      "no_remote_session": "Failed to perform a session operation as the database does not contain the session."
     }
   }
 }

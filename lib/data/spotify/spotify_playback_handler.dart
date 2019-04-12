@@ -31,7 +31,7 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
   /// An rxdart [BehaviorSubject] that publishes the current state of the music
   /// player in the Spotify app.
   BehaviorSubject<PlayerStateModel> _playerStateSubject =
-      BehaviorSubject(seedValue: null);
+      BehaviorSubject.seeded(null);
 
   @override
   ValueObservable<PlayerStateModel> get playerState =>

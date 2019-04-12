@@ -4,7 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 /// A class that handles logging the user in to Firebase.
 abstract class AuthHandlerBase {
   /// Get the current user's user ID.
-  Future<String> uid();
+  Future<String> uid({bool checked = true});
 
   /// Attempt to sign the user in silently.
   Future<GoogleSignInAccount> signInSilently();

@@ -8,7 +8,7 @@ class UserModel {
   /// The current search for this user.
   final SearchModel search;
 
-  UserModel(this.uid, this.search);
+  UserModel.empty(this.uid) : search = SearchModel.empty();
 
   UserModel.fromMap(Map map)
       : uid = map["uid"],

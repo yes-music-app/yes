@@ -1,11 +1,13 @@
+import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/login_bloc.dart';
-import 'package:yes_music/blocs/session_bloc.dart';
+import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/confirmation_dialog.dart';
 
 enum BarActions {
+  SID,
   LEAVE,
   LOGOUT,
 }
@@ -18,6 +20,9 @@ List<Widget> getAppBarActions(
   List<PopupMenuItem<BarActions>> items = [];
   actions.forEach((BarActions action) {
     switch (action) {
+      case BarActions.SID:
+        items.add(_getSIDItem(context));
+        break;
       case BarActions.LEAVE:
         items.add(_getLeaveItem(context));
         break;
@@ -33,6 +38,9 @@ List<Widget> getAppBarActions(
     PopupMenuButton<BarActions>(
       onSelected: (BarActions result) {
         switch (result) {
+          case BarActions.SID:
+            _copySID(context);
+            break;
           case BarActions.LEAVE:
             _leave(context);
             break;
@@ -46,6 +54,30 @@ List<Widget> getAppBarActions(
       itemBuilder: (BuildContext context) => items,
     ),
   ];
+}
+
+/// Gets the menu item for displaying the SID.
+PopupMenuItem<BarActions> _getSIDItem(BuildContext context) {
+  String sid = BlocProvider.of<SessionStateBloc>(context).sid();
+  String text = FlutterI18n.translate(context, "main.sid") + ": " + sid;
+
+  return PopupMenuItem<BarActions>(
+    value: BarActions.SID,
+    child: Text(text),
+  );
+}
+
+/// Copies the current session ID to the clipboard.
+void _copySID(BuildContext context) {
+  String sid = BlocProvider.of<SessionStateBloc>(context).sid();
+  ClipboardManager.copyToClipBoard(sid).then((_) {
+    final snackBar = SnackBar(
+      content: Text(
+        FlutterI18n.translate(context, "main.sidMessage"),
+      ),
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
+  });
 }
 
 /// Gets the menu item for the leave action.
@@ -70,9 +102,7 @@ void _leave(BuildContext context) {
     "confirm",
     "cancel",
     () {
-      BlocProvider.of<SessionBloc>(context)
-          .stateSink
-          .add(SessionState.LEAVING);
+      BlocProvider.of<SessionStateBloc>(context).sink.add(SessionState.LEAVING);
     },
     () {},
   );

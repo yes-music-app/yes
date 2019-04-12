@@ -7,9 +7,17 @@ class FirebaseAuthHandler implements AuthHandlerBase {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
-  Future<String> uid() async {
+  Future<String> uid({bool checked = true}) async {
+    // Get the current uid.
     FirebaseUser user = await _firebaseAuth?.currentUser();
-    return user?.uid;
+    String uid = user?.uid;
+
+    // If the uid should be checked, ensure that it is not null or empty.
+    if (checked && (uid == null || uid.isEmpty)) {
+      throw StateError("errors.database.uid");
+    }
+
+    return uid;
   }
 
   @override

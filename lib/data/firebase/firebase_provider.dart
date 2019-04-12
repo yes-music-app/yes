@@ -1,13 +1,13 @@
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 import 'package:yes_music/data/firebase/firebase_auth_handler.dart';
-import 'package:yes_music/data/firebase/firebase_transaction_handler.dart';
-import 'package:yes_music/data/firebase/transaction_handler_base.dart';
+import 'package:yes_music/data/firebase/session_state_handler.dart';
+import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 import 'package:yes_music/data/flavor.dart';
 
 class FirebaseProvider {
   Flavor _flavor;
   AuthHandlerBase _authHandler;
-  TransactionHandlerBase _transactionHandler;
+  SessionStateHandlerBase _sessionHandler;
 
   /// A singleton instance of the Firebase provider.
   static final FirebaseProvider _instance = FirebaseProvider._internal();
@@ -29,25 +29,26 @@ class FirebaseProvider {
         }
 
         return _authHandler;
-        break;
+      case Flavor.MOCK:
+        throw UnimplementedError("Mock auth handler not yet implemented.");
       default:
         throw StateError("Firebase provider flavor not set");
         break;
     }
   }
 
-  TransactionHandlerBase getTransactionHandler() {
+  SessionStateHandlerBase getSessionStateHandler() {
     switch (_flavor) {
       case Flavor.REMOTE:
-        if (_transactionHandler == null) {
-          _transactionHandler = FirebaseTransactionHandler();
+        if (_sessionHandler == null) {
+          _sessionHandler = SessionStateHandler();
         }
 
-        return _transactionHandler;
-        break;
+        return _sessionHandler;
+      case Flavor.MOCK:
+        throw UnimplementedError("Mock session handler not yet implemented.");
       default:
         throw StateError("Firebase provider flavor not set");
-        break;
     }
   }
 }
