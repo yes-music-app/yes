@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:yes_music/blocs/create_bloc.dart';
+import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/custom_button.dart';
 import 'package:yes_music/components/common/failed_alert.dart';
@@ -15,26 +15,17 @@ class CreateScreen extends StatefulWidget {
 }
 
 class _CreateScreenState extends State<CreateScreen> {
-  CreateBloc bloc;
+  SessionStateBloc _stateBloc;
   StreamSubscription subscription;
 
   @override
   void initState() {
     // Get a reference to the create bloc for this context.
-    bloc = BlocProvider.of<CreateBloc>(context);
+    _stateBloc = BlocProvider.of<SessionStateBloc>(context);
 
     // Create a subscription to the bloc's state stream.
-    subscription = bloc.stream.listen(
-      (CreateSessionState state) {
-        switch (state) {
-          case CreateSessionState.NOT_CREATED:
-            // If we are in the "zero state", tell the bloc to create a session.
-            bloc.sink.add(CreateSessionState.CREATING);
-            break;
-          default:
-            break;
-        }
-      },
+    subscription = _stateBloc.stream.listen(
+      (SessionState state) {},
       onError: (e) {
         // If the error was produced by the bloc, retrieve the error message.
         String message = e is StateError ? e.message : "errors.unknown";
@@ -58,10 +49,10 @@ class _CreateScreenState extends State<CreateScreen> {
       child: Container(
         child: Center(
           child: StreamBuilder(
-            stream: bloc.stream,
+            stream: _stateBloc.stream,
             builder: (
               BuildContext context,
-              AsyncSnapshot<CreateSessionState> snapshot,
+              AsyncSnapshot<SessionState> snapshot,
             ) {
               // If there is no stream data or there is an error, show a
               // loading indicator.
@@ -70,12 +61,9 @@ class _CreateScreenState extends State<CreateScreen> {
               }
 
               switch (snapshot.data) {
-                case CreateSessionState.CREATED:
-                  // If the session has been created, show the user their
-                  // session ID.
+                case SessionState.CREATED:
                   return _getBody();
                 default:
-                  // If the session is being created, show a loading indicator.
                   return loadingIndicator();
               }
             },
@@ -105,7 +93,7 @@ class _CreateScreenState extends State<CreateScreen> {
           padding: EdgeInsets.only(bottom: 10),
         ),
         Text(
-          bloc.sid,
+          _stateBloc.sid(checked: true),
           style: Theme.of(context).textTheme.subhead,
         ),
         Padding(

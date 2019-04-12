@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:yes_music/blocs/app_remote_bloc.dart';
-import 'package:yes_music/blocs/create_bloc.dart';
-import 'package:yes_music/blocs/join_bloc.dart';
-import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/login/login_screen.dart';
 import 'package:yes_music/components/main/main_screen.dart';
@@ -25,17 +22,8 @@ final RouteCallback appRemoteCallback = (context) => BlocProvider(
       child: AppRemoteScreen(),
     );
 
-final RouteCallback createCallback = (context) => BlocProvider(
-      bloc: CreateBloc(),
-      child: CreateScreen(),
-    );
+final RouteCallback createCallback = (context) => CreateScreen();
 
-final RouteCallback joinCallback = (context) => BlocProvider(
-      bloc: JoinBloc(),
-      child: JoinScreen(),
-    );
+final RouteCallback joinCallback = (context) => JoinScreen();
 
-final RouteCallback mainCallback = (context) => BlocProvider(
-      bloc: SessionStateBloc(),
-      child: MainScreen(),
-    );
+final RouteCallback mainCallback = (context) => MainScreen();
