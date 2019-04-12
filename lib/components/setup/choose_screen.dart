@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/login_bloc.dart';
+import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/bar_actions.dart';
 import 'package:yes_music/components/common/custom_button.dart';
@@ -14,13 +15,16 @@ class ChooseScreen extends StatefulWidget {
 }
 
 class _ChooseScreenState extends State<ChooseScreen> {
-  LoginBloc _bloc;
-  StreamSubscription _subscription;
+  LoginBloc _loginBloc;
+  SessionStateBloc _stateBloc;
+  StreamSubscription _loginSub;
 
   @override
   void initState() {
-    _bloc = BlocProvider.of<LoginBloc>(context);
-    _subscription = _bloc.stream.listen(
+    _stateBloc = BlocProvider.of<SessionStateBloc>(context);
+
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
+    _loginSub = _loginBloc.stream.listen(
       (FirebaseAuthState state) {
         switch (state) {
           case FirebaseAuthState.UNAUTHORIZED:
@@ -48,7 +52,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
         ),
       ),
       body: StreamBuilder(
-        stream: _bloc.stream,
+        stream: _loginBloc.stream,
         builder: (
           BuildContext context,
           AsyncSnapshot<FirebaseAuthState> snapshot,
@@ -70,7 +74,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
 
   @override
   void dispose() {
-    _subscription.cancel();
+    _loginSub.cancel();
     super.dispose();
   }
 
@@ -82,6 +86,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
         children: <Widget>[
           CustomButton.withTheme(
             onPressed: () {
+              _stateBloc.sink.add(SessionState.CREATING);
               Navigator.of(context).pushNamed("/appRemote");
             },
             theme: Theme.of(context),
@@ -96,6 +101,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
           ),
           CustomButton.withTheme(
             onPressed: () {
+              _stateBloc.sink.add(SessionState.AWAITING_SID);
               Navigator.of(context).pushNamed("/join");
             },
             theme: Theme.of(context),

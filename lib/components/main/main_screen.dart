@@ -21,7 +21,7 @@ class _MainScreenState extends State<MainScreen> {
     _sessionBloc = BlocProvider.of<SessionStateBloc>(context);
 
     _stateSubscription =
-        _sessionBloc.stateStream.listen((SessionState state) {
+        _sessionBloc.stream.listen((SessionState state) {
       switch (state) {
         case SessionState.INACTIVE:
           _pushLoginScreen();
@@ -38,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       child: StreamBuilder(
-        stream: _sessionBloc.stateStream,
+        stream: _sessionBloc.stream,
         builder: (
           BuildContext context,
           AsyncSnapshot<SessionState> snapshot,

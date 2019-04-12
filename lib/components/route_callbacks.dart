@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:yes_music/blocs/app_remote_bloc.dart';
 import 'package:yes_music/blocs/create_bloc.dart';
 import 'package:yes_music/blocs/join_bloc.dart';
-import 'package:yes_music/blocs/rejoin_bloc.dart';
 import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/login/login_screen.dart';
@@ -17,10 +16,7 @@ typedef RouteCallback = Widget Function(BuildContext context);
 
 final RouteCallback loginCallback = (context) => LoginScreen();
 
-final RouteCallback rejoinCallback = (context) => BlocProvider(
-      bloc: RejoinBloc(),
-      child: RejoinScreen(),
-    );
+final RouteCallback rejoinCallback = (context) => RejoinScreen();
 
 final RouteCallback chooseCallback = (context) => ChooseScreen();
 

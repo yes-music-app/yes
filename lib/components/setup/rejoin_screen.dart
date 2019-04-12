@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:yes_music/blocs/rejoin_bloc.dart';
+import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/failed_alert.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
@@ -13,25 +13,25 @@ class RejoinScreen extends StatefulWidget {
 }
 
 class _RejoinScreenState extends State<RejoinScreen> {
-  RejoinBloc _rejoinBloc;
+  SessionStateBloc _stateBloc;
   StreamSubscription _stateSub;
 
   @override
   void initState() {
     // Retrieve a reference to the rejoin bloc for this context.
-    _rejoinBloc = BlocProvider.of<RejoinBloc>(context);
+    _stateBloc = BlocProvider.of<SessionStateBloc>(context);
 
     // Create a subscription to the bloc's state stream.
-    _stateSub = _rejoinBloc.stateStream.listen(
-      (RejoinState state) {
+    _stateSub = _stateBloc.stream.listen(
+      (SessionState state) {
         switch (state) {
-          case RejoinState.NO_SESSION:
-            // If the rejoin bloc was unable to find a session to rejoin, push
-            // the choose screen.
+          case SessionState.INACTIVE:
+            _stateBloc.sink.add(SessionState.REJOINING);
+            break;
+          case SessionState.CHOOSING:
             _pushChooseScreen();
             break;
-          case RejoinState.SESSION_JOINED:
-            // If the rejoin bloc found a session to rejoin, join it.
+          case SessionState.ACTIVE:
             _pushMainScreen();
             break;
           default:
@@ -48,7 +48,7 @@ class _RejoinScreenState extends State<RejoinScreen> {
           FlutterI18n.translate(context, message),
           // When they dismiss the message, push the not rejoined state to the
           // bloc.
-          () => _rejoinBloc.stateSink.add(RejoinState.NOT_REJOINED),
+          () => _stateBloc.sink.add(SessionState.CHOOSING),
         );
       },
     );

@@ -107,7 +107,6 @@ class _JoinScreenState extends State<JoinScreen> {
           ),
           onPressed: () {
             bloc.sidSink.add(sidController.value.text);
-            sidController.value = TextEditingValue(text: "");
           },
           theme: Theme.of(context),
         ),
