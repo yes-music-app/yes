@@ -52,8 +52,7 @@ class JoinBloc implements BlocBase {
     _stateHandler.joinSession(sid).then((_) {
       _joinState.add(JoinSessionState.JOINED);
     }).catchError((e) {
-      StateError error = e is StateError ? e : StateError("errors.unknown");
-      _joinState.addError(error);
+      _joinState.addError(e);
     });
   }
 

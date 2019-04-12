@@ -94,6 +94,9 @@ class SessionStateHandler implements SessionStateHandlerBase {
   /// Joins a session that is already in progress.
   @override
   Future joinSession(String sid) async {
+    // Case the SID.
+    sid = sid.toUpperCase();
+
     // Acquire the current UID.
     String uid = await _uid();
 
@@ -112,7 +115,7 @@ class SessionStateHandler implements SessionStateHandlerBase {
 
     // Attempt to write the new value to the session database.
     UserModel model = UserModel(uid, SearchModel.empty());
-    _firebase.child(sid).child(path).set(model.toMap()).catchError(() {
+    _firebase.child(sid).child(path).set(model.toMap()).catchError((e) {
       throw StateError("errors.session.session_write");
     });
 
