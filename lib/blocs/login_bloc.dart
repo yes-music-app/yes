@@ -6,6 +6,8 @@ import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
+import 'package:yes_music/feature_flags/flag_provider.dart';
+import 'package:yes_music/feature_flags/index.dart';
 
 /// An enumeration of the potential states that a login operation can be in.
 enum FirebaseAuthState {
@@ -55,6 +57,10 @@ class LoginBloc implements BlocBase {
 
   /// Attempts to sign the user in without a prompt.
   void _signInSilently() async {
+    if (FlagProvider().getFlag(SIGN_OUT)) {
+      await _authHandler.signOut();
+    }
+
     GoogleSignInAccount googleAccount = await _authHandler.signInSilently();
 
     if (googleAccount == null) {
