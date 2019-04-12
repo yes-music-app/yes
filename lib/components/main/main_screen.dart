@@ -23,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
     _stateSubscription =
         _sessionBloc.stateStream.listen((SessionState state) {
       switch (state) {
-        case SessionState.LEFT:
+        case SessionState.INACTIVE:
           _pushLoginScreen();
           break;
         default:

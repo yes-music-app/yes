@@ -17,7 +17,6 @@ enum SessionState {
   CREATED,
   ACTIVE,
   LEAVING,
-  LEFT,
 }
 
 /// A bloc that handles managing session state.
@@ -28,7 +27,7 @@ class SessionStateBloc implements BlocBase {
 
   /// A [BehaviorSubject] that broadcasts the current state of the session.
   final BehaviorSubject<SessionState> _stateSubject =
-      BehaviorSubject.seeded(SessionState.ACTIVE);
+      BehaviorSubject.seeded(SessionState.INACTIVE);
 
   ValueObservable<SessionState> get stateStream => _stateSubject.stream;
 
@@ -54,9 +53,10 @@ class SessionStateBloc implements BlocBase {
   void _leaveSession() async {
     await _stateHandler.leaveSession().catchError((e) {
       _stateSubject.addError(e);
+      return;
     });
 
-    _stateSubject.add(SessionState.LEFT);
+    _stateSubject.add(SessionState.INACTIVE);
   }
 
   @override
