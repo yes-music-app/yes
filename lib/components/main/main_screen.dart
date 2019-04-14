@@ -68,14 +68,13 @@ class _MainScreenState extends State<MainScreen> {
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          Builder(
-            builder: (BuildContext context) =>
+      body: Builder(
+        builder: (BuildContext context) => CustomScrollView(
+              slivers: <Widget>[
                 _getAppBar(width, Uint8List(0), context),
-          ),
-          _getQueue(),
-        ],
+                _getQueue(),
+              ],
+            ),
       ),
       floatingActionButton: _getAddButton(),
     );
