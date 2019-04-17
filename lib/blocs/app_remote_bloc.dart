@@ -44,7 +44,7 @@ class AppRemoteBloc implements BlocBase {
   }
 
   /// Connects to the Spotify app remote.
-  void _connect() {
+  Future _connect() async {
     _connectionHandler.connect().then((_) {
       _connectionState.add(SpotifyConnectionState.CONNECTED);
     }).catchError((e) {

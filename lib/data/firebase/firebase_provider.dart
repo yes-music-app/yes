@@ -5,7 +5,7 @@ import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 import 'package:yes_music/data/flavor.dart';
 
 class FirebaseProvider {
-  Flavor _flavor;
+  Flavor _flavor = Flavor.REMOTE;
   AuthHandlerBase _authHandler;
   SessionStateHandlerBase _sessionHandler;
 
