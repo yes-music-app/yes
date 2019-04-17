@@ -1,7 +1,7 @@
 import 'package:yes_music/data/flavor.dart';
 import 'package:yes_music/data/spotify/connection_handler_base.dart';
 import 'package:yes_music/data/spotify/playback_handler_base.dart';
-import 'package:yes_music/data/spotify/spotify_auth_handler.dart';
+import 'package:yes_music/data/spotify/spotify_token_handler.dart';
 import 'package:yes_music/data/spotify/spotify_connection_handler.dart';
 import 'package:yes_music/data/spotify/spotify_playback_handler.dart';
 import 'package:yes_music/data/spotify/token_handler_base.dart';
@@ -54,7 +54,7 @@ class SpotifyProvider {
     }
   }
 
-  TokenHandlerBase getAuthHandler() {
+  TokenHandlerBase getTokenHandler() {
     switch (_flavor) {
       case Flavor.REMOTE:
         if (_tokenHandler == null) {
