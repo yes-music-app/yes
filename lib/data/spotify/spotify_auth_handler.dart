@@ -4,8 +4,12 @@ import 'package:yes_music/data/spotify/token_handler_base.dart';
 class SpotifyTokenHandler implements TokenHandlerBase {
   /// Request authorization from the Spotify Web API.
   Future<String> requestAuthUrl() async {
-    return await CloudFunctions.instance.call(
-      functionName: "requestAuth",
-    );
+    try {
+      return await CloudFunctions.instance.call(
+        functionName: "requestAuth",
+      );
+    } catch (e) {
+      throw StateError("errors.spotify.auth_url");
+    }
   }
 }

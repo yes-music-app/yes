@@ -48,7 +48,7 @@ class AppRemoteBloc implements BlocBase {
     _connectionHandler.connect().then((_) {
       _connectionState.add(SpotifyConnectionState.CONNECTED);
     }).catchError((e) {
-      _connectionState.addError(StateError("errors.remote.connect"));
+      _connectionState.addError(e);
     });
   }
 

@@ -45,6 +45,9 @@
       "signIn": "Failed to sign in with this Google account.",
       "singOut": "Failed to sign out."
     },
+    "spotify": {
+      "auth_url": "Failed to retrieve Spotify authorization URL."
+    },
     "remote": {
       "connect": "Failed to connect to the Spotify app."
     },
