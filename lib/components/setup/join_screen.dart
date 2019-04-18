@@ -22,7 +22,7 @@ class _JoinScreenState extends State<JoinScreen> {
   @override
   void initState() {
     _stateBloc = BlocProvider.of<SessionStateBloc>(context);
-    _stateSub = _stateBloc.stream.listen(
+    _stateSub = _stateBloc.stateStream.listen(
       (SessionState state) {
         switch (state) {
           case SessionState.ACTIVE:
@@ -37,7 +37,7 @@ class _JoinScreenState extends State<JoinScreen> {
         showFailedAlert(
           context,
           FlutterI18n.translate(context, message),
-          () => _stateBloc.sink.add(SessionState.AWAITING_SID),
+          () => _stateBloc.stateSink.add(SessionState.AWAITING_SID),
         );
       },
     );
@@ -51,7 +51,7 @@ class _JoinScreenState extends State<JoinScreen> {
       child: Scaffold(
         body: Center(
           child: StreamBuilder(
-            stream: _stateBloc.stream,
+            stream: _stateBloc.stateStream,
             builder: (
               BuildContext context,
               AsyncSnapshot<SessionState> snapshot,
@@ -72,7 +72,7 @@ class _JoinScreenState extends State<JoinScreen> {
       ),
       onWillPop: () {
         return Future.value(
-          _stateBloc.stream.value == SessionState.AWAITING_SID,
+          _stateBloc.stateStream.value == SessionState.AWAITING_SID,
         );
       },
     );

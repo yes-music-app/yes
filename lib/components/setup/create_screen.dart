@@ -24,7 +24,7 @@ class _CreateScreenState extends State<CreateScreen> {
     _stateBloc = BlocProvider.of<SessionStateBloc>(context);
 
     // Create a subscription to the bloc's state stream.
-    subscription = _stateBloc.stream.listen(
+    subscription = _stateBloc.stateStream.listen(
       (SessionState state) {},
       onError: (e) {
         // If the error was produced by the bloc, retrieve the error message.
@@ -49,7 +49,7 @@ class _CreateScreenState extends State<CreateScreen> {
       child: Container(
         child: Center(
           child: StreamBuilder(
-            stream: _stateBloc.stream,
+            stream: _stateBloc.stateStream,
             builder: (
               BuildContext context,
               AsyncSnapshot<SessionState> snapshot,
@@ -124,7 +124,7 @@ class _CreateScreenState extends State<CreateScreen> {
   }
 
   void _pushMainScreen() {
-    _stateBloc.sink.add(SessionState.ACTIVE);
+    _stateBloc.stateSink.add(SessionState.ACTIVE);
     Navigator.of(context).pushReplacementNamed("/main");
   }
 }

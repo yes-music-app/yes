@@ -1,5 +1,6 @@
 import 'package:yes_music/helpers/list_utils.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';
+import 'package:yes_music/models/spotify/token_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
 import 'package:yes_music/models/state/user_model.dart';
 
@@ -10,6 +11,7 @@ const String QUEUE_PATH = "queue";
 const String HISTORY_PATH = "history";
 const String HOST_PATH = "host";
 const String USERS_PATH = "users";
+const String TOKENS_PATH = "tokens";
 
 /// A session of users.
 class SessionModel {
@@ -31,9 +33,11 @@ class SessionModel {
   /// The list of current users.
   final List<UserModel> users;
 
-  SessionModel.empty(String sid, UserModel newHost)
-      : sid = sid,
-        playerState = null,
+  /// The tokens to be used for this session.
+  final TokenModel tokens;
+
+  SessionModel.empty(this.sid, UserModel newHost, this.tokens)
+      : playerState = null,
         queue = [],
         history = [],
         host = newHost.uid,
@@ -47,7 +51,8 @@ class SessionModel {
         queue = SongModel.fromMapList(map[QUEUE_PATH]),
         history = SongModel.fromMapList(map[HISTORY_PATH]),
         host = map[HOST_PATH],
-        users = UserModel.fromMapList(map[USERS_PATH]);
+        users = UserModel.fromMapList(map[USERS_PATH]),
+        tokens = TokenModel.fromMap(map[TOKENS_PATH]);
 
   Map<String, dynamic> toMap() {
     return {
@@ -57,6 +62,7 @@ class SessionModel {
       HISTORY_PATH: SongModel.toMapList(history),
       HOST_PATH: host,
       USERS_PATH: UserModel.toMapList(users),
+      TOKENS_PATH: tokens?.toMap(),
     };
   }
 
@@ -68,7 +74,8 @@ class SessionModel {
       listsEqual(other.queue, queue) &&
       listsEqual(other.history, history) &&
       other.host == host &&
-      listsEqual(other.users, users);
+      listsEqual(other.users, users) &&
+      other.tokens == tokens;
 
   @override
   int get hashCode =>
@@ -77,5 +84,6 @@ class SessionModel {
       queue.hashCode ^
       history.hashCode ^
       host.hashCode ^
-      users.hashCode;
+      users.hashCode ^
+      tokens.hashCode;
 }

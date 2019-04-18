@@ -34,6 +34,7 @@ class TokenModel {
         refreshToken = newRefresh == null ? old.refreshToken : newRefresh,
         tokenDirty = newDirty == null ? old.tokenDirty : newDirty;
 
+  /// Convert this token model into a map.
   Map<String, dynamic> toMap() {
     return {
       ACCESS_TOKEN_PATH: accessToken,
