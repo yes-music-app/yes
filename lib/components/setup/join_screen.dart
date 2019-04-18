@@ -108,7 +108,8 @@ class _JoinScreenState extends State<JoinScreen> {
             style: Theme.of(context).textTheme.button,
           ),
           onPressed: () {
-            _stateBloc.joinSession(_sidController.value.text);
+            _stateBloc.stateSink.add(SessionState.JOINING);
+            _stateBloc.sidSink.add(_sidController.value.text);
           },
           theme: Theme.of(context),
         ),

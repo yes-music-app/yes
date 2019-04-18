@@ -86,8 +86,8 @@ class _ChooseScreenState extends State<ChooseScreen> {
         children: <Widget>[
           CustomButton.withTheme(
             onPressed: () {
-              _stateBloc.stateSink.add(SessionState.CREATING);
-              Navigator.of(context).pushNamed("/appRemote");
+              _stateBloc.stateSink.add(SessionState.AWAITING_URL);
+              Navigator.of(context).pushNamed("/spotify");
             },
             theme: Theme.of(context),
             child: Text(

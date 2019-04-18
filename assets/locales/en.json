@@ -38,6 +38,7 @@
   "errors": {
     "title": "Error",
     "unknown": "Unknown error.",
+    "order": "Tried to perform an operation out of order.",
     "login": {
       "googleSignIn": "Failed to sign in with Google.",
       "auth": "Received an invalid account from Google.",

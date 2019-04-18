@@ -2,30 +2,31 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:yes_music/blocs/app_remote_bloc.dart';
+import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/failed_alert.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
 
 /// The screen that handles connection with the Spotify app.
-class AppRemoteScreen extends StatefulWidget {
+class SpotifyConnectScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _AppRemoteScreenState();
+  State<StatefulWidget> createState() => _SpotifyConnectScreenState();
 }
 
-class _AppRemoteScreenState extends State<AppRemoteScreen> {
-  AppRemoteBloc bloc;
-  StreamSubscription subscription;
+class _SpotifyConnectScreenState extends State<SpotifyConnectScreen> {
+  SessionStateBloc _stateBloc;
+  StreamSubscription _stateSub;
 
   @override
   void initState() {
-    bloc = BlocProvider.of<AppRemoteBloc>(context);
-    subscription = bloc.stream.listen((SpotifyConnectionState state) {
+    _stateBloc = BlocProvider.of<SessionStateBloc>(context);
+    _stateSub = _stateBloc.stateStream.listen((SessionState state) {
       switch (state) {
-        case SpotifyConnectionState.DISCONNECTED:
-          bloc.sink.add(SpotifyConnectionState.CONNECTING);
+        case SessionState.AWAITING_URL:
+          _stateBloc.stateSink.add(SessionState.AWAITING_CONNECTION);
           break;
-        case SpotifyConnectionState.CONNECTED:
+        case SessionState.AWAITING_CONNECTION:
+          _stateBloc.tokenSink.add(null);
           _pushCreateScreen();
           break;
         default:
@@ -36,10 +37,7 @@ class _AppRemoteScreenState extends State<AppRemoteScreen> {
       showFailedAlert(
         context,
         FlutterI18n.translate(context, message),
-        () => Navigator.of(context).pushNamedAndRemoveUntil(
-              "/choose",
-              (Route<dynamic> route) => false,
-            ),
+        _pushChooseScreen,
       );
     });
 
@@ -57,11 +55,18 @@ class _AppRemoteScreenState extends State<AppRemoteScreen> {
 
   @override
   void dispose() {
-    subscription.cancel();
+    _stateSub.cancel();
     super.dispose();
   }
 
   void _pushCreateScreen() {
     Navigator.of(context).pushReplacementNamed("/create");
+  }
+
+  void _pushChooseScreen() {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      "/choose",
+          (Route<dynamic> route) => false,
+    );
   }
 }

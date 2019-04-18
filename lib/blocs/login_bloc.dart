@@ -68,7 +68,7 @@ class LoginBloc implements BlocBase {
     });
 
     if (googleAccount == null) {
-      _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED);
+      _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY);
       return;
     }
 

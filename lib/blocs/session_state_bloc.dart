@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
-import 'package:yes_music/data/firebase/data_utils.dart';
+import 'package:yes_music/helpers/data_utils.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 import 'package:yes_music/data/spotify/connection_handler_base.dart';
@@ -53,13 +52,26 @@ class SessionStateBloc implements BlocBase {
 
   StreamSink<SessionState> get stateSink => _stateSubject.sink;
 
-  /// A subscription to the session state.
   StreamSubscription<SessionState> _stateSub;
 
   /// A [BehaviorSubject] that broadcasts the current auth url.
   final BehaviorSubject<String> _urlSubject = BehaviorSubject.seeded(null);
 
   ValueObservable<String> get urlStream => _urlSubject.stream;
+
+  /// A [BehaviorSubject] that receives the latest [TokenModel].
+  final BehaviorSubject<TokenModel> _tokenSubject = BehaviorSubject();
+
+  StreamSink<TokenModel> get tokenSink => _tokenSubject.sink;
+
+  StreamSubscription _tokenSub;
+
+  /// A [BehaviorSubject] that receives the latest sid to join.
+  final BehaviorSubject<String> _sidSubject = BehaviorSubject();
+
+  StreamSink<String> get sidSink => _sidSubject.sink;
+
+  StreamSubscription _sidSub;
 
   SessionStateBloc() {
     _stateSub = _stateSubject.listen((SessionState state) {
@@ -77,21 +89,10 @@ class SessionStateBloc implements BlocBase {
           break;
       }
     });
-  }
 
-  /// Joins a session with the given sid.
-  void joinSession(String sid) {
-    if (_stateSubject.value == SessionState.AWAITING_SID) {
-      _stateSubject.add(SessionState.JOINING);
-      _joinSession(sid);
-    }
-  }
+    _tokenSub = _tokenSubject.listen(_createSession);
 
-  void createSession(TokenModel tokens) {
-    if (_stateSubject.value == SessionState.AWAITING_CONNECTION) {
-      _stateSubject.add(SessionState.AWAITING_CONNECTION);
-      _createSession(tokens);
-    }
+    _sidSub = _sidSubject.listen(_joinSession);
   }
 
   /// A getter for the session ID.
@@ -108,6 +109,11 @@ class SessionStateBloc implements BlocBase {
 
   /// Attempts to join a session with the given [sid].
   void _joinSession(String sid) async {
+    if(_stateSubject.value != SessionState.JOINING) {
+      _stateSubject.addError(StateError("errors.order"));
+      return;
+    }
+
     _stateHandler.joinSession(sid).then((_) {
       _stateSubject.add(SessionState.ACTIVE);
     }).catchError((e) {
@@ -127,43 +133,26 @@ class SessionStateBloc implements BlocBase {
 
   /// Attempts to create a session.
   void _createSession(TokenModel tokens) async {
+    if(_stateSubject.value != SessionState.AWAITING_CONNECTION) {
+      _stateSubject.addError(StateError("errors.order"));
+      return;
+    }
+
+    _connectionHandler.connect().then((_) {
+      _stateSubject.add(SessionState.CREATING);
+    }).catchError((e) {
+      _stateSubject.addError(e);
+      return;
+    });
+
     UserModel user = UserModel.empty(await _authHandler.uid());
-    final sid = await _generateSID();
+    final sid = await generateSID();
     SessionModel model = SessionModel.empty(sid, user, tokens);
     _stateHandler.createSession(model).then((_) {
       _stateSubject.add(SessionState.CREATED);
     }).catchError((e) {
       _stateSubject.addError(e);
     });
-  }
-
-  /// Generates a unique session ID.
-  Future<String> _generateSID() async {
-    String sid;
-
-    do {
-      Random random = Random();
-
-      List<int> codes = [];
-      for (int i = 0; i < 6; i++) {
-        int code = random.nextInt(36);
-        if (code < 10) {
-          code += 48;
-        } else {
-          code += 55;
-        }
-        codes.add(code);
-      }
-
-      sid = String.fromCharCodes(codes);
-
-      // If this session already exists, generate another sid.
-      if (await sessionExists(sid)) {
-        sid = null;
-      }
-    } while (sid == null);
-
-    return sid;
   }
 
   /// Leaves the current session.
@@ -178,8 +167,12 @@ class SessionStateBloc implements BlocBase {
 
   @override
   void dispose() {
-    _stateSub.cancel();
-    _stateSubject.close();
-    _urlSubject.close();
+    _stateSub?.cancel();
+    _stateSubject?.close();
+    _urlSubject?.close();
+    _tokenSub?.cancel();
+    _tokenSubject?.close();
+    _sidSub?.cancel();
+    _sidSubject?.close();
   }
 }

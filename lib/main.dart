@@ -6,7 +6,6 @@ import 'package:yes_music/blocs/login_bloc.dart';
 import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/route_callbacks.dart';
-import 'package:yes_music/components/setup/spotify_auth_screen.dart';
 import 'package:yes_music/components/themes.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/flavor.dart';
@@ -26,9 +25,7 @@ class YesApp extends StatelessWidget {
   final Map<String, RouteCallback> _routes = {
     "/": loginCallback,
     "/rejoin": rejoinCallback,
-    "/choose": chooseCallback,
-    "/spotifyAuth": (context) => SpotifyAuthScreen(),
-    "/appRemote": appRemoteCallback,
+    "/spotify": spotifyCallback,
     "/create": createCallback,
     "/join": joinCallback,
     "/main": mainCallback,
