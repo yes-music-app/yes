@@ -24,6 +24,7 @@ void main() async {
 class YesApp extends StatelessWidget {
   final Map<String, RouteCallback> _routes = {
     "/": loginCallback,
+    "/choose": chooseCallback,
     "/rejoin": rejoinCallback,
     "/spotify": spotifyCallback,
     "/create": createCallback,

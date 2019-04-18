@@ -22,7 +22,7 @@ class _SpotifyConnectScreenState extends State<SpotifyConnectScreen> {
     _stateBloc = BlocProvider.of<SessionStateBloc>(context);
     _stateSub = _stateBloc.stateStream.listen((SessionState state) {
       switch (state) {
-        case SessionState.AWAITING_URL:
+        case SessionState.AWAITING_TOKENS:
           _stateBloc.stateSink.add(SessionState.AWAITING_CONNECTION);
           break;
         case SessionState.AWAITING_CONNECTION:
@@ -66,7 +66,7 @@ class _SpotifyConnectScreenState extends State<SpotifyConnectScreen> {
   void _pushChooseScreen() {
     Navigator.of(context).pushNamedAndRemoveUntil(
       "/choose",
-          (Route<dynamic> route) => false,
+      (Route<dynamic> route) => false,
     );
   }
 }

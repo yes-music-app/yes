@@ -109,7 +109,7 @@ class SessionStateBloc implements BlocBase {
 
   /// Attempts to join a session with the given [sid].
   void _joinSession(String sid) async {
-    if(_stateSubject.value != SessionState.JOINING) {
+    if (_stateSubject.value != SessionState.JOINING) {
       _stateSubject.addError(StateError("errors.order"));
       return;
     }
@@ -133,12 +133,12 @@ class SessionStateBloc implements BlocBase {
 
   /// Attempts to create a session.
   void _createSession(TokenModel tokens) async {
-    if(_stateSubject.value != SessionState.AWAITING_CONNECTION) {
+    if (_stateSubject.value != SessionState.AWAITING_CONNECTION) {
       _stateSubject.addError(StateError("errors.order"));
       return;
     }
 
-    _connectionHandler.connect().then((_) {
+    await _connectionHandler.connect().then((_) {
       _stateSubject.add(SessionState.CREATING);
     }).catchError((e) {
       _stateSubject.addError(e);
