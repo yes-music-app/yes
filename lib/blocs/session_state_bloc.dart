@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
-import 'package:yes_music/helpers/data_utils.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 import 'package:yes_music/data/spotify/connection_handler_base.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
 import 'package:yes_music/data/spotify/token_handler_base.dart';
+import 'package:yes_music/helpers/data_utils.dart';
 import 'package:yes_music/models/spotify/token_model.dart';
 import 'package:yes_music/models/state/session_model.dart';
 import 'package:yes_music/models/state/user_model.dart';
@@ -24,7 +24,6 @@ enum SessionState {
   JOINING,
   AWAITING_URL,
   AWAITING_TOKENS,
-  AWAITING_CONNECTION,
   CREATING,
   CREATED,
   ACTIVE,
@@ -123,9 +122,13 @@ class SessionStateBloc implements BlocBase {
 
   /// Fetches the auth URL.
   void _fetchURL() {
+    if (_stateSubject.value != SessionState.AWAITING_URL) {
+      _stateSubject.addError(StateError("errors.order"));
+      return;
+    }
+
     _tokenHandler.requestAuthUrl().then((String url) {
       _urlSubject.add(url);
-      _stateSubject.add(SessionState.AWAITING_TOKENS);
     }).catchError((e) {
       _stateSubject.addError(e);
     });
@@ -133,14 +136,12 @@ class SessionStateBloc implements BlocBase {
 
   /// Attempts to create a session.
   void _createSession(TokenModel tokens) async {
-    if (_stateSubject.value != SessionState.AWAITING_CONNECTION) {
+    if (_stateSubject.value != SessionState.CREATING) {
       _stateSubject.addError(StateError("errors.order"));
       return;
     }
 
-    await _connectionHandler.connect().then((_) {
-      _stateSubject.add(SessionState.CREATING);
-    }).catchError((e) {
+    await _connectionHandler.connect().catchError((e) {
       _stateSubject.addError(e);
       return;
     });

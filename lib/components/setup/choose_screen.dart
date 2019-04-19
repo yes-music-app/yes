@@ -87,7 +87,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
           CustomButton.withTheme(
             onPressed: () {
               _stateBloc.stateSink.add(SessionState.AWAITING_URL);
-              Navigator.of(context).pushNamed("/spotify");
+              Navigator.of(context).pushNamed("/create");
             },
             theme: Theme.of(context),
             child: Text(

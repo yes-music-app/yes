@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yes_music/components/login/login_screen.dart';
 import 'package:yes_music/components/main/main_screen.dart';
-import 'package:yes_music/components/setup/spotify_connect_screen.dart';
 import 'package:yes_music/components/setup/choose_screen.dart';
 import 'package:yes_music/components/setup/create_screen.dart';
 import 'package:yes_music/components/setup/join_screen.dart';
@@ -14,8 +13,6 @@ final RouteCallback loginCallback = (context) => LoginScreen();
 final RouteCallback rejoinCallback = (context) => RejoinScreen();
 
 final RouteCallback chooseCallback = (context) => ChooseScreen();
-
-final RouteCallback spotifyCallback = (context) => SpotifyConnectScreen();
 
 final RouteCallback createCallback = (context) => CreateScreen();
 

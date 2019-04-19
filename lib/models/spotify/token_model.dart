@@ -30,9 +30,9 @@ class TokenModel {
     String newAccess,
     String newRefresh,
     bool newDirty,
-  })  : accessToken = newAccess == null ? old.accessToken : newAccess,
-        refreshToken = newRefresh == null ? old.refreshToken : newRefresh,
-        tokenDirty = newDirty == null ? old.tokenDirty : newDirty;
+  })  : accessToken = newAccess ?? old.accessToken,
+        refreshToken = newRefresh ?? old.refreshToken,
+        tokenDirty = newDirty ?? old.tokenDirty;
 
   /// Convert this token model into a map.
   Map<String, dynamic> toMap() {
@@ -52,7 +52,5 @@ class TokenModel {
 
   @override
   int get hashCode =>
-      accessToken.hashCode ^
-      refreshToken.hashCode ^
-      tokenDirty.hashCode;
+      accessToken.hashCode ^ refreshToken.hashCode ^ tokenDirty.hashCode;
 }
