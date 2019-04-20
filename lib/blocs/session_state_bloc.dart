@@ -53,20 +53,21 @@ class SessionStateBloc implements BlocBase {
 
   StreamSubscription<SessionState> _stateSub;
 
-  /// A [BehaviorSubject] that broadcasts the current auth url.
-  final BehaviorSubject<String> _urlSubject = BehaviorSubject.seeded(null);
+  /// A [StreamController] that broadcasts the current auth url.
+  final StreamController<String> _urlSubject =
+      StreamController<String>.broadcast();
 
-  ValueObservable<String> get urlStream => _urlSubject.stream;
+  Stream<String> get urlStream => _urlSubject.stream;
 
-  /// A [BehaviorSubject] that receives the latest [TokenModel].
-  final BehaviorSubject<TokenModel> _tokenSubject = BehaviorSubject();
+  /// A [StreamController] that receives the latest [TokenModel].
+  final StreamController<TokenModel> _tokenSubject =
+      StreamController<TokenModel>.broadcast();
 
   StreamSink<TokenModel> get tokenSink => _tokenSubject.sink;
 
-  StreamSubscription _tokenSub;
-
-  /// A [BehaviorSubject] that receives the latest sid to join.
-  final BehaviorSubject<String> _sidSubject = BehaviorSubject();
+  /// A [StreamController] that receives the latest sid to join.
+  final StreamController<String> _sidSubject =
+      StreamController<String>.broadcast();
 
   StreamSink<String> get sidSink => _sidSubject.sink;
 
@@ -84,14 +85,18 @@ class SessionStateBloc implements BlocBase {
         case SessionState.AWAITING_URL:
           _fetchURL();
           break;
+        case SessionState.AWAITING_TOKENS:
+          _tokenSubject.stream.first.then((TokenModel tokens) {
+            stateSink.add(SessionState.CREATING);
+            _createSession(tokens);
+          });
+          break;
         default:
           break;
       }
     });
 
-    _tokenSub = _tokenSubject.listen(_createSession);
-
-    _sidSub = _sidSubject.listen(_joinSession);
+    _sidSub = _sidSubject.stream.listen(_joinSession);
   }
 
   /// A getter for the session ID.
@@ -136,21 +141,15 @@ class SessionStateBloc implements BlocBase {
 
   /// Attempts to create a session.
   void _createSession(TokenModel tokens) async {
-    if (_stateSubject.value != SessionState.CREATING) {
-      _stateSubject.addError(StateError("errors.order"));
-      return;
-    }
-
-    await _connectionHandler.connect().catchError((e) {
-      _stateSubject.addError(e);
-      return;
-    });
-
-    UserModel user = UserModel.empty(await _authHandler.uid());
-    final sid = await generateSID();
-    SessionModel model = SessionModel.empty(sid, user, tokens);
-    _stateHandler.createSession(model).then((_) {
-      _stateSubject.add(SessionState.CREATED);
+    _connectionHandler.connect().then((_) async {
+      UserModel user = UserModel.empty(await _authHandler.uid());
+      final sid = await generateSID();
+      SessionModel model = SessionModel.empty(sid, user, tokens);
+      _stateHandler.createSession(model).then((_) {
+        _stateSubject.add(SessionState.CREATED);
+      }).catchError((e) {
+        _stateSubject.addError(e);
+      });
     }).catchError((e) {
       _stateSubject.addError(e);
     });
@@ -171,7 +170,6 @@ class SessionStateBloc implements BlocBase {
     _stateSub?.cancel();
     _stateSubject?.close();
     _urlSubject?.close();
-    _tokenSub?.cancel();
     _tokenSubject?.close();
     _sidSub?.cancel();
     _sidSubject?.close();

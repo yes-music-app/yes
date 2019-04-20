@@ -47,7 +47,8 @@
       "singOut": "Failed to sign out."
     },
     "spotify": {
-      "auth_url": "Failed to retrieve Spotify authorization URL."
+      "auth_url": "Failed to retrieve Spotify authorization URL.",
+      "auth_cancel": "Failed to login with Spotify, please try again."
     },
     "remote": {
       "connect": "Failed to connect to the Spotify app."

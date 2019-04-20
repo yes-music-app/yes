@@ -18,7 +18,6 @@ class CreateScreen extends StatefulWidget {
 class _CreateScreenState extends State<CreateScreen> {
   SessionStateBloc _stateBloc;
   StreamSubscription _stateSub;
-  StreamSubscription _urlSub;
 
   @override
   void initState() {
@@ -43,8 +42,9 @@ class _CreateScreenState extends State<CreateScreen> {
     );
 
     // Launch the WebView when a url is received.
-    _urlSub = _stateBloc.urlStream.listen((_) {
+    _stateBloc.urlStream.first.then((String url) {
       _stateBloc.stateSink.add(SessionState.AWAITING_TOKENS);
+      showAuthWebView(url, _onUrlChange);
     });
 
     super.initState();
@@ -69,8 +69,6 @@ class _CreateScreenState extends State<CreateScreen> {
             switch (snapshot.data) {
               case SessionState.CREATED:
                 return _getBody();
-              case SessionState.AWAITING_TOKENS:
-                return getWebView(_stateBloc.urlStream.value);
               default:
                 return loadingIndicator();
             }
@@ -84,7 +82,6 @@ class _CreateScreenState extends State<CreateScreen> {
   @override
   void dispose() {
     _stateSub.cancel();
-    _urlSub.cancel();
     super.dispose();
   }
 
@@ -124,6 +121,16 @@ class _CreateScreenState extends State<CreateScreen> {
       radius: 20,
       constraints: BoxConstraints.tight(Size(160, 40)),
     );
+  }
+
+  bool _onUrlChange(String url) {
+    if (url.startsWith("yes-music-app://connect")) {
+      _stateBloc.stateSink.add(SessionState.CREATING);
+      _stateBloc.tokenSink.add(null);
+      return true;
+    }
+
+    return false;
   }
 
   void _pushChooseScreen() {
