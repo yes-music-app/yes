@@ -60,10 +60,10 @@ class SessionStateBloc implements BlocBase {
   Stream<String> get urlStream => _urlSubject.stream;
 
   /// A [StreamController] that receives the latest [TokenModel].
-  final StreamController<TokenModel> _tokenSubject =
-      StreamController<TokenModel>.broadcast();
+  final StreamController<String> _codeSubject =
+      StreamController<String>.broadcast();
 
-  StreamSink<TokenModel> get tokenSink => _tokenSubject.sink;
+  StreamSink<String> get codeSink => _codeSubject.sink;
 
   /// A [StreamController] that receives the latest sid to join.
   final StreamController<String> _sidSubject =
@@ -86,9 +86,9 @@ class SessionStateBloc implements BlocBase {
           _fetchURL();
           break;
         case SessionState.AWAITING_TOKENS:
-          _tokenSubject.stream.first.then((TokenModel tokens) {
+          _codeSubject.stream.first.then((String code) {
             stateSink.add(SessionState.CREATING);
-            _createSession(tokens);
+            _createSession(code);
           });
           break;
         default:
@@ -140,11 +140,13 @@ class SessionStateBloc implements BlocBase {
   }
 
   /// Attempts to create a session.
-  void _createSession(TokenModel tokens) async {
+  void _createSession(String code) async {
+    TokenModel tokenModel = TokenModel.initial(code, "refresh");
+
     _connectionHandler.connect().then((_) async {
       UserModel user = UserModel.empty(await _authHandler.uid());
       final sid = await generateSID();
-      SessionModel model = SessionModel.empty(sid, user, tokens);
+      SessionModel model = SessionModel.empty(sid, user, tokenModel);
       _stateHandler.createSession(model).then((_) {
         _stateSubject.add(SessionState.CREATED);
       }).catchError((e) {
@@ -170,7 +172,7 @@ class SessionStateBloc implements BlocBase {
     _stateSub?.cancel();
     _stateSubject?.close();
     _urlSubject?.close();
-    _tokenSubject?.close();
+    _codeSubject?.close();
     _sidSub?.cancel();
     _sidSubject?.close();
   }

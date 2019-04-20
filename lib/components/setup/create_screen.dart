@@ -44,7 +44,11 @@ class _CreateScreenState extends State<CreateScreen> {
     // Launch the WebView when a url is received.
     _stateBloc.urlStream.first.then((String url) {
       _stateBloc.stateSink.add(SessionState.AWAITING_TOKENS);
-      showAuthWebView(url, _onUrlChange);
+      showAuthWebView(
+        url,
+        onSuccess: _onConnectSuccess,
+        onFail: _onConnectFail,
+      );
     });
 
     super.initState();
@@ -123,14 +127,15 @@ class _CreateScreenState extends State<CreateScreen> {
     );
   }
 
-  bool _onUrlChange(String url) {
-    if (url.startsWith("yes-music-app://connect")) {
-      _stateBloc.stateSink.add(SessionState.CREATING);
-      _stateBloc.tokenSink.add(null);
-      return true;
-    }
+  /// The action to perform when the user connects with Spotify.
+  void _onConnectSuccess(String code) {
+    _stateBloc.stateSink.add(SessionState.CREATING);
+    _stateBloc.codeSink.add(code);
+  }
 
-    return false;
+  /// The action to perform when the user fails to connect with Spotify.
+  void _onConnectFail() {
+    _stateBloc.stateSink.addError(StateError("errors.spotify.auth_cancel"));
   }
 
   void _pushChooseScreen() {
