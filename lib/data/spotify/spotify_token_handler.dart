@@ -12,4 +12,16 @@ class SpotifyTokenHandler implements TokenHandlerBase {
       throw StateError("errors.spotify.auth_url");
     }
   }
+
+  /// Request an access token from the Spotify Web API.
+  Future<Map> requestAccessToken(String code) async {
+    try {
+      return await CloudFunctions.instance.call(
+        functionName: "requestAccessToken",
+        parameters: {"code": code},
+      );
+    } catch (e) {
+      throw StateError("errors.spotify.auth_cancel");
+    }
+  }
 }

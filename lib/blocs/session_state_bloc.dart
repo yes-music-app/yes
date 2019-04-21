@@ -141,7 +141,8 @@ class SessionStateBloc implements BlocBase {
 
   /// Attempts to create a session.
   void _createSession(String code) async {
-    TokenModel tokenModel = TokenModel.initial(code, "refresh");
+    final Map data = await _tokenHandler.requestAccessToken(code);
+    final TokenModel tokenModel = generateModel(data);
 
     _connectionHandler.connect().then((_) async {
       UserModel user = UserModel.empty(await _authHandler.uid());
