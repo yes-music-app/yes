@@ -22,11 +22,11 @@ class _RejoinScreenState extends State<RejoinScreen> {
     _stateBloc = BlocProvider.of<SessionStateBloc>(context);
 
     // Create a subscription to the bloc's state stream.
-    _stateSub = _stateBloc.stream.listen(
+    _stateSub = _stateBloc.stateStream.listen(
       (SessionState state) {
         switch (state) {
           case SessionState.INACTIVE:
-            _stateBloc.sink.add(SessionState.REJOINING);
+            _stateBloc.stateSink.add(SessionState.REJOINING);
             break;
           case SessionState.CHOOSING:
             _pushChooseScreen();
@@ -48,7 +48,7 @@ class _RejoinScreenState extends State<RejoinScreen> {
           FlutterI18n.translate(context, message),
           // When they dismiss the message, push the not rejoined state to the
           // bloc.
-          () => _stateBloc.sink.add(SessionState.CHOOSING),
+          () => _stateBloc.stateSink.add(SessionState.CHOOSING),
         );
       },
     );

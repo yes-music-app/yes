@@ -1,16 +1,14 @@
-import 'package:rxdart/rxdart.dart';
-import 'package:yes_music/blocs/app_remote_bloc.dart';
-
+/// Interface for a class that handles connections with Spotify.
 abstract class ConnectionHandlerBase {
-  /// A stream of connection state information from the app remote.
-  ValueObservable<SpotifyConnectionState> get stream;
+  /// Request the authorization URL from the Spotify Web API.
+  Future<String> requestAuthUrl();
+
+  /// Request an access token from the Spotify Web API.
+  Future<dynamic> requestAccessToken(String code);
 
   /// Attempt to connect to the Spotify auth API.
   Future connect();
 
   /// Attempt to disconnect from the Spotify auth API.
   void disconnect();
-
-  /// Dispose of any resources allocated by this handler.
-  void dispose();
 }

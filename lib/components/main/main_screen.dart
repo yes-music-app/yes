@@ -20,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     _sessionBloc = BlocProvider.of<SessionStateBloc>(context);
 
-    _stateSubscription = _sessionBloc.stream.listen((SessionState state) {
+    _stateSubscription = _sessionBloc.stateStream.listen((SessionState state) {
       switch (state) {
         case SessionState.INACTIVE:
           _pushLoginScreen();
@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       child: StreamBuilder(
-        stream: _sessionBloc.stream,
+        stream: _sessionBloc.stateStream,
         builder: (
           BuildContext context,
           AsyncSnapshot<SessionState> snapshot,
@@ -68,14 +68,13 @@ class _MainScreenState extends State<MainScreen> {
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          Builder(
-            builder: (BuildContext context) =>
+      body: Builder(
+        builder: (BuildContext context) => CustomScrollView(
+              slivers: <Widget>[
                 _getAppBar(width, Uint8List(0), context),
-          ),
-          _getQueue(),
-        ],
+                _getQueue(),
+              ],
+            ),
       ),
       floatingActionButton: _getAddButton(),
     );

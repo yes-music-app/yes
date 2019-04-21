@@ -102,7 +102,7 @@ void _leave(BuildContext context) {
     "confirm",
     "cancel",
     () {
-      BlocProvider.of<SessionStateBloc>(context).sink.add(SessionState.LEAVING);
+      BlocProvider.of<SessionStateBloc>(context).stateSink.add(SessionState.LEAVING);
     },
     () {},
   );

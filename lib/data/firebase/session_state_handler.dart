@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
-import 'package:yes_music/data/firebase/data_utils.dart';
+import 'package:yes_music/helpers/data_utils.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 import 'package:yes_music/models/state/session_model.dart';

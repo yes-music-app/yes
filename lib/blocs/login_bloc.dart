@@ -61,7 +61,11 @@ class LoginBloc implements BlocBase {
       await _authHandler.signOut();
     }
 
-    GoogleSignInAccount googleAccount = await _authHandler.signInSilently();
+    GoogleSignInAccount googleAccount =
+        await _authHandler.signInSilently().catchError((e) {
+      _firebaseAuthState.addError(e);
+      return;
+    });
 
     if (googleAccount == null) {
       _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED_SILENTLY);
@@ -73,44 +77,41 @@ class LoginBloc implements BlocBase {
 
   /// Attempts to sign the user in with a prompt.
   void _signInWithGoogle() async {
-    GoogleSignInAccount googleAccount;
-
-    try {
-      googleAccount = await _authHandler.signInWithGoogle();
-    } catch (e) {
-      _firebaseAuthState.addError(StateError("errors.login.googleSignIn"));
-      return;
-    }
-
-    _signInWithAccount(googleAccount);
+    _authHandler.signInWithGoogle().then((GoogleSignInAccount googleAccount) {
+      _signInWithAccount(googleAccount);
+    }).catchError((e) {
+      _firebaseAuthState.addError(e);
+    });
   }
 
   /// Attempts to sign the user in to Firebase with their Google account.
   void _signInWithAccount(GoogleSignInAccount account) async {
-    try {
-      AuthCredential credential = await _authHandler.getCredential(account);
-      await _authHandler.signInWithCredential(credential);
-    } on StateError catch (e) {
+    AuthCredential credential =
+        await _authHandler.getCredential(account).catchError((e) {
       _firebaseAuthState.addError(e);
-    }
+      return;
+    });
 
-    _firebaseAuthState.add(FirebaseAuthState.AUTHORIZED);
+
+    _authHandler.signInWithCredential(credential).then((_) {
+      _firebaseAuthState.add(FirebaseAuthState.AUTHORIZED);
+    }).catchError((e) {
+      _firebaseAuthState.addError(e);
+    });
   }
 
   /// Signs the user out of their Google account.
   void _signOut() async {
-    try {
-      await _authHandler.signOut();
-    } on StateError catch (e) {
+    _authHandler.signOut().then((_) {
+      _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED);
+    }).catchError((e) {
       _firebaseAuthState.addError(e);
-    }
-
-    _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED);
+    });
   }
 
   @override
   void dispose() async {
-    await _sub.cancel();
+    _sub.cancel();
     _firebaseAuthState.close();
   }
 }

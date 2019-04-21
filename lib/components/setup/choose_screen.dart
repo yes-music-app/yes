@@ -86,8 +86,8 @@ class _ChooseScreenState extends State<ChooseScreen> {
         children: <Widget>[
           CustomButton.withTheme(
             onPressed: () {
-              _stateBloc.sink.add(SessionState.CREATING);
-              Navigator.of(context).pushNamed("/appRemote");
+              _stateBloc.stateSink.add(SessionState.AWAITING_URL);
+              Navigator.of(context).pushNamed("/create");
             },
             theme: Theme.of(context),
             child: Text(
@@ -101,7 +101,7 @@ class _ChooseScreenState extends State<ChooseScreen> {
           ),
           CustomButton.withTheme(
             onPressed: () {
-              _stateBloc.sink.add(SessionState.AWAITING_SID);
+              _stateBloc.stateSink.add(SessionState.AWAITING_SID);
               Navigator.of(context).pushNamed("/join");
             },
             theme: Theme.of(context),

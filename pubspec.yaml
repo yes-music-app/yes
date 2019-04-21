@@ -22,10 +22,12 @@ dependencies:
   rxdart: ^0.21.0
   firebase_database: ^2.0.2
   firebase_auth: ^0.8.1
+  cloud_functions: ^0.1.2
   google_sign_in: ^4.0.1
   flutter_i18n: ^0.6.3
   shared_preferences: ^0.5.1
   clipboard_manager: ^0.0.4
+  flutter_webview_plugin: ^0.3.4
 
 dev_dependencies:
   flutter_test:

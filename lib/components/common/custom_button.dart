@@ -29,7 +29,7 @@ class CustomButton extends StatelessWidget {
         _highlightColor = isPrimary
             ? theme.buttonTheme.colorScheme.primaryVariant
             : theme.buttonTheme.colorScheme.secondaryVariant,
-        _textStyle = textStyle == null ? theme.textTheme.button : textStyle,
+        _textStyle = textStyle ?? theme.textTheme.button,
         _radius = radius,
         _constraints = constraints,
         _padding = padding,

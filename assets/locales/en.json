@@ -38,12 +38,17 @@
   "errors": {
     "title": "Error",
     "unknown": "Unknown error.",
+    "order": "Tried to perform an operation out of order.",
     "login": {
       "googleSignIn": "Failed to sign in with Google.",
       "auth": "Received an invalid account from Google.",
       "credential": "Failed to create credentials.",
       "signIn": "Failed to sign in with this Google account.",
       "singOut": "Failed to sign out."
+    },
+    "spotify": {
+      "auth_url": "Failed to retrieve Spotify authorization URL.",
+      "auth_cancel": "Failed to login with Spotify, please try again."
     },
     "remote": {
       "connect": "Failed to connect to the Spotify app."

@@ -5,7 +5,7 @@ import 'package:yes_music/data/spotify/spotify_connection_handler.dart';
 import 'package:yes_music/data/spotify/spotify_playback_handler.dart';
 
 class SpotifyProvider {
-  Flavor _flavor;
+  Flavor _flavor = Flavor.REMOTE;
   PlaybackHandlerBase _playbackHandler;
   ConnectionHandlerBase _connectionHandler;
 
