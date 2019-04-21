@@ -141,28 +141,26 @@ class SessionStateBloc implements BlocBase {
 
   /// Attempts to create a session.
   void _createSession(String code) async {
-    TokenModel tokenModel;
-
     try {
+      // Generate the tokens from the given code.
       final Map data = await _tokenHandler.requestAccessToken(code);
-      tokenModel = generateModel(data);
-    } catch (e) {
-      _stateSubject.addError(e);
-      return;
-    }
+      final TokenModel tokenModel = generateModel(data);
 
-    _connectionHandler.connect().then((_) async {
-      UserModel user = UserModel.empty(await _authHandler.uid());
+      // Connect to the Spotify app.
+      await _connectionHandler.connect();
+
+      // Generate the models needed to create a new session.
+      final UserModel user = UserModel.empty(await _authHandler.uid());
       final sid = await generateSID();
-      SessionModel model = SessionModel.empty(sid, user, tokenModel);
-      _stateHandler.createSession(model).then((_) {
-        _stateSubject.add(SessionState.CREATED);
-      }).catchError((e) {
-        _stateSubject.addError(e);
-      });
-    }).catchError((e) {
+      final SessionModel model = SessionModel.empty(sid, user, tokenModel);
+
+      // Create the new session.
+      await _stateHandler.createSession(model);
+      _stateSubject.add(SessionState.CREATED);
+    } catch (e) {
+      // If any of the operations threw an error, push it through the stream.
       _stateSubject.addError(e);
-    });
+    }
   }
 
   /// Leaves the current session.
