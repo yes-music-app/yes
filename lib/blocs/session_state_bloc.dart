@@ -7,7 +7,6 @@ import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/session_state_handler_base.dart';
 import 'package:yes_music/data/spotify/connection_handler_base.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
-import 'package:yes_music/data/spotify/token_handler_base.dart';
 import 'package:yes_music/helpers/data_utils.dart';
 import 'package:yes_music/models/spotify/token_model.dart';
 import 'package:yes_music/models/state/session_model.dart';
@@ -36,8 +35,6 @@ class SessionStateBloc implements BlocBase {
 
   final ConnectionHandlerBase _connectionHandler =
       SpotifyProvider().getConnectionHandler();
-
-  final TokenHandlerBase _tokenHandler = SpotifyProvider().getTokenHandler();
 
   /// A reference to the session handler.
   final SessionStateHandlerBase _stateHandler =
@@ -132,7 +129,7 @@ class SessionStateBloc implements BlocBase {
       return;
     }
 
-    _tokenHandler.requestAuthUrl().then((String url) {
+    _connectionHandler.requestAuthUrl().then((String url) {
       _urlSubject.add(url);
     }).catchError((e) {
       _stateSubject.addError(e);
@@ -143,7 +140,7 @@ class SessionStateBloc implements BlocBase {
   void _createSession(String code) async {
     try {
       // Generate the tokens from the given code.
-      final Map data = await _tokenHandler.requestAccessToken(code);
+      final Map data = await _connectionHandler.requestAccessToken(code);
       final TokenModel tokenModel = generateModel(data);
 
       // Connect to the Spotify app.

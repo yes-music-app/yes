@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:yes_music/models/spotify/token_model.dart';
 
 /// The redirect uri that will be the prefix for a valid url to navigate from.
 const String REDIRECT_URI = "yes-music-app://connect";
