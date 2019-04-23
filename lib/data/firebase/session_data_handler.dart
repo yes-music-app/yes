@@ -9,7 +9,7 @@ import 'package:yes_music/models/state/song_model.dart';
 class SessionDataHandler implements SessionDataHandlerBase {
   /// A reference to the root of the Firebase database.
   final DatabaseReference _firebase =
-      FirebaseDatabase.instance.reference().child(SESSION_PATH);
+      FirebaseDatabase.instance.reference().child(SESSION_KEY);
 
   /// A reference to the session state handler for the sid.
   final SessionStateHandler _stateHandler =
@@ -18,14 +18,14 @@ class SessionDataHandler implements SessionDataHandlerBase {
   /// Sets the queue for the current session to [queue].
   @override
   Future setQueue(List<SongModel> queue) async {
-    await _setItem(QUEUE_PATH, SongModel.toMapList(queue));
+    await _setItem(QUEUE_KEY, SongModel.toMapList(queue));
     return;
   }
 
   /// Sets the history for the current session to [history].
   @override
   Future setHistory(List<SongModel> history) async {
-    await _setItem(HISTORY_PATH, SongModel.toMapList(history));
+    await _setItem(HISTORY_KEY, SongModel.toMapList(history));
     return;
   }
 

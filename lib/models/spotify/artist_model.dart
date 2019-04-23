@@ -1,18 +1,14 @@
-import 'package:yes_music/helpers/list_utils.dart';
-import 'package:yes_music/models/spotify/image_model.dart';
+const String NAME_KEY = "name";
+const String ARTIST_URI_KEY = "uri";
 
 /// A data model for an artist as returned by the Spotify API.
 class ArtistModel {
   final String name;
   final String uri;
-  final String id;
-  final List<ImageModel> images;
 
   ArtistModel.fromMap(Map map)
-      : name = map["name"],
-        uri = map["uri"],
-        id = map["id"],
-        images = ImageModel.mapImages(map["images"]);
+      : name = map[NAME_KEY],
+        uri = map[ARTIST_URI_KEY];
 
   static List<ArtistModel> mapArtists(List artists) {
     if (artists == null) {
@@ -24,10 +20,8 @@ class ArtistModel {
 
   Map<String, dynamic> toMap() {
     return {
-      "name": name,
-      "uri": uri,
-      "id": id,
-      "images": ImageModel.toMapList(images),
+      NAME_KEY: name,
+      ARTIST_URI_KEY: uri,
     };
   }
 
@@ -37,13 +31,8 @@ class ArtistModel {
 
   @override
   bool operator ==(other) =>
-      other is ArtistModel &&
-      other.name == name &&
-      other.uri == uri &&
-      other.id == id &&
-      listsEqual(other.images, images);
+      other is ArtistModel && other.name == name && other.uri == uri;
 
   @override
-  int get hashCode =>
-      name.hashCode ^ uri.hashCode ^ id.hashCode ^ images.hashCode;
+  int get hashCode => name.hashCode ^ uri.hashCode;
 }

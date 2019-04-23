@@ -1,3 +1,4 @@
+/// Tests to see whether two lists are equal.
 bool listsEqual<T>(List<T> l1, List<T> l2) {
   if (l1 == null || l2 == null || l1.length != l2.length) {
     return false;

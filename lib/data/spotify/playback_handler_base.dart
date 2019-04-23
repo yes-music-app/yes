@@ -38,4 +38,8 @@ abstract class PlaybackHandlerBase {
 
   /// Closes the handler's connections.
   void dispose();
+
+  /// Searches with the given [query], using [accessToken] for authorization.
+  /// Uses [limit] and [offset] for paging.
+  Future search(String query, String accessToken, int limit, int offset);
 }

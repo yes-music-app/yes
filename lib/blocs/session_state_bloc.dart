@@ -151,6 +151,10 @@ class SessionStateBloc implements BlocBase {
       final sid = await generateSID();
       final SessionModel model = SessionModel.empty(sid, user, tokenModel);
 
+      await SpotifyProvider()
+          .getPlaybackHandler()
+          .search("test", tokenModel.accessToken, 20, 0);
+
       // Create the new session.
       await _stateHandler.createSession(model);
       _stateSubject.add(SessionState.CREATED);
