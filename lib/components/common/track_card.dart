@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:yes_music/helpers/transparent_image.dart';
 import 'package:yes_music/models/spotify/artist_model.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 
@@ -26,6 +25,8 @@ Widget trackCard(
       : ArtistModel.fromMap(DEFAULT_ARTIST);
 
   final String imageUrl = track.album.images[0].url;
+
+  final TextTheme textTheme = Theme.of(context).textTheme;
 
   return Card(
     elevation: 5,
@@ -63,10 +64,16 @@ Widget trackCard(
                       Text(
                         track.name,
                         overflow: TextOverflow.ellipsis,
+                        style: textTheme.body1,
+                      ),
+                      SizedBox(
+                        width: 0,
+                        height: 2,
                       ),
                       Text(
                         mainArtist.name + " • " + track.album.name,
                         overflow: TextOverflow.ellipsis,
+                        style: textTheme.caption,
                       ),
                     ],
                   ),
