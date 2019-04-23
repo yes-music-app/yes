@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:yes_music/helpers/transparent_image.dart';
 import 'package:yes_music/models/spotify/artist_model.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 
@@ -29,46 +30,52 @@ Widget trackCard(
   return Card(
     elevation: 5,
     margin: margin,
+    clipBehavior: Clip.antiAlias,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
     ),
     child: Container(
       width: width,
       height: height,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          colorFilter:
-              ColorFilter.mode(Color.fromRGBO(0, 0, 0, 64), BlendMode.darken),
-          fit: BoxFit.fitWidth,
-          image: NetworkImage(imageUrl),
-        ),
-        borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
-      ),
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    track.name,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    mainArtist.name + " • " + track.album.name,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+      child: Stack(
+        children: <Widget>[
+          Container(
+            width: width,
+            height: height,
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.fitWidth,
+              color: Color.fromRGBO(0, 0, 0, 64),
+              colorBlendMode: BlendMode.darken,
             ),
-            Icon(Icons.keyboard_arrow_up),
-          ],
-        ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        track.name,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        mainArtist.name + " • " + track.album.name,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.keyboard_arrow_up),
+              ],
+            ),
+          ),
+        ],
       ),
     ),
   );
