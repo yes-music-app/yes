@@ -8,6 +8,7 @@ import 'package:rxdart/subjects.dart';
 import 'package:yes_music/data/spotify/playback_handler_base.dart';
 import 'package:yes_music/helpers/data_utils.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';
+import 'package:yes_music/models/spotify/track_model.dart';
 
 /// A class that handles playback interactions with the Spotify app.
 class SpotifyPlaybackHandler implements PlaybackHandlerBase {
@@ -112,7 +113,12 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
 
   /// Searches with the given [query], using [accessToken] for authorization.
   @override
-  Future search(String query, String accessToken, int limit, int offset) async {
+  Future<List<TrackModel>> search(
+    String query,
+    String accessToken, {
+    int limit = 20,
+    int offset = 0,
+  }) async {
     // The url of the search endpoint.
     final baseUrl = "https://api.spotify.com/v1/search";
     final Map<String, String> params = {
@@ -133,7 +139,7 @@ class SpotifyPlaybackHandler implements PlaybackHandlerBase {
       headers: headers,
     );
 
-    Map items = jsonDecode(res.body);
-    print(items);
+    final Map items = jsonDecode(res.body);
+    return TrackModel.mapTracks(items["tracks"]["items"]);
   }
 }
