@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
-import 'package:yes_music/components/common/loading_indicator.dart';
 import 'package:yes_music/components/common/bar_actions.dart';
+import 'package:yes_music/components/common/loading_indicator.dart';
 import 'package:yes_music/components/common/track_card.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 
@@ -75,6 +75,7 @@ class _MainScreenState extends State<MainScreen> {
               slivers: <Widget>[
                 _getAppBar(width, Uint8List(0), context),
                 _getQueue(),
+                SliverPadding(padding: EdgeInsets.only(top: 5)),
               ],
             ),
       ),
@@ -105,14 +106,19 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _getAppBarImage(Uint8List bytes) {
-    return bytes == null || bytes.isEmpty
+    return FittedBox(
+      fit: BoxFit.fitWidth,
+      child: Image.network(
+          "https://i.scdn.co/image/44eeb521fbba3523d65bb0e2b9b2893965fcd437"),
+    );
+    /*bytes == null || bytes.isEmpty
         ? Center(
             child: loadingIndicator(),
           )
         : FittedBox(
             fit: BoxFit.fitWidth,
             child: Image.memory(bytes),
-          );
+          );*/
   }
 
   SliverList _getQueue() {
@@ -123,100 +129,274 @@ class _MainScreenState extends State<MainScreen> {
 
   SliverChildBuilderDelegate _queueDelegate() {
     final Map tempTrack = {
-      "album" : {
-        "album_type" : "album",
-        "artists" : [ {
-          "external_urls" : {
-            "spotify" : "https://open.spotify.com/artist/3tJoFztHeIJkJWMrx0td2f"
+      "album": {
+        "album_type": "album",
+        "artists": [
+          {
+            "external_urls": {
+              "spotify":
+                  "https://open.spotify.com/artist/3tJoFztHeIJkJWMrx0td2f"
+            },
+            "href": "https://api.spotify.com/v1/artists/3tJoFztHeIJkJWMrx0td2f",
+            "id": "3tJoFztHeIJkJWMrx0td2f",
+            "name": "Moneybagg Yo",
+            "type": "artist",
+            "uri": "spotify:artist:3tJoFztHeIJkJWMrx0td2f"
           },
-          "href" : "https://api.spotify.com/v1/artists/3tJoFztHeIJkJWMrx0td2f",
-          "id" : "3tJoFztHeIJkJWMrx0td2f",
-          "name" : "Moneybagg Yo",
-          "type" : "artist",
-          "uri" : "spotify:artist:3tJoFztHeIJkJWMrx0td2f"
-        }, {
-          "external_urls" : {
-            "spotify" : "https://open.spotify.com/artist/7wlFDEWiM5OoIAt8RSli8b"
+          {
+            "external_urls": {
+              "spotify":
+                  "https://open.spotify.com/artist/7wlFDEWiM5OoIAt8RSli8b"
+            },
+            "href": "https://api.spotify.com/v1/artists/7wlFDEWiM5OoIAt8RSli8b",
+            "id": "7wlFDEWiM5OoIAt8RSli8b",
+            "name": "YoungBoy Never Broke Again",
+            "type": "artist",
+            "uri": "spotify:artist:7wlFDEWiM5OoIAt8RSli8b"
+          }
+        ],
+        "available_markets": [
+          "AD",
+          "AE",
+          "AR",
+          "AT",
+          "AU",
+          "BE",
+          "BG",
+          "BH",
+          "BO",
+          "BR",
+          "CA",
+          "CH",
+          "CL",
+          "CO",
+          "CR",
+          "CY",
+          "CZ",
+          "DE",
+          "DK",
+          "DO",
+          "DZ",
+          "EC",
+          "EE",
+          "EG",
+          "ES",
+          "FI",
+          "FR",
+          "GB",
+          "GR",
+          "GT",
+          "HK",
+          "HN",
+          "HU",
+          "ID",
+          "IE",
+          "IL",
+          "IN",
+          "IS",
+          "IT",
+          "JO",
+          "JP",
+          "KW",
+          "LB",
+          "LI",
+          "LT",
+          "LU",
+          "LV",
+          "MA",
+          "MC",
+          "MT",
+          "MX",
+          "MY",
+          "NI",
+          "NL",
+          "NO",
+          "NZ",
+          "OM",
+          "PA",
+          "PE",
+          "PH",
+          "PL",
+          "PS",
+          "PT",
+          "PY",
+          "QA",
+          "RO",
+          "SA",
+          "SE",
+          "SG",
+          "SK",
+          "SV",
+          "TH",
+          "TN",
+          "TR",
+          "TW",
+          "US",
+          "UY",
+          "VN",
+          "ZA"
+        ],
+        "external_urls": {
+          "spotify": "https://open.spotify.com/album/4RUq0kdGLKc5ROEv8I0lRY"
+        },
+        "href": "https://api.spotify.com/v1/albums/4RUq0kdGLKc5ROEv8I0lRY",
+        "id": "4RUq0kdGLKc5ROEv8I0lRY",
+        "images": [
+          {
+            "height": 640,
+            "url":
+                "https://i.scdn.co/image/44eeb521fbba3523d65bb0e2b9b2893965fcd437",
+            "width": 640
           },
-          "href" : "https://api.spotify.com/v1/artists/7wlFDEWiM5OoIAt8RSli8b",
-          "id" : "7wlFDEWiM5OoIAt8RSli8b",
-          "name" : "YoungBoy Never Broke Again",
-          "type" : "artist",
-          "uri" : "spotify:artist:7wlFDEWiM5OoIAt8RSli8b"
-        } ],
-        "available_markets" : [ "AD", "AE", "AR", "AT", "AU", "BE", "BG", "BH", "BO", "BR", "CA", "CH", "CL", "CO", "CR", "CY", "CZ", "DE", "DK", "DO", "DZ", "EC", "EE", "EG", "ES", "FI", "FR", "GB", "GR", "GT", "HK", "HN", "HU", "ID", "IE", "IL", "IN", "IS", "IT", "JO", "JP", "KW", "LB", "LI", "LT", "LU", "LV", "MA", "MC", "MT", "MX", "MY", "NI", "NL", "NO", "NZ", "OM", "PA", "PE", "PH", "PL", "PS", "PT", "PY", "QA", "RO", "SA", "SE", "SG", "SK", "SV", "TH", "TN", "TR", "TW", "US", "UY", "VN", "ZA" ],
-        "external_urls" : {
-          "spotify" : "https://open.spotify.com/album/4RUq0kdGLKc5ROEv8I0lRY"
-        },
-        "href" : "https://api.spotify.com/v1/albums/4RUq0kdGLKc5ROEv8I0lRY",
-        "id" : "4RUq0kdGLKc5ROEv8I0lRY",
-        "images" : [ {
-          "height" : 640,
-          "url" : "https://i.scdn.co/image/44eeb521fbba3523d65bb0e2b9b2893965fcd437",
-          "width" : 640
-        }, {
-          "height" : 300,
-          "url" : "https://i.scdn.co/image/af8a6955600797b2d65dc8a05951c240698c3ec5",
-          "width" : 300
-        }, {
-          "height" : 64,
-          "url" : "https://i.scdn.co/image/5718ffbc6e63b4dd95c2165d5d12671dbe6d0ce4",
-          "width" : 64
-        } ],
-        "name" : "Fed Baby’s",
-        "release_date" : "2017-11-17",
-        "release_date_precision" : "day",
-        "total_tracks" : 14,
-        "type" : "album",
-        "uri" : "spotify:album:4RUq0kdGLKc5ROEv8I0lRY"
+          {
+            "height": 300,
+            "url":
+                "https://i.scdn.co/image/af8a6955600797b2d65dc8a05951c240698c3ec5",
+            "width": 300
+          },
+          {
+            "height": 64,
+            "url":
+                "https://i.scdn.co/image/5718ffbc6e63b4dd95c2165d5d12671dbe6d0ce4",
+            "width": 64
+          }
+        ],
+        "name": "Fed Baby’s",
+        "release_date": "2017-11-17",
+        "release_date_precision": "day",
+        "total_tracks": 14,
+        "type": "album",
+        "uri": "spotify:album:4RUq0kdGLKc5ROEv8I0lRY"
       },
-      "artists" : [ {
-        "external_urls" : {
-          "spotify" : "https://open.spotify.com/artist/3tJoFztHeIJkJWMrx0td2f"
+      "artists": [
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/3tJoFztHeIJkJWMrx0td2f"
+          },
+          "href": "https://api.spotify.com/v1/artists/3tJoFztHeIJkJWMrx0td2f",
+          "id": "3tJoFztHeIJkJWMrx0td2f",
+          "name": "Moneybagg Yo",
+          "type": "artist",
+          "uri": "spotify:artist:3tJoFztHeIJkJWMrx0td2f"
         },
-        "href" : "https://api.spotify.com/v1/artists/3tJoFztHeIJkJWMrx0td2f",
-        "id" : "3tJoFztHeIJkJWMrx0td2f",
-        "name" : "Moneybagg Yo",
-        "type" : "artist",
-        "uri" : "spotify:artist:3tJoFztHeIJkJWMrx0td2f"
-      }, {
-        "external_urls" : {
-          "spotify" : "https://open.spotify.com/artist/7wlFDEWiM5OoIAt8RSli8b"
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/7wlFDEWiM5OoIAt8RSli8b"
+          },
+          "href": "https://api.spotify.com/v1/artists/7wlFDEWiM5OoIAt8RSli8b",
+          "id": "7wlFDEWiM5OoIAt8RSli8b",
+          "name": "YoungBoy Never Broke Again",
+          "type": "artist",
+          "uri": "spotify:artist:7wlFDEWiM5OoIAt8RSli8b"
         },
-        "href" : "https://api.spotify.com/v1/artists/7wlFDEWiM5OoIAt8RSli8b",
-        "id" : "7wlFDEWiM5OoIAt8RSli8b",
-        "name" : "YoungBoy Never Broke Again",
-        "type" : "artist",
-        "uri" : "spotify:artist:7wlFDEWiM5OoIAt8RSli8b"
-      }, {
-        "external_urls" : {
-          "spotify" : "https://open.spotify.com/artist/50co4Is1HCEo8bhOyUWKpn"
-        },
-        "href" : "https://api.spotify.com/v1/artists/50co4Is1HCEo8bhOyUWKpn",
-        "id" : "50co4Is1HCEo8bhOyUWKpn",
-        "name" : "Young Thug",
-        "type" : "artist",
-        "uri" : "spotify:artist:50co4Is1HCEo8bhOyUWKpn"
-      } ],
-      "available_markets" : [ "AD", "AE", "AR", "AT", "AU", "BE", "BG", "BH", "BO", "BR", "CA", "CH", "CL", "CO", "CR", "CY", "CZ", "DE", "DK", "DO", "DZ", "EC", "EE", "EG", "ES", "FI", "FR", "GB", "GR", "GT", "HK", "HN", "HU", "ID", "IE", "IL", "IN", "IS", "IT", "JO", "JP", "KW", "LB", "LI", "LT", "LU", "LV", "MA", "MC", "MT", "MX", "MY", "NI", "NL", "NO", "NZ", "OM", "PA", "PE", "PH", "PL", "PS", "PT", "PY", "QA", "RO", "SA", "SE", "SG", "SK", "SV", "TH", "TN", "TR", "TW", "US", "UY", "VN", "ZA" ],
-      "disc_number" : 1,
-      "duration_ms" : 212660,
-      "explicit" : true,
-      "external_ids" : {
-        "isrc" : "USUG11701371"
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/50co4Is1HCEo8bhOyUWKpn"
+          },
+          "href": "https://api.spotify.com/v1/artists/50co4Is1HCEo8bhOyUWKpn",
+          "id": "50co4Is1HCEo8bhOyUWKpn",
+          "name": "Young Thug",
+          "type": "artist",
+          "uri": "spotify:artist:50co4Is1HCEo8bhOyUWKpn"
+        }
+      ],
+      "available_markets": [
+        "AD",
+        "AE",
+        "AR",
+        "AT",
+        "AU",
+        "BE",
+        "BG",
+        "BH",
+        "BO",
+        "BR",
+        "CA",
+        "CH",
+        "CL",
+        "CO",
+        "CR",
+        "CY",
+        "CZ",
+        "DE",
+        "DK",
+        "DO",
+        "DZ",
+        "EC",
+        "EE",
+        "EG",
+        "ES",
+        "FI",
+        "FR",
+        "GB",
+        "GR",
+        "GT",
+        "HK",
+        "HN",
+        "HU",
+        "ID",
+        "IE",
+        "IL",
+        "IN",
+        "IS",
+        "IT",
+        "JO",
+        "JP",
+        "KW",
+        "LB",
+        "LI",
+        "LT",
+        "LU",
+        "LV",
+        "MA",
+        "MC",
+        "MT",
+        "MX",
+        "MY",
+        "NI",
+        "NL",
+        "NO",
+        "NZ",
+        "OM",
+        "PA",
+        "PE",
+        "PH",
+        "PL",
+        "PS",
+        "PT",
+        "PY",
+        "QA",
+        "RO",
+        "SA",
+        "SE",
+        "SG",
+        "SK",
+        "SV",
+        "TH",
+        "TN",
+        "TR",
+        "TW",
+        "US",
+        "UY",
+        "VN",
+        "ZA"
+      ],
+      "disc_number": 1,
+      "duration_ms": 212660,
+      "explicit": true,
+      "external_ids": {"isrc": "USUG11701371"},
+      "external_urls": {
+        "spotify": "https://open.spotify.com/track/3VvHSQ2x6PqKYe4MBgxV0a"
       },
-      "external_urls" : {
-        "spotify" : "https://open.spotify.com/track/3VvHSQ2x6PqKYe4MBgxV0a"
-      },
-      "href" : "https://api.spotify.com/v1/tracks/3VvHSQ2x6PqKYe4MBgxV0a",
-      "id" : "3VvHSQ2x6PqKYe4MBgxV0a",
-      "is_local" : false,
-      "name" : "Mandatory Drug Test (feat. Young Thug)",
-      "popularity" : 56,
-      "preview_url" : null,
-      "track_number" : 3,
-      "type" : "track",
-      "uri" : "spotify:track:3VvHSQ2x6PqKYe4MBgxV0a"
+      "href": "https://api.spotify.com/v1/tracks/3VvHSQ2x6PqKYe4MBgxV0a",
+      "id": "3VvHSQ2x6PqKYe4MBgxV0a",
+      "is_local": false,
+      "name": "Mandatory Drug Test (feat. Young Thug)",
+      "popularity": 56,
+      "preview_url": null,
+      "track_number": 3,
+      "type": "track",
+      "uri": "spotify:track:3VvHSQ2x6PqKYe4MBgxV0a"
     };
     TrackModel model = TrackModel.fromMap(tempTrack);
 
