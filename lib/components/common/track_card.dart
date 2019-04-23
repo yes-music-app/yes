@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:yes_music/helpers/transparent_image.dart';
 import 'package:yes_music/models/spotify/artist_model.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 
@@ -19,14 +20,35 @@ Widget trackCard(
   Color color,
   EdgeInsets margin =
       const EdgeInsets.only(left: 6, top: 6, right: 6, bottom: 0),
+  Icon actionIcon,
+  VoidCallback onAction,
 }) {
+  // Get the theme to use for text.
+  final TextTheme textTheme = Theme.of(context).textTheme;
+
+  // Set the correct icon to use for the action button.
+  actionIcon = actionIcon ?? Icon(Icons.music_note);
+
+  // Find the artist to use to label this track.
   final ArtistModel mainArtist = track.artists.length > 0
       ? track.artists[0]
       : ArtistModel.fromMap(DEFAULT_ARTIST);
 
-  final String imageUrl = track.album.images[0].url;
+  // Get the image url of this track.
+  final String imageUrl = track.album?.images[0]?.url;
 
-  final TextTheme textTheme = Theme.of(context).textTheme;
+  // Set the correct image to use based on whether we received a valid url.
+  Image image = imageUrl == null
+      ? Image.memory(
+          transparentImage,
+          fit: BoxFit.fitWidth,
+        )
+      : Image.network(
+          imageUrl,
+          fit: BoxFit.fitWidth,
+          color: Color.fromRGBO(0, 0, 0, 64),
+          colorBlendMode: BlendMode.darken,
+        );
 
   return Card(
     elevation: 5,
@@ -43,15 +65,10 @@ Widget trackCard(
           Container(
             width: width,
             height: height,
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.fitWidth,
-              color: Color.fromRGBO(0, 0, 0, 64),
-              colorBlendMode: BlendMode.darken,
-            ),
+            child: image,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: EdgeInsets.only(left: 20, right: 14),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -78,7 +95,10 @@ Widget trackCard(
                     ],
                   ),
                 ),
-                Icon(Icons.keyboard_arrow_up),
+                IconButton(
+                  icon: actionIcon,
+                  onPressed: onAction,
+                )
               ],
             ),
           ),
