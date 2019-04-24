@@ -19,21 +19,18 @@ class _SearchScreenState extends State<SearchScreen> {
   SearchBloc _searchBloc;
 
   /// The text editing controller to use to control the query.
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _queryController = TextEditingController();
   String _oldText;
 
-  /// Initialize the search bloc.
+  /// The scroll controller used to monitor list scrolls.
+  final ScrollController _scrollController = ScrollController();
+
+  /// Initialize the search bloc and register listeners.
   @override
   void initState() {
     _searchBloc = BlocProvider.of<SearchBloc>(context);
-
-    // Update the search bloc whenever the controller is changed.
-    _controller.addListener(() {
-      if (_oldText != _controller.text) {
-        _searchBloc.querySink.add(_controller.text);
-        _oldText = _controller.text;
-      }
-    });
+    _queryController.addListener(_queryListener);
+    _scrollController.addListener(_scrollListener);
 
     super.initState();
   }
@@ -44,6 +41,27 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: _getAppBar(),
       body: _getBody(),
     );
+  }
+
+  /// Listens to the query text controller and updates the bloc with query
+  /// updates.
+  void _queryListener() {
+    if (_oldText != _queryController.text) {
+      _searchBloc.querySink.add(_queryController.text);
+      _oldText = _queryController.text;
+    }
+  }
+
+  /// Listens to the scroll controller and updates the bloc for new searches
+  /// when scrolled to the bottom.
+  void _scrollListener() {
+    if (_searchBloc.searchStream.value?.tracks != null &&
+        _searchBloc.searchStream.value.remainder > 0 &&
+        _scrollController.offset >=
+            _scrollController.position.maxScrollExtent - 50) {
+      // If we have reached the bottom of the base, load more items.
+      _searchBloc.loadMore();
+    }
   }
 
   /// Gets the search app bar.
@@ -60,7 +78,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _getSearchBar() {
     return TextField(
       autocorrect: false,
-      controller: _controller,
+      controller: _queryController,
       decoration: InputDecoration.collapsed(
         hintText: FlutterI18n.translate(context, "main.searchHint"),
       ),
@@ -72,7 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _getClearButton() {
     return IconButton(
       icon: Icon(Icons.close),
-      onPressed: _controller.clear,
+      onPressed: _queryController.clear,
     );
   }
 
@@ -102,7 +120,7 @@ class _SearchScreenState extends State<SearchScreen> {
         }
 
         // If we have tracks to display, display them.
-        return _getList(snapshot.data.tracks);
+        return _getList(snapshot.data);
       },
     );
   }
@@ -132,12 +150,31 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   /// Gets a list of track cards to display some [TrackModels].
-  Widget _getList(List<TrackModel> tracks) {
+  Widget _getList(SearchModel model) {
     // Generate a list of track card widgets, and add bottom padding.
-    List<Widget> items =
-        tracks.map((TrackModel track) => trackCard(track, context)).toList();
-    items.add(Padding(padding: EdgeInsets.only(top: TRACK_CARD_MARGIN)));
+    List<Widget> items = model.tracks
+        .map((TrackModel track) => trackCard(track, context))
+        .toList();
+    items.add(Padding(padding: EdgeInsets.only(top: TRACK_CARD_MARGIN * 2)));
 
-    return ListView(children: items);
+    // If there are remaining results, show a loading indicator; otherwise,
+    // indicate that there are no remaining results.
+    items.add(
+      Center(
+        child: model.remainder > 0
+            ? CircularProgressIndicator()
+            : Text(
+                FlutterI18n.translate(context, "main.noMoreResults"),
+                style: Theme.of(context).textTheme.caption,
+              ),
+      ),
+    );
+
+    items.add(Padding(padding: EdgeInsets.only(top: TRACK_CARD_MARGIN * 2)));
+
+    return ListView(
+      children: items,
+      controller: _scrollController,
+    );
   }
 }

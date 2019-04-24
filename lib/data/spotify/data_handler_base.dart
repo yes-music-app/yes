@@ -1,3 +1,4 @@
+import 'package:yes_music/models/spotify/track_model.dart';
 import 'package:yes_music/models/state/search_model.dart';
 
 abstract class DataHandlerBase {
@@ -6,7 +7,7 @@ abstract class DataHandlerBase {
   Future<SearchModel> search(
     String query,
     String accessToken, {
+    List<TrackModel> prevTracks = const [],
     int limit = 20,
-    int offset = 0,
   });
 }

@@ -13,9 +13,12 @@ class SpotifyDataHandler implements DataHandlerBase {
   Future<SearchModel> search(
     String query,
     String accessToken, {
+    List<TrackModel> prevTracks = const [],
     int limit = 20,
-    int offset = 0,
   }) async {
+    // Set the first index to search from to the number of previous tracks.
+    int offset = prevTracks.length;
+
     // The url of the search endpoint.
     final baseUrl = "https://api.spotify.com/v1/search";
     final Map<String, String> params = {
@@ -39,7 +42,8 @@ class SpotifyDataHandler implements DataHandlerBase {
 
     // Decode the received objects.
     final Map items = jsonDecode(res.body);
-    List<TrackModel> tracks = TrackModel.mapTracks(items["tracks"]["items"]);
+    List<TrackModel> tracks = prevTracks;
+    tracks.addAll(TrackModel.mapTracks(items["tracks"]["items"]));
     int total = items["tracks"]["total"];
 
     return SearchModel(tracks, total - tracks.length - offset);
