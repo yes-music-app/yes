@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:yes_music/components/common/custom_fade_in.dart';
 import 'package:yes_music/helpers/transparent_image.dart';
 import 'package:yes_music/models/spotify/artist_model.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
@@ -65,7 +66,13 @@ Widget trackCard(
           Container(
             width: width,
             height: height,
-            child: image,
+            child: CustomFadeInImage.memoryNetwork(
+              fadeOutDuration: Duration(),
+              fadeInDuration: Duration(milliseconds: 500),
+              placeholder: transparentImage,
+              image: imageUrl,
+              fit: BoxFit.fitWidth,
+            ),
           ),
           Container(
             margin: EdgeInsets.only(left: 20, right: 14),
