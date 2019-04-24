@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';
-import 'package:yes_music/models/spotify/track_model.dart';
+import 'package:yes_music/models/state/search_model.dart';
 
 abstract class PlaybackHandlerBase {
   /// A stream of player state objects.
@@ -42,7 +42,7 @@ abstract class PlaybackHandlerBase {
 
   /// Searches with the given [query], using [accessToken] for authorization.
   /// Uses [limit] and [offset] for paging.
-  Future<List<TrackModel>> search(
+  Future<SearchModel> search(
     String query,
     String accessToken, {
     int limit = 20,
