@@ -34,7 +34,7 @@ class SessionDataBloc implements BlocBase {
 
   StreamSubscription _queueSub;
 
-  /// Creates a session data bloc with the given [sid].
+  /// Creates a session data bloc.
   SessionDataBloc() {
     _dataHandler.getSessionModelStream().then((Stream<SessionModel> stream) {
       _sessionSub = stream.listen((SessionModel data) {
