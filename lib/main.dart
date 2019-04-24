@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yes_music/blocs/login_bloc.dart';
+import 'package:yes_music/blocs/session_data_bloc.dart';
 import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/route_callbacks.dart';
@@ -28,6 +29,7 @@ class YesApp extends StatelessWidget {
     "/choose": chooseCallback,
     "/create": createCallback,
     "/join": joinCallback,
+    "/main": mainCallback,
   };
 
   @override
@@ -58,9 +60,7 @@ Route _generateRoute(RouteSettings settings) {
   final args = settings.arguments;
   switch (settings.name) {
     case "/search":
-      return args is String ? searchCallback(args) : null;
-    case "/main":
-      return args is String ? mainCallback(args) : null;
+      return args is SessionDataBloc ? searchCallback(args) : null;
     default:
       return null;
   }

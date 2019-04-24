@@ -57,7 +57,7 @@ Widget trackCard(
       : Image.network(
           imageUrl,
           fit: BoxFit.fitWidth,
-          color: Color.fromRGBO(0, 0, 0, 64),
+          color: Color.fromRGBO(0, 0, 0, 48),
           colorBlendMode: BlendMode.darken,
         );
 

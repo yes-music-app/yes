@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/search_bloc.dart';
+import 'package:yes_music/blocs/session_data_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/track_card.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
@@ -9,8 +10,12 @@ import 'package:yes_music/models/state/search_model.dart';
 
 /// A screen that allows the user to search for tracks to add.
 class SearchScreen extends StatefulWidget {
+  final SessionDataBloc _dataBloc;
+
+  SearchScreen(this._dataBloc);
+
   @override
-  State<StatefulWidget> createState() => _SearchScreenState();
+  State<StatefulWidget> createState() => _SearchScreenState(_dataBloc);
 }
 
 /// A class that represents the state of a [SearchScreen].
@@ -18,12 +23,17 @@ class _SearchScreenState extends State<SearchScreen> {
   /// The bloc that handles searching.
   SearchBloc _searchBloc;
 
+  /// The bloc that handles data.
+  SessionDataBloc _dataBloc;
+
   /// The text editing controller to use to control the query.
   final TextEditingController _queryController = TextEditingController();
   String _oldText;
 
   /// The scroll controller used to monitor list scrolls.
   final ScrollController _scrollController = ScrollController();
+
+  _SearchScreenState(this._dataBloc);
 
   /// Initialize the search bloc and register listeners.
   @override
@@ -153,7 +163,14 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _getList(SearchModel model) {
     // Generate a list of track card widgets, and add bottom padding.
     List<Widget> items = model.tracks
-        .map((TrackModel track) => trackCard(track, context))
+        .map((TrackModel track) => trackCard(
+              track,
+              context,
+              actionIcon: Icon(Icons.add),
+              onAction: () {
+                _dataBloc.queueSink.add(track);
+              },
+            ))
         .toList();
     items.add(Padding(padding: EdgeInsets.only(top: TRACK_CARD_MARGIN * 2)));
 

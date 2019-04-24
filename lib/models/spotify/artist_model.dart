@@ -12,9 +12,8 @@ class ArtistModel {
 
   static List<ArtistModel> mapArtists(List artists) {
     if (artists == null) {
-      return null;
+      return [];
     }
-
     return artists.map((artist) => ArtistModel.fromMap(artist)).toList();
   }
 

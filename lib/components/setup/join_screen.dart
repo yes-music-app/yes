@@ -120,8 +120,7 @@ class _JoinScreenState extends State<JoinScreen> {
   void _pushMainScreen(String sid) {
     Navigator.of(context).pushNamedAndRemoveUntil(
       "/main",
-      (Route route) => false,
-      arguments: sid,
+      (Route route) => false
     );
   }
 }

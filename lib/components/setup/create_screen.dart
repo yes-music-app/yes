@@ -154,7 +154,6 @@ class _CreateScreenState extends State<CreateScreen> {
     Navigator.of(context).pushNamedAndRemoveUntil(
       "/main",
       (Route route) => false,
-      arguments: sid,
     );
   }
 }
