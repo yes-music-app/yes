@@ -39,6 +39,7 @@ class YesApp extends StatelessWidget {
         theme: Themes.darkTheme,
         initialRoute: "/",
         routes: _routes,
+        onGenerateRoute: _generateRoute,
         localizationsDelegates: [
           FlutterI18nDelegate(
             useCountryCode: false,
@@ -50,6 +51,17 @@ class YesApp extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Generate a route from a push named (used to allow for arguments).
+Route _generateRoute(RouteSettings settings) {
+  final args = settings.arguments;
+  switch (settings.name) {
+    case "/search":
+      return args is String ? searchCallback(args) : null;
+    default:
+      return null;
   }
 }
 

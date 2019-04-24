@@ -413,10 +413,20 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  /// Push the choose screen as the base route.
   void _pushChooseScreen() {
     Navigator.of(context).pushNamedAndRemoveUntil(
       "/choose",
       (Route<dynamic> route) => false,
+    );
+  }
+
+  /// Push the search screen with the access token as an argument.
+  void _pushSearchScreen() {
+    Navigator.of(context).pushNamed(
+      "/search",
+      // TODO: Change this to the access token for this session.
+      arguments: null,
     );
   }
 }
