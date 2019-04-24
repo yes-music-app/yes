@@ -4,15 +4,15 @@ import 'package:async/async.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
-import 'package:yes_music/data/spotify/playback_handler_base.dart';
+import 'package:yes_music/data/spotify/data_handler_base.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
 import 'package:yes_music/models/state/search_model.dart';
 
 /// A bloc that allows the user to search for items.
 class SearchBloc implements BlocBase {
   /// The component that handles searching.
-  final PlaybackHandlerBase _playbackHandler =
-      SpotifyProvider().getPlaybackHandler();
+  final DataHandlerBase _playbackHandler =
+      SpotifyProvider().getDataHandler();
 
   /// The access token to use to authorize searches.
   final String accessToken;
@@ -26,8 +26,7 @@ class SearchBloc implements BlocBase {
   StreamSubscription _querySub;
 
   /// The [BehaviorSubject] that handles the latest search results.
-  final BehaviorSubject<SearchModel> _searchSubject =
-      BehaviorSubject<SearchModel>.seeded(null);
+  final BehaviorSubject<SearchModel> _searchSubject = BehaviorSubject();
 
   ValueObservable<SearchModel> get searchStream => _searchSubject.stream;
 

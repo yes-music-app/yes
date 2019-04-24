@@ -1,12 +1,12 @@
 import 'package:yes_music/data/flavor.dart';
 import 'package:yes_music/data/spotify/connection_handler_base.dart';
-import 'package:yes_music/data/spotify/playback_handler_base.dart';
+import 'package:yes_music/data/spotify/data_handler_base.dart';
 import 'package:yes_music/data/spotify/spotify_connection_handler.dart';
-import 'package:yes_music/data/spotify/spotify_playback_handler.dart';
+import 'package:yes_music/data/spotify/spotify_data_handler.dart';
 
 class SpotifyProvider {
   Flavor _flavor = Flavor.REMOTE;
-  PlaybackHandlerBase _playbackHandler;
+  DataHandlerBase _dataHandler;
   ConnectionHandlerBase _connectionHandler;
 
   /// A singleton instance of the Spotify provider.
@@ -21,14 +21,14 @@ class SpotifyProvider {
     _flavor = flavor;
   }
 
-  PlaybackHandlerBase getPlaybackHandler() {
+  DataHandlerBase getDataHandler() {
     switch (_flavor) {
       case Flavor.REMOTE:
-        if (_playbackHandler == null) {
-          _playbackHandler = SpotifyPlaybackHandler();
+        if (_dataHandler == null) {
+          _dataHandler = SpotifyDataHandler();
         }
 
-        return _playbackHandler;
+        return _dataHandler;
         break;
       default:
         throw StateError("Spotify provider flavor not set");
