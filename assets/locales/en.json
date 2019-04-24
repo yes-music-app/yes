@@ -29,6 +29,7 @@
   },
   "main": {
     "searchHint": "Search for a song",
+    "noResults": "No results",
     "sid": "Session ID",
     "sidMessage": "Session ID copied to the clipboard",
     "logout": "Log out",

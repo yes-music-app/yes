@@ -19,10 +19,11 @@ class SpotifyDataHandler implements DataHandlerBase {
     // The url of the search endpoint.
     final baseUrl = "https://api.spotify.com/v1/search";
     final Map<String, String> params = {
-      "q": query,
+      "q": "track:" + query,
       "type": "track",
       "limit": limit.toString(),
       "offset": offset.toString(),
+      "market": "from_token",
     };
 
     // Set the auth header with the access token.

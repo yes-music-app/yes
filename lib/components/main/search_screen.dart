@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/search_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
-import 'package:yes_music/components/common/loading_indicator.dart';
 import 'package:yes_music/components/common/track_card.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 import 'package:yes_music/models/state/search_model.dart';
@@ -14,6 +13,7 @@ class SearchScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _SearchScreenState();
 }
 
+/// A class that represents the state of a [SearchScreen].
 class _SearchScreenState extends State<SearchScreen> {
   /// The bloc that handles searching.
   SearchBloc _searchBloc;
@@ -29,7 +29,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // Update the search bloc whenever the controller is changed.
     _controller.addListener(() {
-      if(_oldText != _controller.text) {
+      if (_oldText != _controller.text) {
         _searchBloc.querySink.add(_controller.text);
         _oldText = _controller.text;
       }
@@ -83,27 +83,51 @@ class _SearchScreenState extends State<SearchScreen> {
       builder: (BuildContext context, AsyncSnapshot<SearchModel> snapshot) {
         // If we have not yet received a snapshot, show a loading indicator.
         if (snapshot == null) {
-          return loadingIndicator();
+          return _getLoadingStatus();
         }
 
         // If we are waiting for a query, prompt the user to search.
         if (snapshot.data == null) {
-          return Text("Search for a track");
+          return _getNoResultsStatus();
         }
 
         // If the data is loading, show a loading indicator.
         if (snapshot.data.tracks == null) {
-          return loadingIndicator();
+          return _getLoadingStatus();
         }
 
         // If the data is empty, tell the user that there are no results.
         if (snapshot.data.tracks.isEmpty) {
-          return Text("No results");
+          return _getNoResultsStatus();
         }
 
         // If we have tracks to display, display them.
         return _getList(snapshot.data.tracks);
       },
+    );
+  }
+
+  /// Gets a status widget to display below the search bar.
+  Widget _getStatus(Widget child) {
+    return Container(
+      alignment: Alignment.topCenter,
+      margin: EdgeInsets.only(top: 30),
+      child: child,
+    );
+  }
+
+  /// Gets a loading status widget.
+  Widget _getLoadingStatus() {
+    return _getStatus(CircularProgressIndicator());
+  }
+
+  /// Gets the status in a case where there are no results.
+  Widget _getNoResultsStatus() {
+    return _getStatus(
+      Text(
+        FlutterI18n.translate(context, "main.noResults"),
+        style: Theme.of(context).textTheme.caption,
+      ),
     );
   }
 
