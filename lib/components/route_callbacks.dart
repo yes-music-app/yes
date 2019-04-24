@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yes_music/blocs/search_bloc.dart';
+import 'package:yes_music/blocs/session_data_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/login/login_screen.dart';
 import 'package:yes_music/components/main/main_screen.dart';
@@ -21,7 +22,13 @@ final RouteCallback createCallback = (context) => CreateScreen();
 
 final RouteCallback joinCallback = (context) => JoinScreen();
 
-final RouteCallback mainCallback = (context) => MainScreen();
+MaterialPageRoute mainCallback(String sid) => MaterialPageRoute(
+      builder: (BuildContext context) => BlocProvider(
+            bloc: SessionDataBloc(sid),
+            child: MainScreen(),
+          ),
+      maintainState: false,
+    );
 
 MaterialPageRoute searchCallback(String accessToken) => MaterialPageRoute(
       builder: (BuildContext context) => BlocProvider(
