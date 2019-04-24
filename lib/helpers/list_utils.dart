@@ -15,5 +15,5 @@ bool listsEqual<T>(List<T> l1, List<T> l2) {
 
 /// Converts a dynamic list into a list of strings.
 List<String> listToString(List<dynamic> list) {
-  return list?.map((dynamic element) => element.toString());
+  return list?.map<String>((dynamic element) => element.toString())?.toList();
 }

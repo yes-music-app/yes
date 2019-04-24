@@ -33,6 +33,9 @@ class _SearchScreenState extends State<SearchScreen> {
   /// The scroll controller used to monitor list scrolls.
   final ScrollController _scrollController = ScrollController();
 
+  /// A key to keep track of the scaffold.
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
   _SearchScreenState(this._dataBloc);
 
   /// Initialize the search bloc and register listeners.
@@ -48,6 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: _getAppBar(),
       body: _getBody(),
     );
@@ -168,6 +172,7 @@ class _SearchScreenState extends State<SearchScreen> {
               context,
               actionIcon: Icon(Icons.add),
               onAction: () {
+                _scaffoldKey.currentState.showSnackBar(_getAddedBar(track));
                 _dataBloc.queueSink.add(track);
               },
             ))
@@ -192,6 +197,20 @@ class _SearchScreenState extends State<SearchScreen> {
     return ListView(
       children: items,
       controller: _scrollController,
+    );
+  }
+
+  /// Gets a snackbar that indicates that the user has added the [track] to the
+  /// queue.
+  SnackBar _getAddedBar(TrackModel track) {
+    return SnackBar(
+      content: Text(
+        FlutterI18n.translate(
+          context,
+          "main.songAdded",
+          {"track": track.name},
+        ),
+      ),
     );
   }
 }

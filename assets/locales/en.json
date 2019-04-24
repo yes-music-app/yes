@@ -31,6 +31,7 @@
     "searchHint": "Search for a song",
     "noResults": "No results",
     "noMoreResults": "No more results",
+    "songAdded": "Added {track} to the queue",
     "sid": "Session ID",
     "sidMessage": "Session ID copied to the clipboard",
     "logout": "Log out",
