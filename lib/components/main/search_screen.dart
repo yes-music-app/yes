@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/search_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
@@ -17,10 +18,23 @@ class _SearchScreenState extends State<SearchScreen> {
   /// The bloc that handles searching.
   SearchBloc _searchBloc;
 
+  /// The text editing controller to use to control the query.
+  final TextEditingController _controller = TextEditingController();
+  String _oldText;
+
   /// Initialize the search bloc.
   @override
   void initState() {
     _searchBloc = BlocProvider.of<SearchBloc>(context);
+
+    // Update the search bloc whenever the controller is changed.
+    _controller.addListener(() {
+      if(_oldText != _controller.text) {
+        _searchBloc.querySink.add(_controller.text);
+        _oldText = _controller.text;
+      }
+    });
+
     super.initState();
   }
 
@@ -34,7 +48,32 @@ class _SearchScreenState extends State<SearchScreen> {
 
   /// Gets the search app bar.
   Widget _getAppBar() {
-    return AppBar();
+    return AppBar(
+      centerTitle: false,
+      titleSpacing: 5,
+      title: _getSearchBar(),
+      actions: <Widget>[_getClearButton()],
+    );
+  }
+
+  /// Gets the search bar to display in the app bar.
+  Widget _getSearchBar() {
+    return TextField(
+      autocorrect: false,
+      controller: _controller,
+      decoration: InputDecoration.collapsed(
+        hintText: FlutterI18n.translate(context, "main.searchHint"),
+      ),
+      style: Theme.of(context).textTheme.title,
+    );
+  }
+
+  /// Gets the button to clear the text field.
+  Widget _getClearButton() {
+    return IconButton(
+      icon: Icon(Icons.close),
+      onPressed: _controller.clear,
+    );
   }
 
   /// Gets the body elements to be displayed.

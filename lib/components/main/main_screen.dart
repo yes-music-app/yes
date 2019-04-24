@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:yes_music/blocs/session_data_bloc.dart';
 import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/bar_actions.dart';
@@ -15,14 +16,17 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  SessionStateBloc _sessionBloc;
+  SessionStateBloc _stateBloc;
   StreamSubscription<SessionState> _stateSubscription;
+  SessionDataBloc _dataBloc;
 
   @override
   void initState() {
-    _sessionBloc = BlocProvider.of<SessionStateBloc>(context);
+    // Get bloc references.
+    _stateBloc = BlocProvider.of<SessionStateBloc>(context);
+    _dataBloc = BlocProvider.of<SessionDataBloc>(context);
 
-    _stateSubscription = _sessionBloc.stateStream.listen((SessionState state) {
+    _stateSubscription = _stateBloc.stateStream.listen((SessionState state) {
       switch (state) {
         case SessionState.INACTIVE:
           _pushChooseScreen();
@@ -39,18 +43,16 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       child: StreamBuilder(
-        stream: _sessionBloc.stateStream,
-        builder: (
-          BuildContext context,
-          AsyncSnapshot<SessionState> snapshot,
-        ) {
+        stream: _stateBloc.stateStream,
+        builder: (BuildContext context,
+            AsyncSnapshot<SessionState> snapshot,) {
           if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
             return loadingIndicator();
           }
 
           switch (snapshot.data) {
             case SessionState.ACTIVE:
-              return _getContent();
+              return _getBody();
             default:
               return loadingIndicator();
           }
@@ -66,12 +68,30 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
   }
 
+  Widget _getBody() {
+    return StreamBuilder(
+      // TODO: Change this to session model listener.
+      stream: _dataBloc.tokenStream,
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        if(snapshot?.data == null) {
+          return loadingIndicator();
+        }
+
+        return _getContent();
+      },
+    );
+  }
+
   Widget _getContent() {
-    double width = MediaQuery.of(context).size.width;
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     return Scaffold(
       body: Builder(
-        builder: (BuildContext context) => CustomScrollView(
+        builder: (BuildContext context) =>
+            CustomScrollView(
               slivers: <Widget>[
                 _getAppBar(width, Uint8List(0), context),
                 _getQueue(),
@@ -135,7 +155,7 @@ class _MainScreenState extends State<MainScreen> {
           {
             "external_urls": {
               "spotify":
-                  "https://open.spotify.com/artist/2RhgnQNC74QoBlaUvT4MEe"
+              "https://open.spotify.com/artist/2RhgnQNC74QoBlaUvT4MEe"
             },
             "href": "https://api.spotify.com/v1/artists/2RhgnQNC74QoBlaUvT4MEe",
             "id": "2RhgnQNC74QoBlaUvT4MEe",
@@ -153,19 +173,19 @@ class _MainScreenState extends State<MainScreen> {
           {
             "height": 640,
             "url":
-                "https://i.scdn.co/image/12f844b98fd8bc20ad16d2c83fdcfb7751787ea8",
+            "https://i.scdn.co/image/12f844b98fd8bc20ad16d2c83fdcfb7751787ea8",
             "width": 640
           },
           {
             "height": 300,
             "url":
-                "https://i.scdn.co/image/c6c758d870f7acbbea075ddf55d547b5ff7a1935",
+            "https://i.scdn.co/image/c6c758d870f7acbbea075ddf55d547b5ff7a1935",
             "width": 300
           },
           {
             "height": 64,
             "url":
-                "https://i.scdn.co/image/053d452277c79d269352cd7bbdb860814da10784",
+            "https://i.scdn.co/image/053d452277c79d269352cd7bbdb860814da10784",
             "width": 64
           }
         ],
@@ -201,7 +221,7 @@ class _MainScreenState extends State<MainScreen> {
       "name": "Love Test",
       "popularity": 52,
       "preview_url":
-          "https://p.scdn.co/mp3-preview/48c64aa7fea8f151158acfabd64a5ebc06aac47b?cid=a50706c333cb40a396c6020d9c79fb8b",
+      "https://p.scdn.co/mp3-preview/48c64aa7fea8f151158acfabd64a5ebc06aac47b?cid=a50706c333cb40a396c6020d9c79fb8b",
       "track_number": 8,
       "type": "track",
       "uri": "spotify:track:71bWpBImqNaLjIvfV50Hsa"
@@ -209,7 +229,7 @@ class _MainScreenState extends State<MainScreen> {
     TrackModel model = TrackModel.fromMap(tempTrack);
 
     return SliverChildBuilderDelegate(
-      (BuildContext context, int index) => trackCard(model, context),
+          (BuildContext context, int index) => trackCard(model, context),
       childCount: 20,
     );
   }
@@ -225,7 +245,7 @@ class _MainScreenState extends State<MainScreen> {
   void _pushChooseScreen() {
     Navigator.of(context).pushNamedAndRemoveUntil(
       "/choose",
-      (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
     );
   }
 
@@ -233,8 +253,7 @@ class _MainScreenState extends State<MainScreen> {
   void _pushSearchScreen() {
     Navigator.of(context).pushNamed(
       "/search",
-      // TODO: Change this to the access token for this session.
-      arguments: "",
+      arguments: _dataBloc.tokenStream.value,
     );
   }
 }

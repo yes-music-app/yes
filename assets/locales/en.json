@@ -28,6 +28,7 @@
     "join": "Join"
   },
   "main": {
+    "searchHint": "Search for a song",
     "sid": "Session ID",
     "sidMessage": "Session ID copied to the clipboard",
     "logout": "Log out",

@@ -37,7 +37,7 @@ class SearchBloc implements BlocBase {
   SearchBloc(this.accessToken) {
     _querySub = _querySubject.stream.listen((String query) {
       // When the query changes, cancel the previous search process.
-      _prevSearch.cancel();
+      _prevSearch?.cancel();
 
       if (query == null || query.isEmpty) {
         // If we received an empty query, push a null search model.
