@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yes_music/helpers/transparent_image.dart';
 import 'package:yes_music/models/spotify/artist_model.dart';
+import 'package:yes_music/models/spotify/image_model.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 
 /// The margin to be used between track cards.
@@ -44,7 +45,8 @@ Widget trackCard(
       : ArtistModel.fromMap(DEFAULT_ARTIST);
 
   // Get the image url of this track.
-  final String imageUrl = track.album?.images[0]?.url;
+  final List<ImageModel> images = track.album?.images;
+  final imageUrl = images == null || images.isEmpty ? null : images[0].url;
 
   // Set the correct image to use based on whether we received a valid url.
   Image image = imageUrl == null
