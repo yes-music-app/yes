@@ -17,10 +17,13 @@ class SongModel {
   SongModel.fromMap(Map map)
       : track = TrackModel.fromMap(map["track"]),
         uid = map["uid"],
-        upvotes = map["upvotes"];
+        upvotes = listToString(map["upvotes"]);
 
   static List<SongModel> fromMapList(List songs) {
-    return songs?.map((song) => SongModel.fromMap(song))?.toList();
+    if (songs == null) {
+      return [];
+    }
+    return songs.map((song) => SongModel.fromMap(song)).toList();
   }
 
   Map<String, dynamic> toMap() {

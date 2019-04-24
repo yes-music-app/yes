@@ -90,6 +90,8 @@ class _CreateScreenState extends State<CreateScreen> {
   }
 
   Widget _getBody() {
+    final String _sid = _stateBloc.sid(checked: true);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -103,21 +105,24 @@ class _CreateScreenState extends State<CreateScreen> {
             padding: EdgeInsets.only(bottom: 10),
           ),
           Text(
-            _stateBloc.sid(checked: true),
+            _sid,
             style: Theme.of(context).textTheme.subhead,
           ),
           Padding(
             padding: EdgeInsets.only(bottom: 40),
           ),
-          _getContinueButton(),
+          _getContinueButton(_sid),
         ],
       ),
     );
   }
 
-  Widget _getContinueButton() {
+  Widget _getContinueButton(String sid) {
     return CustomButton.withTheme(
-      onPressed: _pushMainScreen,
+      onPressed: () {
+        _stateBloc.stateSink.add(SessionState.ACTIVE);
+        _pushMainScreen(sid);
+      },
       theme: Theme.of(context),
       child: Text(
         FlutterI18n.translate(context, "create.continue"),
@@ -145,8 +150,10 @@ class _CreateScreenState extends State<CreateScreen> {
     );
   }
 
-  void _pushMainScreen() {
-    _stateBloc.stateSink.add(SessionState.ACTIVE);
-    Navigator.of(context).pushReplacementNamed("/main");
+  void _pushMainScreen(String sid) {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      "/main",
+      (Route route) => false,
+    );
   }
 }

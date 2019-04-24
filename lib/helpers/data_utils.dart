@@ -9,7 +9,7 @@ Future<bool> sessionExists(String sid) async {
   // Get a snapshot of the session.
   final DataSnapshot snapshot = await FirebaseDatabase.instance
       .reference()
-      .child(SESSION_PATH)
+      .child(SESSION_KEY)
       .child(sid)
       .once();
 
@@ -53,4 +53,15 @@ TokenModel generateModel(Map data) {
     throw StateError("errors.spotify.auth_cancel");
   }
   return TokenModel.initial(data["access_token"], data["refresh_token"]);
+}
+
+/// Generate a url from a base url and a map of query parameters.
+String generateUrl(String baseUrl, Map<String, String> params) {
+  String queryString = params.keys
+      .map(
+        (String key) => key + "=" + params[key].replaceAll(" ", "+"),
+      )
+      .join("&");
+
+  return baseUrl + "?" + queryString;
 }

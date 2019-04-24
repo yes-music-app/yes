@@ -1,18 +1,11 @@
-import 'package:yes_music/models/state/search_model.dart';
-
 /// A user in a session.
 class UserModel {
   /// This user's user ID.
   final String uid;
 
-  /// The current search for this user.
-  final SearchModel search;
+  UserModel.empty(this.uid);
 
-  UserModel.empty(this.uid) : search = SearchModel.empty();
-
-  UserModel.fromMap(Map map)
-      : uid = map["uid"],
-        search = SearchModel.fromMap(map["search"]);
+  UserModel.fromMap(Map map) : uid = map["uid"];
 
   static List<UserModel> fromMapList(Map maps) {
     List<UserModel> models = List();
@@ -27,7 +20,6 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       "uid": uid,
-      "search": search.toMap(),
     };
   }
 
@@ -42,9 +34,8 @@ class UserModel {
   }
 
   @override
-  bool operator ==(other) =>
-      other is UserModel && other.uid == uid && other.search == search;
+  bool operator ==(other) => other is UserModel && other.uid == uid;
 
   @override
-  int get hashCode => uid.hashCode ^ search.hashCode;
+  int get hashCode => uid.hashCode;
 }

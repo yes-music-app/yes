@@ -26,7 +26,7 @@ class _JoinScreenState extends State<JoinScreen> {
       (SessionState state) {
         switch (state) {
           case SessionState.ACTIVE:
-            _pushMainScreen();
+            _pushMainScreen(_stateBloc.sid(checked: true));
             break;
           default:
             break;
@@ -117,7 +117,10 @@ class _JoinScreenState extends State<JoinScreen> {
     );
   }
 
-  void _pushMainScreen() {
-    Navigator.of(context).pushReplacementNamed("/main");
+  void _pushMainScreen(String sid) {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      "/main",
+      (Route route) => false
+    );
   }
 }

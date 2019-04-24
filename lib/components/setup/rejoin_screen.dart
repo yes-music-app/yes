@@ -32,7 +32,7 @@ class _RejoinScreenState extends State<RejoinScreen> {
             _pushChooseScreen();
             break;
           case SessionState.ACTIVE:
-            _pushMainScreen();
+            _pushMainScreen(_stateBloc.sid(checked: true));
             break;
           default:
             break;
@@ -67,8 +67,11 @@ class _RejoinScreenState extends State<RejoinScreen> {
     super.dispose();
   }
 
-  void _pushMainScreen() {
-    Navigator.of(context).pushReplacementNamed("/main");
+  void _pushMainScreen(String sid) {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      "/main",
+      (Route route) => false,
+    );
   }
 
   void _pushChooseScreen() {

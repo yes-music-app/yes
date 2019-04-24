@@ -1,9 +1,10 @@
+import 'package:yes_music/models/state/session_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
 
 abstract class SessionDataHandlerBase {
-  /// Sets the queue for the current session to [queue].
-  Future setQueue(List<SongModel> queue);
+  /// Gets a [SessionModel] stream for the given [sid].
+  Future<Stream<SessionModel>> getSessionModelStream();
 
-  /// Sets the history for the current session to [history].xs
-  Future setHistory(List<SongModel> history);
+  /// Queues the given [track] for the current session.
+  Future queueTrack(SongModel track);
 }

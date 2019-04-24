@@ -14,7 +14,7 @@ import 'package:yes_music/models/state/user_model.dart';
 class SessionStateHandler implements SessionStateHandlerBase {
   /// A reference to the root of the Firebase database.
   final DatabaseReference _firebase =
-      FirebaseDatabase.instance.reference().child(SESSION_PATH);
+      FirebaseDatabase.instance.reference().child(SESSION_KEY);
 
   /// A reference to the Firebase auth handler so that we can retrieve the uid.
   final AuthHandlerBase _authHandler = FirebaseProvider().getAuthHandler();
@@ -110,7 +110,7 @@ class SessionStateHandler implements SessionStateHandlerBase {
     }
 
     // Set a path that points to the new user's entry in the database.
-    final String path = USERS_PATH + "/" + uid;
+    final String path = USERS_KEY + "/" + uid;
 
     // Attempt to write the new value to the session database.
     UserModel model = UserModel.empty(uid);
@@ -146,7 +146,7 @@ class SessionStateHandler implements SessionStateHandlerBase {
 
     // If the user is not part of the session, return false.
     DatabaseReference userReference =
-        _firebase.child(oldSID).child(USERS_PATH).child(uid);
+        _firebase.child(oldSID).child(USERS_KEY).child(uid);
     DataSnapshot snapshot = await userReference.once();
     if (snapshot == null || snapshot.value == null) {
       return false;
@@ -173,7 +173,7 @@ class SessionStateHandler implements SessionStateHandlerBase {
     DatabaseReference sessionReference = _firebase.child(_sid);
 
     // Check to see whether the user is the host of the session.
-    DataSnapshot snapshot = await sessionReference.child(HOST_PATH).once();
+    DataSnapshot snapshot = await sessionReference.child(HOST_KEY).once();
     if (snapshot?.value == uid) {
       // If the user is the host, delete the entire session.
       await sessionReference.remove().catchError((e) {
@@ -186,7 +186,7 @@ class SessionStateHandler implements SessionStateHandlerBase {
 
     // Check to ensure the user is in the session.
     DatabaseReference userReference =
-        sessionReference.child(USERS_PATH).child(uid);
+        sessionReference.child(USERS_KEY).child(uid);
     snapshot = await userReference.once();
     if (snapshot == null || snapshot.value == null) {
       throw StateError("errors.session.no_remote_session");

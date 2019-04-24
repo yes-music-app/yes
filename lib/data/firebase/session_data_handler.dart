@@ -1,53 +1,51 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:yes_music/helpers/data_utils.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/session_data_handler_base.dart';
-import 'package:yes_music/data/firebase/session_state_handler.dart';
 import 'package:yes_music/models/state/session_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
 
 class SessionDataHandler implements SessionDataHandlerBase {
   /// A reference to the root of the Firebase database.
   final DatabaseReference _firebase =
-      FirebaseDatabase.instance.reference().child(SESSION_PATH);
+      FirebaseDatabase.instance.reference().child(SESSION_KEY);
 
-  /// A reference to the session state handler for the sid.
-  final SessionStateHandler _stateHandler =
-      FirebaseProvider().getSessionStateHandler();
-
-  /// Sets the queue for the current session to [queue].
   @override
-  Future setQueue(List<SongModel> queue) async {
-    await _setItem(QUEUE_PATH, SongModel.toMapList(queue));
-    return;
-  }
+  Future<Stream<SessionModel>> getSessionModelStream() async {
+    final String sid =
+        FirebaseProvider().getSessionStateHandler().sid(checked: true);
 
-  /// Sets the history for the current session to [history].
-  @override
-  Future setHistory(List<SongModel> history) async {
-    await _setItem(HISTORY_PATH, SongModel.toMapList(history));
-    return;
-  }
-
-  /// Sets the child of the current session at [path] to [value].
-  Future _setItem(String path, dynamic value) async {
-    // Get the current sid.
-    String sid = _stateHandler.sid();
-
-    // Retrieve a reference to the new session's database path, and check if a
-    // session exists there.
-    if (!await sessionExists(sid)) {
+    final DatabaseReference sessionReference = _firebase.child(sid);
+    final DataSnapshot sessionSnapshot = await sessionReference.once();
+    if (sessionSnapshot == null || sessionSnapshot.value == null) {
       throw StateError("errors.session.no_remote_session");
     }
 
-    // Attempt to write the new value to the session database.
-    DatabaseReference sessionReference = _firebase.child(sid);
-    try {
-      sessionReference.child(path).set(value);
-    } catch (e) {
-      throw StateError("errors.session.session_write");
+    return sessionReference.onValue.map<SessionModel>(
+      (Event data) => SessionModel.fromMap(data.snapshot.value),
+    );
+  }
+
+  /// Queues the given [track] for the current session.
+  Future queueTrack(SongModel track) async {
+    final String sid =
+        FirebaseProvider().getSessionStateHandler().sid(checked: true);
+
+    final DatabaseReference sessionReference = _firebase.child(sid);
+    DataSnapshot snapshot = await sessionReference.once();
+    if (snapshot == null || snapshot.value == null) {
+      throw StateError("errors.session.no_remote_session");
     }
 
-    return;
+    final DatabaseReference queueReference = sessionReference.child(QUEUE_KEY);
+    snapshot = await queueReference.once();
+    if (snapshot == null) {
+      throw StateError("errors.session.no_remote_session");
+    }
+
+    List<SongModel> oldQueue = SongModel.fromMapList(snapshot.value);
+    oldQueue.add(track);
+    queueReference.set(SongModel.toMapList(oldQueue)).catchError((e) {
+      throw StateError("errors.session.session_write");
+    });
   }
 }

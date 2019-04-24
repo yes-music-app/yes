@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:yes_music/blocs/session_data_bloc.dart';
 import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
-import 'package:yes_music/components/common/loading_indicator.dart';
 import 'package:yes_music/components/common/bar_actions.dart';
+import 'package:yes_music/components/common/loading_indicator.dart';
+import 'package:yes_music/components/common/track_card.dart';
+import 'package:yes_music/models/spotify/track_model.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -13,17 +16,20 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  SessionStateBloc _sessionBloc;
+  SessionStateBloc _stateBloc;
   StreamSubscription<SessionState> _stateSubscription;
+  SessionDataBloc _dataBloc;
 
   @override
   void initState() {
-    _sessionBloc = BlocProvider.of<SessionStateBloc>(context);
+    // Get bloc references.
+    _stateBloc = BlocProvider.of<SessionStateBloc>(context);
+    _dataBloc = BlocProvider.of<SessionDataBloc>(context);
 
-    _stateSubscription = _sessionBloc.stateStream.listen((SessionState state) {
+    _stateSubscription = _stateBloc.stateStream.listen((SessionState state) {
       switch (state) {
         case SessionState.INACTIVE:
-          _pushLoginScreen();
+          _pushChooseScreen();
           break;
         default:
           break;
@@ -37,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       child: StreamBuilder(
-        stream: _sessionBloc.stateStream,
+        stream: _stateBloc.stateStream,
         builder: (
           BuildContext context,
           AsyncSnapshot<SessionState> snapshot,
@@ -48,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
 
           switch (snapshot.data) {
             case SessionState.ACTIVE:
-              return _getContent();
+              return _getBody();
             default:
               return loadingIndicator();
           }
@@ -64,6 +70,20 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
   }
 
+  Widget _getBody() {
+    return StreamBuilder(
+      // TODO: Change this to session model listener.
+      stream: _dataBloc.tokenStream,
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        if (snapshot?.data == null) {
+          return loadingIndicator();
+        }
+
+        return _getContent();
+      },
+    );
+  }
+
   Widget _getContent() {
     double width = MediaQuery.of(context).size.width;
 
@@ -73,6 +93,7 @@ class _MainScreenState extends State<MainScreen> {
               slivers: <Widget>[
                 _getAppBar(width, Uint8List(0), context),
                 _getQueue(),
+                SliverPadding(padding: EdgeInsets.only(top: 5)),
               ],
             ),
       ),
@@ -103,14 +124,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _getAppBarImage(Uint8List bytes) {
-    return bytes == null || bytes.isEmpty
-        ? Center(
-            child: loadingIndicator(),
-          )
-        : FittedBox(
-            fit: BoxFit.fitWidth,
-            child: Image.memory(bytes),
-          );
+    return FittedBox(
+      fit: BoxFit.fitWidth,
+      child: Image.network(
+          "https://i.scdn.co/image/44eeb521fbba3523d65bb0e2b9b2893965fcd437"),
+    );
   }
 
   SliverList _getQueue() {
@@ -120,25 +138,112 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   SliverChildBuilderDelegate _queueDelegate() {
-    return SliverChildBuilderDelegate(
-      (BuildContext context, int index) {
-        return Container(
-          padding: const EdgeInsets.all(10),
-          child: Text("hello world"),
-        );
+    final Map tempTrack = {
+      "album": {
+        "album_type": "album",
+        "artists": [
+          {
+            "external_urls": {
+              "spotify":
+                  "https://open.spotify.com/artist/2RhgnQNC74QoBlaUvT4MEe"
+            },
+            "href": "https://api.spotify.com/v1/artists/2RhgnQNC74QoBlaUvT4MEe",
+            "id": "2RhgnQNC74QoBlaUvT4MEe",
+            "name": "The Growlers",
+            "type": "artist",
+            "uri": "spotify:artist:2RhgnQNC74QoBlaUvT4MEe"
+          }
+        ],
+        "external_urls": {
+          "spotify": "https://open.spotify.com/album/0b7iiX6rAdsggW5ERuLWB7"
+        },
+        "href": "https://api.spotify.com/v1/albums/0b7iiX6rAdsggW5ERuLWB7",
+        "id": "0b7iiX6rAdsggW5ERuLWB7",
+        "images": [
+          {
+            "height": 640,
+            "url":
+                "https://i.scdn.co/image/12f844b98fd8bc20ad16d2c83fdcfb7751787ea8",
+            "width": 640
+          },
+          {
+            "height": 300,
+            "url":
+                "https://i.scdn.co/image/c6c758d870f7acbbea075ddf55d547b5ff7a1935",
+            "width": 300
+          },
+          {
+            "height": 64,
+            "url":
+                "https://i.scdn.co/image/053d452277c79d269352cd7bbdb860814da10784",
+            "width": 64
+          }
+        ],
+        "name": "Chinese Fountain",
+        "release_date": "2014-09-23",
+        "release_date_precision": "day",
+        "total_tracks": 11,
+        "type": "album",
+        "uri": "spotify:album:0b7iiX6rAdsggW5ERuLWB7"
       },
-      childCount: 50,
+      "artists": [
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/2RhgnQNC74QoBlaUvT4MEe"
+          },
+          "href": "https://api.spotify.com/v1/artists/2RhgnQNC74QoBlaUvT4MEe",
+          "id": "2RhgnQNC74QoBlaUvT4MEe",
+          "name": "The Growlers",
+          "type": "artist",
+          "uri": "spotify:artist:2RhgnQNC74QoBlaUvT4MEe"
+        }
+      ],
+      "disc_number": 1,
+      "duration_ms": 249266,
+      "explicit": false,
+      "external_ids": {"isrc": "USER81404408"},
+      "external_urls": {
+        "spotify": "https://open.spotify.com/track/71bWpBImqNaLjIvfV50Hsa"
+      },
+      "href": "https://api.spotify.com/v1/tracks/71bWpBImqNaLjIvfV50Hsa",
+      "id": "71bWpBImqNaLjIvfV50Hsa",
+      "is_local": false,
+      "name": "Love Test",
+      "popularity": 52,
+      "preview_url":
+          "https://p.scdn.co/mp3-preview/48c64aa7fea8f151158acfabd64a5ebc06aac47b?cid=a50706c333cb40a396c6020d9c79fb8b",
+      "track_number": 8,
+      "type": "track",
+      "uri": "spotify:track:71bWpBImqNaLjIvfV50Hsa"
+    };
+    TrackModel model = TrackModel.fromMap(tempTrack);
+
+    return SliverChildBuilderDelegate(
+      (BuildContext context, int index) => trackCard(model, context),
+      childCount: 20,
     );
   }
 
   Widget _getAddButton() {
     return FloatingActionButton(
       child: Icon(Icons.add),
-      onPressed: () => {},
+      onPressed: _pushSearchScreen,
     );
   }
 
-  void _pushLoginScreen() {
-    Navigator.of(context).pushReplacementNamed("/");
+  /// Push the choose screen as the base route.
+  void _pushChooseScreen() {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      "/choose",
+      (Route<dynamic> route) => false,
+    );
+  }
+
+  /// Push the search screen with the access token as an argument.
+  void _pushSearchScreen() {
+    Navigator.of(context).pushNamed(
+      "/search",
+      arguments: _dataBloc,
+    );
   }
 }

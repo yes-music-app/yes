@@ -4,14 +4,14 @@ import 'package:yes_music/models/spotify/token_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
 import 'package:yes_music/models/state/user_model.dart';
 
-const String SESSION_PATH = "sessions";
-const String SID_PATH = "sid";
-const String STATE_PATH = "playerState";
-const String QUEUE_PATH = "queue";
-const String HISTORY_PATH = "history";
-const String HOST_PATH = "host";
-const String USERS_PATH = "users";
-const String TOKENS_PATH = "tokens";
+const String SESSION_KEY = "sessions";
+const String SID_KEY = "sid";
+const String STATE_KEY = "playerState";
+const String QUEUE_KEY = "queue";
+const String HISTORY_KEY = "history";
+const String HOST_KEY = "host";
+const String USERS_KEY = "users";
+const String TOKENS_KEY = "tokens";
 
 /// A session of users.
 class SessionModel {
@@ -44,25 +44,25 @@ class SessionModel {
         users = [newHost];
 
   SessionModel.fromMap(Map map)
-      : sid = map[SID_PATH],
-        playerState = map[STATE_PATH] == null
+      : sid = map[SID_KEY],
+        playerState = map[STATE_KEY] == null
             ? null
-            : PlayerStateModel.fromMap(map[STATE_PATH]),
-        queue = SongModel.fromMapList(map[QUEUE_PATH]),
-        history = SongModel.fromMapList(map[HISTORY_PATH]),
-        host = map[HOST_PATH],
-        users = UserModel.fromMapList(map[USERS_PATH]),
-        tokens = TokenModel.fromMap(map[TOKENS_PATH]);
+            : PlayerStateModel.fromMap(map[STATE_KEY]),
+        queue = SongModel.fromMapList(map[QUEUE_KEY]),
+        history = SongModel.fromMapList(map[HISTORY_KEY]),
+        host = map[HOST_KEY],
+        users = UserModel.fromMapList(map[USERS_KEY]),
+        tokens = TokenModel.fromMap(map[TOKENS_KEY]);
 
   Map<String, dynamic> toMap() {
     return {
-      SID_PATH: sid,
-      STATE_PATH: playerState?.toMap(),
-      QUEUE_PATH: SongModel.toMapList(queue),
-      HISTORY_PATH: SongModel.toMapList(history),
-      HOST_PATH: host,
-      USERS_PATH: UserModel.toMapList(users),
-      TOKENS_PATH: tokens?.toMap(),
+      SID_KEY: sid,
+      STATE_KEY: playerState?.toMap(),
+      QUEUE_KEY: SongModel.toMapList(queue),
+      HISTORY_KEY: SongModel.toMapList(history),
+      HOST_KEY: host,
+      USERS_KEY: UserModel.toMapList(users),
+      TOKENS_KEY: tokens?.toMap(),
     };
   }
 
