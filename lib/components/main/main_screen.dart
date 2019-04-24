@@ -25,7 +25,7 @@ class _MainScreenState extends State<MainScreen> {
     _stateSubscription = _sessionBloc.stateStream.listen((SessionState state) {
       switch (state) {
         case SessionState.INACTIVE:
-          _pushLoginScreen();
+          _pushChooseScreen();
           break;
         default:
           break;
@@ -413,7 +413,10 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  void _pushLoginScreen() {
-    Navigator.of(context).pushReplacementNamed("/");
+  void _pushChooseScreen() {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      "/choose",
+      (Route<dynamic> route) => false,
+    );
   }
 }
