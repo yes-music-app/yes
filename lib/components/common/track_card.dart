@@ -6,11 +6,16 @@ import 'package:yes_music/helpers/transparent_image.dart';
 import 'package:yes_music/models/spotify/artist_model.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 
+/// The margin to be used between track cards.
+const double TRACK_CARD_MARGIN = 6;
+
+/// A default, empty artist for a track with no artist.
 const Map DEFAULT_ARTIST = {
   NAME_KEY: "Unknown Artst",
   ARTIST_URI_KEY: "unknown_artist",
 };
 
+/// Creates a track card from the given [TrackModel].
 Widget trackCard(
   TrackModel track,
   BuildContext context, {
@@ -18,8 +23,12 @@ Widget trackCard(
   double height = 60,
   double borderRadius = 10,
   Color color,
-  EdgeInsets margin =
-      const EdgeInsets.only(left: 6, top: 6, right: 6, bottom: 0),
+  EdgeInsets margin = const EdgeInsets.only(
+    left: TRACK_CARD_MARGIN,
+    top: TRACK_CARD_MARGIN,
+    right: TRACK_CARD_MARGIN,
+    bottom: 0,
+  ),
   Icon actionIcon,
   VoidCallback onAction,
 }) {

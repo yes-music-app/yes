@@ -409,7 +409,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget _getAddButton() {
     return FloatingActionButton(
       child: Icon(Icons.add),
-      onPressed: () => {},
+      onPressed: _pushSearchScreen,
     );
   }
 
@@ -426,7 +426,7 @@ class _MainScreenState extends State<MainScreen> {
     Navigator.of(context).pushNamed(
       "/search",
       // TODO: Change this to the access token for this session.
-      arguments: null,
+      arguments: "",
     );
   }
 }
