@@ -32,6 +32,7 @@
     "noResults": "No results",
     "noMoreResults": "No more results",
     "songAdded": "Added {track} to the queue",
+    "queueEmpty": "The queue is empty",
     "sid": "Session ID",
     "sidMessage": "Session ID copied to the clipboard",
     "logout": "Log out",

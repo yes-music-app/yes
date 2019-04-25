@@ -5,6 +5,7 @@ import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/session_data_handler_base.dart';
+import 'package:yes_music/helpers/list_utils.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 import 'package:yes_music/models/state/session_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
@@ -26,6 +27,12 @@ class SessionDataBloc implements BlocBase {
 
   ValueObservable<String> get tokenStream => _tokenSubject.stream;
 
+  /// A [BehaviorSubject] that broadcasts the current state of the queue.
+  final BehaviorSubject<List<SongModel>> _queueListSubject = BehaviorSubject();
+
+  ValueObservable<List<SongModel>> get queueListStream =>
+      _queueListSubject.stream;
+
   /// A [StreamController] that handles the queuing of new songs to play.
   final StreamController<TrackModel> _queueSubject =
       StreamController.broadcast();
@@ -38,9 +45,13 @@ class SessionDataBloc implements BlocBase {
   SessionDataBloc() {
     _dataHandler.getSessionModelStream().then((Stream<SessionModel> stream) {
       _sessionSub = stream.listen((SessionModel data) {
-        // If we receive a new access token, push it.
+        // If we receive new data, push it.
         if (data.tokens.accessToken != _tokenSubject.value) {
           _tokenSubject.add(data.tokens.accessToken);
+        }
+
+        if (!listsEqual(data.queue, _queueListSubject.value)) {
+          _queueListSubject.add(data.queue);
         }
       });
     });
@@ -64,6 +75,7 @@ class SessionDataBloc implements BlocBase {
   void dispose() {
     _sessionSub?.cancel();
     _tokenSubject.close();
+    _queueListSubject.close();
     _queueSub?.cancel();
     _queueSubject.close();
   }
