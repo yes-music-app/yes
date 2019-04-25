@@ -158,6 +158,11 @@ class _MainScreenState extends State<MainScreen> {
           return _getEmptyQueueStatus();
         }
 
+        // Sort by upvotes.
+        tracks.sort(
+          (SongModel a, SongModel b) => b.upvotes.length - a.upvotes.length,
+        );
+
         return SliverFixedExtentList(
           itemExtent: CARD_HEIGHT,
           delegate: SliverChildBuilderDelegate(
