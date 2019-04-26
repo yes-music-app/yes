@@ -28,13 +28,22 @@ class SongModel {
         uid = map[UID_KEY],
         upvotes = listToString(map[UPVOTES_KEY] ?? []);
 
-  static List<SongModel> fromMapList(Map songs) {
+  static List<SongModel> fromMapOfMaps(Map songs) {
     if (songs?.values == null) {
       return [];
     }
 
     // Get a list of the songs and map them.
     return songs.values.map((song) => SongModel.fromMap(song)).toList();
+  }
+
+  static List<SongModel> fromListOfMaps(List songs) {
+    if (songs == null) {
+      return [];
+    }
+
+    // Map the songs.
+    return songs.map((map) => SongModel.fromMap(map)).toList();
   }
 
   Map<String, dynamic> toMap() {
