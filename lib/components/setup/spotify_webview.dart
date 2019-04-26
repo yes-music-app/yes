@@ -74,7 +74,7 @@ int _isSuccessUrl(String url, String state) {
 /// Gets the state string from a given url.
 String _getState(String url) {
   final List<String> urlParts = url.split("state=");
-  if (urlParts.length < 1) {
+  if (urlParts.length < 2) {
     return "";
   }
 
@@ -84,7 +84,7 @@ String _getState(String url) {
 /// Gets the authorization code from the given url.
 String _getCode(String url) {
   final List<String> urlParts = url.split("code=");
-  if (urlParts.length < 1) {
+  if (urlParts.length < 2) {
     return "";
   }
 
