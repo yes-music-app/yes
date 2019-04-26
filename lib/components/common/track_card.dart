@@ -39,14 +39,9 @@ Widget trackCard(
   // Set the correct icon to use for the action button.
   actionIcon = actionIcon ?? Icon(Icons.music_note);
 
-  // Find the artist to use to label this track.
-  final ArtistModel mainArtist = track.artists.length > 0
-      ? track.artists[0]
-      : ArtistModel.fromMap(DEFAULT_ARTIST);
-
   // Get the image url of this track.
   final List<ImageModel> images = track.album?.images;
-  final imageUrl = images == null || images.isEmpty ? null : images[0].url;
+  final imageUrl = images?.elementAt(0)?.url;
 
   // Set the correct image to use based on whether we received a valid url.
   Image image = imageUrl == null
@@ -79,32 +74,13 @@ Widget trackCard(
             child: image,
           ),
           Container(
-            margin: EdgeInsets.only(left: 20, right: 14),
+            margin: EdgeInsets.only(left: 20, right: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        track.name,
-                        overflow: TextOverflow.ellipsis,
-                        style: textTheme.body1,
-                      ),
-                      SizedBox(
-                        width: 0,
-                        height: 2,
-                      ),
-                      Text(
-                        mainArtist.name + " • " + track.album.name,
-                        overflow: TextOverflow.ellipsis,
-                        style: textTheme.caption,
-                      ),
-                    ],
-                  ),
+                  child: _getTrackDetails(track, textTheme),
                 ),
                 IconButton(
                   icon: actionIcon,
@@ -116,5 +92,34 @@ Widget trackCard(
         ],
       ),
     ),
+  );
+}
+
+/// Gets the widgets displaying the specific details of this track.
+Widget _getTrackDetails(TrackModel track, TextTheme textTheme) {
+  // Find the artist to use to label this track.
+  final ArtistModel mainArtist = track.artists.length > 0
+      ? track.artists[0]
+      : ArtistModel.fromMap(DEFAULT_ARTIST);
+
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      Text(
+        track.name,
+        overflow: TextOverflow.ellipsis,
+        style: textTheme.body1,
+      ),
+      SizedBox(
+        width: 0,
+        height: 2,
+      ),
+      Text(
+        mainArtist.name + " • " + track.album.name,
+        overflow: TextOverflow.ellipsis,
+        style: textTheme.caption,
+      ),
+    ],
   );
 }

@@ -48,8 +48,8 @@ class SessionModel {
         playerState = map[STATE_KEY] == null
             ? null
             : PlayerStateModel.fromMap(map[STATE_KEY]),
-        queue = SongModel.fromMapList(map[QUEUE_KEY]),
-        history = SongModel.fromMapList(map[HISTORY_KEY]),
+        queue = SongModel.fromMapOfMaps(map[QUEUE_KEY]),
+        history = SongModel.fromMapOfMaps(map[HISTORY_KEY]),
         host = map[HOST_KEY],
         users = UserModel.fromMapList(map[USERS_KEY]),
         tokens = TokenModel.fromMap(map[TOKENS_KEY]);
