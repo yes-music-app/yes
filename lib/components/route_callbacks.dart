@@ -27,7 +27,7 @@ MaterialPageRoute mainCallback(String sid) => MaterialPageRoute(
             bloc: SessionDataBloc(sid),
             child: MainScreen(),
           ),
-      maintainState: false,
+      maintainState: true,
     );
 
 MaterialPageRoute searchCallback(SessionDataBloc bloc) => MaterialPageRoute(

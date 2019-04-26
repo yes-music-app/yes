@@ -1,1 +1,0 @@
-/// A screen that handles the display of the main screen and the search screen.
