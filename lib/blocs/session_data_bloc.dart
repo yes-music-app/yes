@@ -10,20 +10,35 @@ import 'package:yes_music/models/spotify/track_model.dart';
 import 'package:yes_music/models/state/session_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
 
+enum SessionConnectionState {
+  CONNECTING,
+  CONNECTED,
+  DISCONNECTED,
+}
+
 /// A bloc that handles operations on a session's data.
 class SessionDataBloc implements BlocBase {
   /// A reference to the session data handler to use for network operations.
   final SessionDataHandlerBase _dataHandler =
       FirebaseProvider().getSessionDataHandler();
 
-  /// The session ID of this session.
-  final String _sid;
-
   /// A reference to the auth handler for network operations.
   final AuthHandlerBase _authHandler = FirebaseProvider().getAuthHandler();
 
-  /// A subscription to the session model stream.
+  /// The session ID of this session.
+  final String _sid;
+
+  // <editor-fold desc="Streams">
+
+  /// A subscription to the session state.
   StreamSubscription _sessionSub;
+
+  /// A [BehaviorSubject] that broadcasts the state of the model.
+  final BehaviorSubject<SessionConnectionState> _connectionSubject =
+      BehaviorSubject.seeded(SessionConnectionState.CONNECTING);
+
+  ValueObservable<SessionConnectionState> get connectionStream =>
+      _connectionSubject.stream;
 
   /// A [BehaviorSubject] that broadcasts the current access token.
   final BehaviorSubject<String> _tokenSubject = BehaviorSubject();
@@ -51,19 +66,33 @@ class SessionDataBloc implements BlocBase {
 
   StreamSubscription _likeSub;
 
+  // </editor-fold>
+
   /// Creates a session data bloc.
   SessionDataBloc(this._sid) {
-    _dataHandler
-        .getSessionModelStream(_sid)
-        .then((Stream<SessionModel> stream) {
-      _sessionSub = stream.listen((SessionModel data) {
-        // If we receive new data, push it.
-        if (data.tokens.accessToken != _tokenSubject.value) {
-          _tokenSubject.add(data.tokens.accessToken);
+    _dataHandler.getSessionModelStream(_sid).then((Stream stream) {
+      _sessionSub = stream.listen((data) {
+        // Indicate if we have gained or lost connection with the session.
+        if (data == null) {
+          if (_connectionSubject.value == SessionConnectionState.CONNECTED) {
+            _connectionSubject.add(SessionConnectionState.DISCONNECTED);
+          }
+          return;
+        } else if (_connectionSubject.value ==
+            SessionConnectionState.CONNECTING) {
+          _connectionSubject.add(SessionConnectionState.CONNECTED);
         }
 
-        if (!listsEqual(data.queue, _queueListSubject.value)) {
-          _queueListSubject.add(data.queue);
+        // Generate a session model from the passed data.
+        SessionModel model = SessionModel.fromMap(data);
+
+        // If we receive new data, push it.
+        if (model.tokens.accessToken != _tokenSubject.value) {
+          _tokenSubject.add(model.tokens.accessToken);
+        }
+
+        if (!listsEqual(model.queue, _queueListSubject.value)) {
+          _queueListSubject.add(model.queue);
         }
       });
     });
@@ -93,6 +122,7 @@ class SessionDataBloc implements BlocBase {
   @override
   void dispose() {
     _sessionSub?.cancel();
+    _connectionSubject.close();
     _tokenSubject.close();
     _queueListSubject.close();
     _queueSub?.cancel();

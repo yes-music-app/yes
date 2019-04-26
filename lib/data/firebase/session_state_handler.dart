@@ -164,9 +164,11 @@ class SessionStateHandler implements SessionStateHandlerBase {
     // Acquire the current UID.
     String uid = await _uid();
 
-    // Check to ensure that the session exists.
+    // If the session doesn't exist, we don't need to perform any database
+    // operations.
     if (!await sessionExists(_sid)) {
-      throw StateError("errors.session.no_remote_session");
+      await _setSID(null);
+      return;
     }
 
     // Get a reference to the session.

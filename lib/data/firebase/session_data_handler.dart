@@ -10,16 +10,14 @@ class SessionDataHandler implements SessionDataHandlerBase {
       FirebaseDatabase.instance.reference().child(SESSION_KEY);
 
   @override
-  Future<Stream<SessionModel>> getSessionModelStream(String sid) async {
+  Future<Stream> getSessionModelStream(String sid) async {
     final DatabaseReference sessionReference = _firebase.child(sid);
     final DataSnapshot sessionSnapshot = await sessionReference.once();
     if (sessionSnapshot == null || sessionSnapshot.value == null) {
       throw StateError("errors.session.no_remote_session");
     }
 
-    return sessionReference.onValue.map<SessionModel>(
-      (Event data) => SessionModel.fromMap(data.snapshot.value),
-    );
+    return sessionReference.onValue.map((Event e) => e.snapshot.value);
   }
 
   /// Queues the given [track] for the current session.

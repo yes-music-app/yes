@@ -3,7 +3,7 @@ import 'package:yes_music/models/state/session_model.dart';
 
 abstract class SessionDataHandlerBase {
   /// Gets a [SessionModel] stream for the given [sid].
-  Future<Stream<SessionModel>> getSessionModelStream(String sid);
+  Future<Stream> getSessionModelStream(String sid);
 
   /// Queues the given [track] for the current session.
   Future queueTrack(String sid, String uid, TrackModel track);

@@ -71,7 +71,8 @@
       "join_exists": "Tried to join a session that does not exist.",
       "session_write": "Failed to write to the session database.",
       "no_local_session": "Failed to perform a session operation as the user is not in a session.",
-      "no_remote_session": "Failed to perform a session operation as the database does not contain the session."
+      "no_remote_session": "Failed to perform a session operation as the database does not contain the session.",
+      "deleted": "You have lost connection to the session. This is normally because of bad internet connection or the host deleting the session."
     }
   }
 }
