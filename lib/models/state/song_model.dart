@@ -3,6 +3,9 @@ import 'package:yes_music/models/spotify/track_model.dart';
 
 /// A song in the app's queue.
 class SongModel {
+  /// The automatically generated queue ID for this song.
+  final String qid;
+
   /// The track to be played.
   final TrackModel track;
 
@@ -12,10 +15,11 @@ class SongModel {
   /// A list of the string IDs of the users who upvoted this song.
   final List<String> upvotes;
 
-  SongModel(this.track, this.uid, this.upvotes);
+  SongModel(this.qid, this.track, this.uid, this.upvotes);
 
   SongModel.fromMap(Map map)
-      : track = TrackModel.fromMap(map["track"]),
+      : qid = map["qid"],
+        track = TrackModel.fromMap(map["track"]),
         uid = map["uid"],
         upvotes = listToString(map["upvotes"] ?? []);
 
@@ -28,6 +32,7 @@ class SongModel {
 
   Map<String, dynamic> toMap() {
     return {
+      "qid": qid,
       "track": track.toMap(),
       "uid": uid,
       "upvotes": upvotes,
@@ -41,10 +46,12 @@ class SongModel {
   @override
   bool operator ==(other) =>
       other is SongModel &&
+      other.qid == qid &&
       other.track == track &&
       other.uid == uid &&
       listsEqual(other.upvotes, upvotes);
 
   @override
-  int get hashCode => track.hashCode ^ uid.hashCode ^ upvotes.hashCode;
+  int get hashCode =>
+      qid.hashCode ^ track.hashCode ^ uid.hashCode ^ upvotes.hashCode;
 }

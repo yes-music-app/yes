@@ -7,19 +7,6 @@ import 'package:yes_music/models/state/song_model.dart';
 
 const double CARD_HEIGHT = 60;
 
-/// A class that represents a queue item. This wrapper class allows us to sort
-/// the items in the queue without losing the original order.
-class QueueModel {
-  /// The song item that this model represents.
-  final SongModel song;
-
-  /// The original index of the song in the queue.
-  final int originalIndex;
-
-  /// Creates a new queue item with the given song and index.
-  QueueModel(this.song, this.originalIndex);
-}
-
 /// Builds a list of track cards to display in the queue.
 Widget queueBuilder(
   BuildContext context,
@@ -37,25 +24,22 @@ Widget queueBuilder(
   }
 
   // Get a reference to the queued tracks.
-  List<QueueModel> tracks = [];
-  for (int i = 0; i < snapshot.data.length; i++) {
-    tracks.add(QueueModel(snapshot.data[i], i));
-  }
+  List<SongModel> tracks = snapshot.data;
 
   // Sort by upvotes.
-  tracks.sort((QueueModel a, QueueModel b) =>
-      b.song.upvotes.length - a.song.upvotes.length);
+  tracks.sort((SongModel a, SongModel b) =>
+      b.upvotes.length - a.upvotes.length);
 
   return SliverFixedExtentList(
     itemExtent: CARD_HEIGHT,
     delegate: SliverChildBuilderDelegate(
       (BuildContext context, int index) {
-        SongModel song = tracks[index].song;
+        SongModel song = tracks[index];
         return trackCard(
           song.track,
           context,
           actionIcon: _getCardActionIcon(song, uid),
-          onAction: () => dataBloc.likeSink.add(tracks[index].originalIndex),
+          onAction: () => dataBloc.likeSink.add(song.qid),
         );
       },
       childCount: tracks.length,

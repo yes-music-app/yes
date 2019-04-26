@@ -45,9 +45,9 @@ class SessionDataBloc implements BlocBase {
   StreamSubscription _queueSub;
 
   /// A [StreamController] that handles the liking of items in the queue.
-  final StreamController<int> _likeSubject = StreamController.broadcast();
+  final StreamController<String> _likeSubject = StreamController.broadcast();
 
-  StreamSink<int> get likeSink => _likeSubject.sink;
+  StreamSink<String> get likeSink => _likeSubject.sink;
 
   StreamSubscription _likeSub;
 
@@ -82,13 +82,12 @@ class SessionDataBloc implements BlocBase {
   /// Queues the given track for the user.
   void _queueTrack(TrackModel track) async {
     String uid = await _authHandler.uid(checked: true);
-    SongModel model = SongModel(track, uid, [uid]);
-    _dataHandler.queueTrack(_sid, model);
+    _dataHandler.queueTrack(_sid, uid, track);
   }
 
-  void _likeTrack(int index) async {
+  void _likeTrack(String qid) async {
     String uid = await _authHandler.uid(checked: true);
-    _dataHandler.likeTrack(_sid, index, uid);
+    _dataHandler.likeTrack(_sid, qid, uid);
   }
 
   @override
