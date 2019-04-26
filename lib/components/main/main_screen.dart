@@ -3,13 +3,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:yes_music/blocs/login_bloc.dart';
 import 'package:yes_music/blocs/session_data_bloc.dart';
 import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/bar_actions.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
-import 'package:yes_music/components/common/track_card.dart';
+import 'package:yes_music/components/main/queue_builder.dart';
 import 'package:yes_music/models/state/song_model.dart';
 
 class MainScreen extends StatefulWidget {
@@ -20,6 +20,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   SessionStateBloc _stateBloc;
   SessionDataBloc _dataBloc;
+  LoginBloc _loginBloc;
   StreamSubscription<SessionState> _stateSubscription;
 
   /// A key to keep track of the scaffold.
@@ -30,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
     // Get bloc references.
     _stateBloc = BlocProvider.of<SessionStateBloc>(context);
     _dataBloc = BlocProvider.of<SessionDataBloc>(context);
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
 
     _stateSubscription = _stateBloc.stateStream.listen((SessionState state) {
       switch (state) {
@@ -138,73 +140,10 @@ class _MainScreenState extends State<MainScreen> {
 
   /// The queue of songs that are coming up.
   Widget _getQueue() {
-    const double CARD_HEIGHT = 60;
-
     return StreamBuilder(
       stream: _dataBloc.queueListStream,
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<List<SongModel>> snapshot,
-      ) {
-        if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
-          return _getLoadingStatus();
-        }
-
-        // Get a reference to the queued tracks.
-        List<SongModel> tracks = snapshot.data;
-
-        if (tracks.isEmpty) {
-          // If there are no tracks, indicate that to the user.
-          return _getEmptyQueueStatus();
-        }
-
-        // Sort by upvotes.
-        tracks.sort(
-          (SongModel a, SongModel b) => b.upvotes.length - a.upvotes.length,
-        );
-
-        return SliverFixedExtentList(
-          itemExtent: CARD_HEIGHT,
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) =>
-                trackCard(tracks[index].track, context),
-            childCount: tracks.length,
-          ),
-        );
-      },
-    );
-  }
-
-  /// Gets a loading status indicator.
-  Widget _getLoadingStatus() {
-    return SliverList(
-      delegate: SliverChildListDelegate(
-        <Widget>[
-          Container(
-            alignment: Alignment.topCenter,
-            margin: EdgeInsets.only(top: 30),
-            child: CircularProgressIndicator(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Gets a status message telling the user that the queue is empty.
-  Widget _getEmptyQueueStatus() {
-    return SliverList(
-      delegate: SliverChildListDelegate(
-        <Widget>[
-          Container(
-            alignment: Alignment.topCenter,
-            margin: EdgeInsets.only(top: 30),
-            child: Text(
-              FlutterI18n.translate(context, "main.queueEmpty"),
-              style: Theme.of(context).textTheme.caption,
-            ),
-          ),
-        ],
-      ),
+      builder: (BuildContext context, AsyncSnapshot<List<SongModel>> snap) =>
+          queueBuilder(context, snap, _loginBloc.uidStream.value, _dataBloc),
     );
   }
 

@@ -26,6 +26,7 @@ enum SessionState {
   CREATING,
   CREATED,
   ACTIVE,
+  SEARCHING,
   LEAVING,
 }
 

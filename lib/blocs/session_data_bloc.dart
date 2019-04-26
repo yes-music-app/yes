@@ -16,6 +16,9 @@ class SessionDataBloc implements BlocBase {
   final SessionDataHandlerBase _dataHandler =
       FirebaseProvider().getSessionDataHandler();
 
+  /// The session ID of this session.
+  final String _sid;
+
   /// A reference to the auth handler for network operations.
   final AuthHandlerBase _authHandler = FirebaseProvider().getAuthHandler();
 
@@ -41,9 +44,18 @@ class SessionDataBloc implements BlocBase {
 
   StreamSubscription _queueSub;
 
+  /// A [StreamController] that handles the liking of items in the queue.
+  final StreamController<int> _likeSubject = StreamController.broadcast();
+
+  StreamSink<int> get likeSink => _likeSubject.sink;
+
+  StreamSubscription _likeSub;
+
   /// Creates a session data bloc.
-  SessionDataBloc() {
-    _dataHandler.getSessionModelStream().then((Stream<SessionModel> stream) {
+  SessionDataBloc(this._sid) {
+    _dataHandler
+        .getSessionModelStream(_sid)
+        .then((Stream<SessionModel> stream) {
       _sessionSub = stream.listen((SessionModel data) {
         // If we receive new data, push it.
         if (data.tokens.accessToken != _tokenSubject.value) {
@@ -62,13 +74,21 @@ class SessionDataBloc implements BlocBase {
         _queueTrack(data);
       }
     });
+
+    // Listen for new items to like.
+    _likeSub = _likeSubject.stream.listen(_likeTrack);
   }
 
   /// Queues the given track for the user.
   void _queueTrack(TrackModel track) async {
     String uid = await _authHandler.uid(checked: true);
     SongModel model = SongModel(track, uid, [uid]);
-    _dataHandler.queueTrack(model);
+    _dataHandler.queueTrack(_sid, model);
+  }
+
+  void _likeTrack(int index) async {
+    String uid = await _authHandler.uid(checked: true);
+    _dataHandler.likeTrack(_sid, index, uid);
   }
 
   @override
@@ -78,5 +98,7 @@ class SessionDataBloc implements BlocBase {
     _queueListSubject.close();
     _queueSub?.cancel();
     _queueSubject.close();
+    _likeSub?.cancel();
+    _likeSubject.close();
   }
 }

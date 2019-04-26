@@ -29,7 +29,6 @@ class YesApp extends StatelessWidget {
     "/choose": chooseCallback,
     "/create": createCallback,
     "/join": joinCallback,
-    "/main": mainCallback,
   };
 
   @override
@@ -59,6 +58,8 @@ class YesApp extends StatelessWidget {
 Route _generateRoute(RouteSettings settings) {
   final args = settings.arguments;
   switch (settings.name) {
+    case "/main":
+      return args is String ? mainCallback(args) : null;
     case "/search":
       return args is SessionDataBloc ? searchCallback(args) : null;
     default:
