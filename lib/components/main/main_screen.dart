@@ -3,11 +3,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:yes_music/blocs/login_bloc.dart';
 import 'package:yes_music/blocs/session_data_bloc.dart';
 import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/bar_actions.dart';
+import 'package:yes_music/components/common/failed_alert.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
 import 'package:yes_music/components/main/queue_builder.dart';
 import 'package:yes_music/models/state/song_model.dart';
@@ -19,9 +21,10 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   SessionStateBloc _stateBloc;
+  StreamSubscription _stateSub;
   SessionDataBloc _dataBloc;
+  StreamSubscription _connectionSub;
   LoginBloc _loginBloc;
-  StreamSubscription<SessionState> _stateSubscription;
 
   /// A key to keep track of the scaffold.
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
@@ -33,10 +36,28 @@ class _MainScreenState extends State<MainScreen> {
     _dataBloc = BlocProvider.of<SessionDataBloc>(context);
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
-    _stateSubscription = _stateBloc.stateStream.listen((SessionState state) {
+    _stateSub = _stateBloc.stateStream.listen((SessionState state) {
       switch (state) {
         case SessionState.INACTIVE:
           _pushChooseScreen();
+          break;
+        default:
+          break;
+      }
+    });
+
+    _connectionSub =
+        _dataBloc.connectionStream.listen((SessionConnectionState state) {
+      switch (state) {
+        case SessionConnectionState.DISCONNECTED:
+          switch (_stateBloc.stateStream.value) {
+            case SessionState.ACTIVE:
+            case SessionState.SEARCHING:
+              _leaveSession();
+              break;
+            default:
+              break;
+          }
           break;
         default:
           break;
@@ -73,27 +94,33 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
-    _stateSubscription?.cancel();
+    _connectionSub?.cancel();
+    _stateSub?.cancel();
     super.dispose();
   }
 
   /// Gets the main widgets to display.
   Widget _getContent() {
     return StreamBuilder(
-      stream: _dataBloc.tokenStream,
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        if (snapshot == null ||
-            !snapshot.hasData ||
-            snapshot.hasError ||
-            snapshot.data.isEmpty) {
+      stream: _dataBloc.connectionStream,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<SessionConnectionState> snapshot,
+      ) {
+        if (snapshot == null || !snapshot.hasData || snapshot.hasError) {
           return loadingIndicator();
         }
 
-        return Scaffold(
-          key: _scaffoldKey,
-          body: _getBody(),
-          floatingActionButton: _getAddButton(),
-        );
+        switch (snapshot.data) {
+          case SessionConnectionState.CONNECTED:
+            return Scaffold(
+              key: _scaffoldKey,
+              body: _getBody(),
+              floatingActionButton: _getAddButton(),
+            );
+          default:
+            return loadingIndicator();
+        }
       },
     );
   }
@@ -152,6 +179,15 @@ class _MainScreenState extends State<MainScreen> {
     return FloatingActionButton(
       child: Icon(Icons.add),
       onPressed: _pushSearchScreen,
+    );
+  }
+
+  /// Leaves the current session.
+  void _leaveSession() {
+    showFailedAlert(
+      context,
+      FlutterI18n.translate(context, "errors.session.deleted"),
+      () => _stateBloc.stateSink.add(SessionState.LEAVING),
     );
   }
 
