@@ -2,13 +2,15 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:yes_music/blocs/login_bloc.dart';
 import 'package:yes_music/blocs/session_data_bloc.dart';
 import 'package:yes_music/blocs/session_state_bloc.dart';
 import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/components/common/bar_actions.dart';
 import 'package:yes_music/components/common/loading_indicator.dart';
-import 'package:yes_music/components/common/track_card.dart';
-import 'package:yes_music/models/spotify/track_model.dart';
+import 'package:yes_music/components/main/queue_builder.dart';
+import 'package:yes_music/models/state/song_model.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -17,14 +19,19 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   SessionStateBloc _stateBloc;
-  StreamSubscription<SessionState> _stateSubscription;
   SessionDataBloc _dataBloc;
+  LoginBloc _loginBloc;
+  StreamSubscription<SessionState> _stateSubscription;
+
+  /// A key to keep track of the scaffold.
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
   @override
   void initState() {
     // Get bloc references.
     _stateBloc = BlocProvider.of<SessionStateBloc>(context);
     _dataBloc = BlocProvider.of<SessionDataBloc>(context);
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
 
     _stateSubscription = _stateBloc.stateStream.listen((SessionState state) {
       switch (state) {
@@ -54,7 +61,7 @@ class _MainScreenState extends State<MainScreen> {
 
           switch (snapshot.data) {
             case SessionState.ACTIVE:
-              return _getBody();
+              return _getContent();
             default:
               return loadingIndicator();
           }
@@ -70,45 +77,45 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
   }
 
-  Widget _getBody() {
+  /// Gets the main widgets to display.
+  Widget _getContent() {
     return StreamBuilder(
-      // TODO: Change this to session model listener.
       stream: _dataBloc.tokenStream,
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        if (snapshot?.data == null) {
+        if (snapshot == null ||
+            !snapshot.hasData ||
+            snapshot.hasError ||
+            snapshot.data.isEmpty) {
           return loadingIndicator();
         }
 
-        return _getContent();
+        return Scaffold(
+          key: _scaffoldKey,
+          body: _getBody(),
+          floatingActionButton: _getAddButton(),
+        );
       },
     );
   }
 
-  Widget _getContent() {
+  /// Gets the actual contents of the
+  Widget _getBody() {
     double width = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      body: Builder(
-        builder: (BuildContext context) => CustomScrollView(
-              slivers: <Widget>[
-                _getAppBar(width, Uint8List(0), context),
-                _getQueue(),
-                SliverPadding(padding: EdgeInsets.only(top: 5)),
-              ],
-            ),
-      ),
-      floatingActionButton: _getAddButton(),
+    return CustomScrollView(
+      slivers: <Widget>[
+        _getAppBar(width, Uint8List(0)),
+        _getQueue(),
+        SliverPadding(padding: EdgeInsets.only(top: 5)),
+      ],
     );
   }
 
-  SliverAppBar _getAppBar(double width, Uint8List bytes, BuildContext context) {
+  SliverAppBar _getAppBar(double width, Uint8List bytes) {
     return SliverAppBar(
       actions: getAppBarActions(
         context,
-        [
-          BarActions.SID,
-          BarActions.LEAVE,
-        ],
+        [BarActions.SID, BarActions.LEAVE],
+        scaffoldKey: _scaffoldKey,
       ),
       automaticallyImplyLeading: false,
       centerTitle: true,
@@ -131,99 +138,16 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  SliverList _getQueue() {
-    return SliverList(
-      delegate: _queueDelegate(),
+  /// The queue of songs that are coming up.
+  Widget _getQueue() {
+    return StreamBuilder(
+      stream: _dataBloc.queueListStream,
+      builder: (BuildContext context, AsyncSnapshot<List<SongModel>> snap) =>
+          queueBuilder(context, snap, _loginBloc.uidStream.value, _dataBloc),
     );
   }
 
-  SliverChildBuilderDelegate _queueDelegate() {
-    final Map tempTrack = {
-      "album": {
-        "album_type": "album",
-        "artists": [
-          {
-            "external_urls": {
-              "spotify":
-                  "https://open.spotify.com/artist/2RhgnQNC74QoBlaUvT4MEe"
-            },
-            "href": "https://api.spotify.com/v1/artists/2RhgnQNC74QoBlaUvT4MEe",
-            "id": "2RhgnQNC74QoBlaUvT4MEe",
-            "name": "The Growlers",
-            "type": "artist",
-            "uri": "spotify:artist:2RhgnQNC74QoBlaUvT4MEe"
-          }
-        ],
-        "external_urls": {
-          "spotify": "https://open.spotify.com/album/0b7iiX6rAdsggW5ERuLWB7"
-        },
-        "href": "https://api.spotify.com/v1/albums/0b7iiX6rAdsggW5ERuLWB7",
-        "id": "0b7iiX6rAdsggW5ERuLWB7",
-        "images": [
-          {
-            "height": 640,
-            "url":
-                "https://i.scdn.co/image/12f844b98fd8bc20ad16d2c83fdcfb7751787ea8",
-            "width": 640
-          },
-          {
-            "height": 300,
-            "url":
-                "https://i.scdn.co/image/c6c758d870f7acbbea075ddf55d547b5ff7a1935",
-            "width": 300
-          },
-          {
-            "height": 64,
-            "url":
-                "https://i.scdn.co/image/053d452277c79d269352cd7bbdb860814da10784",
-            "width": 64
-          }
-        ],
-        "name": "Chinese Fountain",
-        "release_date": "2014-09-23",
-        "release_date_precision": "day",
-        "total_tracks": 11,
-        "type": "album",
-        "uri": "spotify:album:0b7iiX6rAdsggW5ERuLWB7"
-      },
-      "artists": [
-        {
-          "external_urls": {
-            "spotify": "https://open.spotify.com/artist/2RhgnQNC74QoBlaUvT4MEe"
-          },
-          "href": "https://api.spotify.com/v1/artists/2RhgnQNC74QoBlaUvT4MEe",
-          "id": "2RhgnQNC74QoBlaUvT4MEe",
-          "name": "The Growlers",
-          "type": "artist",
-          "uri": "spotify:artist:2RhgnQNC74QoBlaUvT4MEe"
-        }
-      ],
-      "disc_number": 1,
-      "duration_ms": 249266,
-      "explicit": false,
-      "external_ids": {"isrc": "USER81404408"},
-      "external_urls": {
-        "spotify": "https://open.spotify.com/track/71bWpBImqNaLjIvfV50Hsa"
-      },
-      "href": "https://api.spotify.com/v1/tracks/71bWpBImqNaLjIvfV50Hsa",
-      "id": "71bWpBImqNaLjIvfV50Hsa",
-      "is_local": false,
-      "name": "Love Test",
-      "popularity": 52,
-      "preview_url":
-          "https://p.scdn.co/mp3-preview/48c64aa7fea8f151158acfabd64a5ebc06aac47b?cid=a50706c333cb40a396c6020d9c79fb8b",
-      "track_number": 8,
-      "type": "track",
-      "uri": "spotify:track:71bWpBImqNaLjIvfV50Hsa"
-    };
-    TrackModel model = TrackModel.fromMap(tempTrack);
-
-    return SliverChildBuilderDelegate(
-      (BuildContext context, int index) => trackCard(model, context),
-      childCount: 20,
-    );
-  }
-
+  /// The button that launches the search screen.
   Widget _getAddButton() {
     return FloatingActionButton(
       child: Icon(Icons.add),

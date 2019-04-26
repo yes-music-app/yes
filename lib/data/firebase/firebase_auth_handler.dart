@@ -56,7 +56,7 @@ class FirebaseAuthHandler implements AuthHandlerBase {
   }
 
   @override
-  Future signInWithCredential(AuthCredential credential) async {
+  Future<String> signInWithCredential(AuthCredential credential) async {
     final FirebaseUser user = await _firebaseAuth
         .signInWithCredential(credential)
         .catchError((e) => throw StateError("errors.login.signIn"));
@@ -70,6 +70,8 @@ class FirebaseAuthHandler implements AuthHandlerBase {
         await user.getIdToken() == null) {
       throw StateError("errors.login.signIn");
     }
+
+    return user.uid;
   }
 
   @override

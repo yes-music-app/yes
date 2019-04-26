@@ -22,9 +22,12 @@ final RouteCallback createCallback = (context) => CreateScreen();
 
 final RouteCallback joinCallback = (context) => JoinScreen();
 
-final RouteCallback mainCallback = (context) => BlocProvider(
-      bloc: SessionDataBloc(),
-      child: MainScreen(),
+MaterialPageRoute mainCallback(String sid) => MaterialPageRoute(
+      builder: (BuildContext context) => BlocProvider(
+            bloc: SessionDataBloc(sid),
+            child: MainScreen(),
+          ),
+      maintainState: true,
     );
 
 MaterialPageRoute searchCallback(SessionDataBloc bloc) => MaterialPageRoute(

@@ -14,8 +14,9 @@ enum BarActions {
 
 List<Widget> getAppBarActions(
   BuildContext context,
-  List<BarActions> actions,
-) {
+  List<BarActions> actions, {
+  GlobalKey<ScaffoldState> scaffoldKey,
+}) {
   // Generate a list of the action items that should be added to the bar.
   List<PopupMenuItem<BarActions>> items = [];
   actions.forEach((BarActions action) {
@@ -39,7 +40,7 @@ List<Widget> getAppBarActions(
       onSelected: (BarActions result) {
         switch (result) {
           case BarActions.SID:
-            _copySID(context);
+            _copySID(context, scaffoldKey);
             break;
           case BarActions.LEAVE:
             _leave(context);
@@ -68,7 +69,7 @@ PopupMenuItem<BarActions> _getSIDItem(BuildContext context) {
 }
 
 /// Copies the current session ID to the clipboard.
-void _copySID(BuildContext context) {
+void _copySID(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey) {
   String sid = BlocProvider.of<SessionStateBloc>(context).sid();
   ClipboardManager.copyToClipBoard(sid).then((_) {
     final snackBar = SnackBar(
@@ -76,7 +77,7 @@ void _copySID(BuildContext context) {
         FlutterI18n.translate(context, "main.sidMessage"),
       ),
     );
-    Scaffold.of(context).showSnackBar(snackBar);
+    scaffoldKey?.currentState?.showSnackBar(snackBar);
   });
 }
 
@@ -102,7 +103,9 @@ void _leave(BuildContext context) {
     "confirm",
     "cancel",
     () {
-      BlocProvider.of<SessionStateBloc>(context).stateSink.add(SessionState.LEAVING);
+      BlocProvider.of<SessionStateBloc>(context)
+          .stateSink
+          .add(SessionState.LEAVING);
     },
     () {},
   );

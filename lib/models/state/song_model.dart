@@ -17,7 +17,7 @@ class SongModel {
   SongModel.fromMap(Map map)
       : track = TrackModel.fromMap(map["track"]),
         uid = map["uid"],
-        upvotes = listToString(map["upvotes"]);
+        upvotes = listToString(map["upvotes"] ?? []);
 
   static List<SongModel> fromMapList(List songs) {
     if (songs == null) {

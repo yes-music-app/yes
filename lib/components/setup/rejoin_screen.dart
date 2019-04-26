@@ -71,6 +71,7 @@ class _RejoinScreenState extends State<RejoinScreen> {
     Navigator.of(context).pushNamedAndRemoveUntil(
       "/main",
       (Route route) => false,
+      arguments: sid,
     );
   }
 

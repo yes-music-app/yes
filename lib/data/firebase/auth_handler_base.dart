@@ -16,7 +16,7 @@ abstract class AuthHandlerBase {
   Future<AuthCredential> getCredential(GoogleSignInAccount account);
 
   /// Attempt to sign the user in with their Firebase auth credentials.
-  Future signInWithCredential(AuthCredential credential);
+  Future<String> signInWithCredential(AuthCredential credential);
 
   /// Sign the user out of their Google account.
   Future signOut();

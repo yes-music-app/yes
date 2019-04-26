@@ -36,6 +36,11 @@ class LoginBloc implements BlocBase {
   /// A subscription to the auth state stream.
   StreamSubscription<FirebaseAuthState> _sub;
 
+  /// The [BehaviorSubject] that broadcasts the curred uid.
+  BehaviorSubject<String> _uidSubject = BehaviorSubject();
+
+  ValueObservable<String> get uidStream => _uidSubject.stream;
+
   LoginBloc() {
     _sub = _firebaseAuthState.listen((FirebaseAuthState state) {
       // If we receive a signal to authorize from the UI, begin that process.
@@ -92,8 +97,8 @@ class LoginBloc implements BlocBase {
       return;
     });
 
-
-    _authHandler.signInWithCredential(credential).then((_) {
+    _authHandler.signInWithCredential(credential).then((String uid) {
+      _uidSubject.add(uid);
       _firebaseAuthState.add(FirebaseAuthState.AUTHORIZED);
     }).catchError((e) {
       _firebaseAuthState.addError(e);
@@ -103,6 +108,7 @@ class LoginBloc implements BlocBase {
   /// Signs the user out of their Google account.
   void _signOut() async {
     _authHandler.signOut().then((_) {
+      _uidSubject.add(null);
       _firebaseAuthState.add(FirebaseAuthState.UNAUTHORIZED);
     }).catchError((e) {
       _firebaseAuthState.addError(e);
@@ -113,5 +119,6 @@ class LoginBloc implements BlocBase {
   void dispose() async {
     _sub.cancel();
     _firebaseAuthState.close();
+    _uidSubject.close();
   }
 }
