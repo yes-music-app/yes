@@ -74,4 +74,19 @@ class SessionDataHandler implements SessionDataHandlerBase {
       throw StateError("errors.session.session_write");
     });
   }
+
+  /// Deletes the track at the given [qid].
+  @override
+  Future deleteTrack(String sid, String qid) async {
+    // Get a snapshot of the song.
+    final DatabaseReference songReference =
+    _firebase.child(sid).child(QUEUE_KEY).child(qid);
+    DataSnapshot snapshot = await songReference.once();
+    if (snapshot == null) {
+      throw StateError("errors.database.noSong");
+    }
+
+    // Deletes the song from the database.
+    songReference.remove();
+  }
 }

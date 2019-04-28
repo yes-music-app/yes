@@ -33,6 +33,9 @@ class SessionDataBloc implements BlocBase {
   /// A subscription to the session state.
   StreamSubscription _sessionSub;
 
+  /// An internal [BehaviorSubject] that broadcasts the data in the session.
+  final BehaviorSubject<SessionModel> _modelSubject = BehaviorSubject();
+
   /// A [BehaviorSubject] that broadcasts the state of the model.
   final BehaviorSubject<SessionConnectionState> _connectionSubject =
       BehaviorSubject.seeded(SessionConnectionState.CONNECTING);
@@ -86,6 +89,11 @@ class SessionDataBloc implements BlocBase {
         // Generate a session model from the passed data.
         SessionModel model = SessionModel.fromMap(data);
 
+        // Push the new model.
+        if (model != _modelSubject.value) {
+          _modelSubject.add(model);
+        }
+
         // If we receive new data, push it.
         if (model.tokens.accessToken != _tokenSubject.value) {
           _tokenSubject.add(model.tokens.accessToken);
@@ -114,13 +122,23 @@ class SessionDataBloc implements BlocBase {
     _dataHandler.queueTrack(_sid, uid, track);
   }
 
+  /// Likes the track at the given qid.
   void _likeTrack(String qid) async {
     String uid = await _authHandler.uid(checked: true);
     _dataHandler.likeTrack(_sid, qid, uid);
   }
 
+  /// Deletes the track at the given qid.
+  void _deleteTrack(String qid) async {
+    String uid = await _authHandler.uid(checked: true);
+
+    // TODO: Check on a setting, either host or one who suggests the song.
+    String songUid = _modelSubject.value.queue[qid]?.uid;
+  }
+
   @override
   void dispose() {
+    _modelSubject?.close();
     _sessionSub?.cancel();
     _connectionSubject.close();
     _tokenSubject.close();

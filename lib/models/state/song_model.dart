@@ -33,13 +33,19 @@ class SongModel {
         upvotes = listToString(map[UPVOTES_KEY] ?? []),
         time = map[TIME_KEY];
 
-  static List<SongModel> fromMapOfMaps(Map songs) {
+  /// Converts a JSON map of song models to a map of [String]s to [SongModel]
+  /// objects.
+  static Map<String, SongModel> fromMapOfMaps(Map songs) {
+    // If we received a null nap, return an empty map;
     if (songs?.values == null) {
-      return [];
+      return {};
     }
 
-    // Get a list of the songs and map them.
-    return songs.values.map((song) => SongModel.fromMap(song)).toList();
+    // Type the map and then push the models.
+    Map<String, Map> typedSongs = songs.cast<String, Map>();
+    return typedSongs.map(
+      (String key, Map value) => MapEntry(key, SongModel.fromMap(value)),
+    );
   }
 
   Map<String, dynamic> toMap() {
@@ -52,9 +58,12 @@ class SongModel {
     };
   }
 
-  static List<Map<String, dynamic>> toMapList(List<SongModel> models) {
-    return models?.map((model) => model.toMap())?.toList();
-  }
+  /// Converts a map of models into a JSON object.
+  static Map<String, Map<String, dynamic>> toMapOfMaps(
+          Map<String, SongModel> models) =>
+      models?.map(
+        (String key, SongModel value) => MapEntry(key, value.toMap()),
+      );
 
   @override
   bool operator ==(other) =>

@@ -22,10 +22,10 @@ class SessionModel {
   final PlayerStateModel playerState;
 
   /// The current queue of upcoming songs.
-  final List<SongModel> queue;
+  final Map<String, SongModel> queue;
 
   /// The history of songs that have been played.
-  final List<SongModel> history;
+  final Map<String, SongModel> history;
 
   /// The host of this session.
   final String host;
@@ -38,8 +38,8 @@ class SessionModel {
 
   SessionModel.empty(this.sid, UserModel newHost, this.tokens)
       : playerState = null,
-        queue = [],
-        history = [],
+        queue = {},
+        history = {},
         host = newHost.uid,
         users = [newHost];
 
@@ -58,8 +58,8 @@ class SessionModel {
     return {
       SID_KEY: sid,
       STATE_KEY: playerState?.toMap(),
-      QUEUE_KEY: SongModel.toMapList(queue),
-      HISTORY_KEY: SongModel.toMapList(history),
+      QUEUE_KEY: SongModel.toMapOfMaps(queue),
+      HISTORY_KEY: SongModel.toMapOfMaps(history),
       HOST_KEY: host,
       USERS_KEY: UserModel.toMapList(users),
       TOKENS_KEY: tokens?.toMap(),
@@ -71,8 +71,8 @@ class SessionModel {
       other is SessionModel &&
       other.sid == sid &&
       other.playerState == playerState &&
-      listsEqual(other.queue, queue) &&
-      listsEqual(other.history, history) &&
+      other.queue == queue &&
+      other.history == history &&
       other.host == host &&
       listsEqual(other.users, users) &&
       other.tokens == tokens;
