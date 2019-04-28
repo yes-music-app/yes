@@ -64,6 +64,9 @@
       "sid": "Failed to retrieve the session ID.",
       "noSong": "The requested song does not exist."
     },
+    "options":{
+      "invalidValue": "Received an option with an invalid value."
+    },
     "session": {
       "already_joined": "Tried to create or join a session while already in one.",
       "create_malformed": "Received incomplete session data when trying to create a new session.",
