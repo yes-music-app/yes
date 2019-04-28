@@ -11,10 +11,12 @@ import 'package:yes_music/components/themes.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/flavor.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
+import 'package:yes_music/options/options_provider.dart';
 
 void main() async {
   FirebaseProvider().setFlavor(Flavor.REMOTE);
   SpotifyProvider().setFlavor(Flavor.REMOTE);
+  OptionsProvider().setFlavor(Flavor.REMOTE);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

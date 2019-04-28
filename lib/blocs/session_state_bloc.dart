@@ -9,8 +9,11 @@ import 'package:yes_music/data/spotify/connection_handler_base.dart';
 import 'package:yes_music/data/spotify/spotify_provider.dart';
 import 'package:yes_music/helpers/data_utils.dart';
 import 'package:yes_music/models/spotify/token_model.dart';
+import 'package:yes_music/models/state/options_model.dart';
 import 'package:yes_music/models/state/session_model.dart';
 import 'package:yes_music/models/state/user_model.dart';
+import 'package:yes_music/options/options_handler_base.dart';
+import 'package:yes_music/options/options_provider.dart';
 
 /// An enumeration of the states that a session can be in. Note that the
 /// "INACTIVE" value is purely client-side; if a user ends a session that they are
@@ -37,9 +40,11 @@ class SessionStateBloc implements BlocBase {
   final ConnectionHandlerBase _connectionHandler =
       SpotifyProvider().getConnectionHandler();
 
-  /// A reference to the session handler.
   final SessionStateHandlerBase _stateHandler =
       FirebaseProvider().getSessionStateHandler();
+
+  final OptionsHandlerBase _optionsHandler =
+      OptionsProvider().getOptionsHandler();
 
   /// A [BehaviorSubject] that broadcasts the current state of the session.
   final BehaviorSubject<SessionState> _stateSubject =
@@ -148,9 +153,16 @@ class SessionStateBloc implements BlocBase {
       await _connectionHandler.connect();
 
       // Generate the models needed to create a new session.
-      final UserModel user = UserModel.empty(await _authHandler.uid());
+      String uid = await _authHandler.uid();
+      final UserModel user = UserModel.fromUID(uid);
       final sid = await generateSID();
-      final SessionModel model = SessionModel.empty(sid, user, tokenModel);
+      final OptionsModel options = await _optionsHandler.getDefaultOptions(uid);
+      final SessionModel model = SessionModel.empty(
+        sid,
+        user,
+        tokenModel,
+        options,
+      );
 
       // Create the new session.
       await _stateHandler.createSession(model);

@@ -1,6 +1,7 @@
 import 'package:yes_music/helpers/list_utils.dart';
 import 'package:yes_music/models/spotify/player_state_model.dart';
 import 'package:yes_music/models/spotify/token_model.dart';
+import 'package:yes_music/models/state/options_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
 import 'package:yes_music/models/state/user_model.dart';
 
@@ -12,6 +13,7 @@ const String HISTORY_KEY = "history";
 const String HOST_KEY = "host";
 const String USERS_KEY = "users";
 const String TOKENS_KEY = "tokens";
+const String OPTIONS_KEY = "options";
 
 /// A session of users.
 class SessionModel {
@@ -36,7 +38,10 @@ class SessionModel {
   /// The tokens to be used for this session.
   final TokenModel tokens;
 
-  SessionModel.empty(this.sid, UserModel newHost, this.tokens)
+  /// The options for this session.
+  final OptionsModel options;
+
+  SessionModel.empty(this.sid, UserModel newHost, this.tokens, this.options)
       : playerState = null,
         queue = {},
         history = {},
@@ -52,7 +57,8 @@ class SessionModel {
         history = SongModel.fromMapOfMaps(map[HISTORY_KEY]),
         host = map[HOST_KEY],
         users = UserModel.fromMapList(map[USERS_KEY]),
-        tokens = TokenModel.fromMap(map[TOKENS_KEY]);
+        tokens = TokenModel.fromMap(map[TOKENS_KEY]),
+        options = OptionsModel.fromMap(map[OPTIONS_KEY]);
 
   Map<String, dynamic> toMap() {
     return {
@@ -63,6 +69,7 @@ class SessionModel {
       HOST_KEY: host,
       USERS_KEY: UserModel.toMapList(users),
       TOKENS_KEY: tokens?.toMap(),
+      OPTIONS_KEY: options?.toMap(),
     };
   }
 
@@ -75,7 +82,8 @@ class SessionModel {
       other.history == history &&
       other.host == host &&
       listsEqual(other.users, users) &&
-      other.tokens == tokens;
+      other.tokens == tokens &&
+      other.options == options;
 
   @override
   int get hashCode =>
@@ -85,5 +93,6 @@ class SessionModel {
       history.hashCode ^
       host.hashCode ^
       users.hashCode ^
-      tokens.hashCode;
+      tokens.hashCode ^
+      options.hashCode;
 }

@@ -30,6 +30,8 @@ class SpotifyProvider {
 
         return _dataHandler;
         break;
+      case Flavor.MOCK:
+        throw UnimplementedError("Mock data handler not yet implemented.");
       default:
         throw StateError("Spotify provider flavor not set");
         break;
@@ -45,6 +47,9 @@ class SpotifyProvider {
 
         return _connectionHandler;
         break;
+      case Flavor.MOCK:
+        throw UnimplementedError(
+            "Mock connection handler not yet implemented.");
       default:
         throw StateError("Spotify provider flavor not set");
         break;

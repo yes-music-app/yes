@@ -11,7 +11,7 @@ class OptionsModel {
   /// The map containing the option values.
   final Map<String, dynamic> _options;
 
-  /// Creates an empty [OptionsModel].
+  /// Creates an [OptionsModel] from the given map.
   OptionsModel(this._options);
 
   /// Creates an [OptionsMode] from a JSON map.

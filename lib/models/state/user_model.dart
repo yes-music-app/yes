@@ -3,7 +3,7 @@ class UserModel {
   /// This user's user ID.
   final String uid;
 
-  UserModel.empty(this.uid);
+  UserModel.fromUID(this.uid);
 
   UserModel.fromMap(Map map) : uid = map["uid"];
 
