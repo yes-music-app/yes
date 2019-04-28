@@ -35,7 +35,13 @@ class SessionDataHandler implements SessionDataHandlerBase {
     String qid = itemReference.key;
 
     // Create a new song model with the received key and push it.
-    SongModel song = SongModel(qid, track, uid, [uid]);
+    SongModel song = SongModel(
+      qid,
+      track,
+      uid,
+      [uid],
+      DateTime.now().millisecondsSinceEpoch,
+    );
     itemReference.set(song.toMap()).catchError((e) {
       throw StateError("errors.session.session_write");
     });

@@ -27,8 +27,7 @@ Widget queueBuilder(
   List<SongModel> tracks = snapshot.data;
 
   // Sort by upvotes.
-  tracks.sort((SongModel a, SongModel b) =>
-      b.upvotes.length - a.upvotes.length);
+  tracks.sort(_compareSongs);
 
   return SliverFixedExtentList(
     itemExtent: CARD_HEIGHT,
@@ -45,6 +44,15 @@ Widget queueBuilder(
       childCount: tracks.length,
     ),
   );
+}
+
+/// Compare two [SongModel]s for queue sorting.
+int _compareSongs(SongModel a, SongModel b) {
+  // Compare by upvotes.
+  int ret = b.upvotes.length - a.upvotes.length;
+
+  // If upvotes are equal, compare by time suggested.
+  return ret == 0 ? a.time - b.time : ret;
 }
 
 /// Gets the appropriate card action icon from the given [uid] and [song].
