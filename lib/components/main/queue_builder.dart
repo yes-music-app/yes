@@ -30,8 +30,7 @@ Widget queueBuilder(
   List<SongModel> tracks = queue.values.toList();
   tracks.sort(_compareSongs);
 
-  return SliverFixedExtentList(
-    itemExtent: CARD_HEIGHT,
+  return SliverList(
     delegate: SliverChildBuilderDelegate(
       (BuildContext context, int index) {
         SongModel song = tracks[index];
@@ -40,6 +39,8 @@ Widget queueBuilder(
           context,
           actionIcon: _getCardActionIcon(song, uid),
           onAction: () => dataBloc.likeSink.add(song.qid),
+          onDelete:
+              uid == song.uid ? () => dataBloc.deleteSink.add(song.qid) : null,
         );
       },
       childCount: tracks.length,

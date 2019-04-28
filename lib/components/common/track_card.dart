@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:yes_music/components/common/custom_dismissible.dart';
 import 'package:yes_music/helpers/transparent_image.dart';
 import 'package:yes_music/models/spotify/artist_model.dart';
 import 'package:yes_music/models/spotify/image_model.dart';
@@ -32,65 +33,95 @@ Widget trackCard(
   ),
   Icon actionIcon,
   VoidCallback onAction,
+  VoidCallback onDelete,
 }) {
   // Get the theme to use for text.
-  final TextTheme textTheme = Theme.of(context).textTheme;
+  final TextTheme textTheme = Theme
+      .of(context)
+      .textTheme;
 
   // Set the correct icon to use for the action button.
   actionIcon = actionIcon ?? Icon(Icons.music_note);
 
   // Get the image url of this track.
   final List<ImageModel> images = track.album?.images;
-  final imageUrl = images?.elementAt(0)?.url;
+  final imageUrl = images
+      ?.elementAt(0)
+      ?.url;
 
   // Set the correct image to use based on whether we received a valid url.
-  Image image = imageUrl == null
-      ? Image.memory(
-          transparentImage,
-          fit: BoxFit.fitWidth,
-        )
-      : Image.network(
-          imageUrl,
-          fit: BoxFit.fitWidth,
-          color: Color.fromRGBO(0, 0, 0, 64),
-          colorBlendMode: BlendMode.darken,
-        );
+  ImageProvider image =
+  imageUrl == null ? MemoryImage(transparentImage) : NetworkImage(imageUrl);
+
+  // The contents of the card.
+  Widget contents = Container(
+    width: width,
+    height: height,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+      image: DecorationImage(
+        image: image,
+        fit: BoxFit.fitWidth,
+        colorFilter: ColorFilter.mode(
+          Color.fromRGBO(0, 0, 0, 64),
+          BlendMode.darken,
+        ),
+      ),
+    ),
+    child: _getContents(track, textTheme, actionIcon, onAction),
+  );
 
   return Card(
+    child: onDelete == null ? contents : _wrapCard(contents, onDelete),
     elevation: 5,
     margin: margin,
     clipBehavior: Clip.antiAlias,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
     ),
-    child: Container(
-      width: width,
-      height: height,
-      child: Stack(
-        children: <Widget>[
-          Container(
-            width: width,
-            height: height,
-            child: image,
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 20, right: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: _getTrackDetails(track, textTheme),
-                ),
-                IconButton(
-                  icon: actionIcon,
-                  onPressed: onAction,
-                )
-              ],
-            ),
-          ),
-        ],
+  );
+}
+
+
+/// Wraps the given widget in a [Dismissible] widget.
+Widget _wrapCard(Widget child, VoidCallback onDelete) {
+  return CustomDismissible(
+    key: UniqueKey(),
+    child: child,
+    direction: DismissDirection.startToEnd,
+    onDismissed: (DismissDirection direction) => onDelete(),
+    background: Container(
+      color: Colors.redAccent,
+      child: Container(
+        margin: EdgeInsets.only(left: 20),
+        alignment: Alignment.centerLeft,
+        child: Icon(Icons.delete),
       ),
+    ),
+  );
+}
+
+/// Gets the contents of a track card that are to be laid over the image.
+Widget _getContents(
+  TrackModel track,
+  TextTheme textTheme,
+  Icon actionIcon,
+  VoidCallback onAction,
+) {
+  return Container(
+    margin: EdgeInsets.only(left: 20, right: 10),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Expanded(
+          child: _getTrackDetails(track, textTheme),
+        ),
+        IconButton(
+          icon: actionIcon,
+          onPressed: onAction,
+        )
+      ],
     ),
   );
 }

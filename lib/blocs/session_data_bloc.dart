@@ -69,6 +69,12 @@ class SessionDataBloc implements BlocBase {
 
   StreamSubscription _likeSub;
 
+  /// A [StreamController] that handles the deletion of items in the queue.
+  final StreamController<String> _deleteSubject = StreamController.broadcast();
+
+  StreamSink<String> get deleteSink => _deleteSubject.sink;
+  StreamSubscription _deleteSub;
+
   // </editor-fold>
 
   /// Creates a session data bloc.
@@ -114,6 +120,9 @@ class SessionDataBloc implements BlocBase {
 
     // Listen for new items to like.
     _likeSub = _likeSubject.stream.listen(_likeTrack);
+
+    // Listen for new items to delete.
+    _deleteSub = _deleteSubject.stream.listen(_deleteTrack);
   }
 
   /// Queues the given track for the user.
@@ -131,9 +140,12 @@ class SessionDataBloc implements BlocBase {
   /// Deletes the track at the given qid.
   void _deleteTrack(String qid) async {
     String uid = await _authHandler.uid(checked: true);
-
-    // TODO: Check on a setting, either host or one who suggests the song.
     String songUid = _modelSubject.value.queue[qid]?.uid;
+
+    // If this is the user that proposed the track, delete it.
+    if (uid == songUid) {
+      _dataHandler.deleteTrack(_sid, qid);
+    }
   }
 
   @override
@@ -147,5 +159,7 @@ class SessionDataBloc implements BlocBase {
     _queueSubject.close();
     _likeSub?.cancel();
     _likeSubject.close();
+    _deleteSub?.cancel();
+    _deleteSubject.close();
   }
 }
