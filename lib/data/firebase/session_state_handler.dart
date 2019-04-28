@@ -113,7 +113,7 @@ class SessionStateHandler implements SessionStateHandlerBase {
     final String path = USERS_KEY + "/" + uid;
 
     // Attempt to write the new value to the session database.
-    UserModel model = UserModel.empty(uid);
+    UserModel model = UserModel.fromUID(uid);
     _firebase.child(sid).child(path).set(model.toMap()).catchError((e) {
       throw StateError("errors.session.session_write");
     });

@@ -61,7 +61,11 @@
     "database": {
       "operation": "Failed to connect to the database. Please make sure that your device is connected to the internet.",
       "uid": "Failed to retrieve the user ID.",
-      "sid": "Failed to retrieve the session ID."
+      "sid": "Failed to retrieve the session ID.",
+      "noSong": "The requested song does not exist."
+    },
+    "options":{
+      "invalidValue": "Received an option with an invalid value."
     },
     "session": {
       "already_joined": "Tried to create or join a session while already in one.",

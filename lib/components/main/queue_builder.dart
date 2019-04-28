@@ -10,7 +10,7 @@ const double CARD_HEIGHT = 60;
 /// Builds a list of track cards to display in the queue.
 Widget queueBuilder(
   BuildContext context,
-  AsyncSnapshot<List<SongModel>> snapshot,
+  AsyncSnapshot<Map<String, SongModel>> snapshot,
   String uid,
   SessionDataBloc dataBloc,
 ) {
@@ -24,14 +24,13 @@ Widget queueBuilder(
   }
 
   // Get a reference to the queued tracks.
-  List<SongModel> tracks = snapshot.data;
+  Map<String, SongModel> queue = snapshot.data;
 
   // Sort by upvotes.
-  tracks.sort((SongModel a, SongModel b) =>
-      b.upvotes.length - a.upvotes.length);
+  List<SongModel> tracks = queue.values.toList();
+  tracks.sort(_compareSongs);
 
-  return SliverFixedExtentList(
-    itemExtent: CARD_HEIGHT,
+  return SliverList(
     delegate: SliverChildBuilderDelegate(
       (BuildContext context, int index) {
         SongModel song = tracks[index];
@@ -40,11 +39,22 @@ Widget queueBuilder(
           context,
           actionIcon: _getCardActionIcon(song, uid),
           onAction: () => dataBloc.likeSink.add(song.qid),
+          onDelete:
+              uid == song.uid ? () => dataBloc.deleteSink.add(song.qid) : null,
         );
       },
       childCount: tracks.length,
     ),
   );
+}
+
+/// Compare two [SongModel]s for queue sorting.
+int _compareSongs(SongModel a, SongModel b) {
+  // Compare by upvotes.
+  int ret = b.upvotes.length - a.upvotes.length;
+
+  // If upvotes are equal, compare by time suggested.
+  return ret == 0 ? a.time - b.time : ret;
 }
 
 /// Gets the appropriate card action icon from the given [uid] and [song].

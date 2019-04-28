@@ -5,7 +5,6 @@ import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/session_data_handler_base.dart';
-import 'package:yes_music/helpers/list_utils.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 import 'package:yes_music/models/state/session_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
@@ -33,6 +32,9 @@ class SessionDataBloc implements BlocBase {
   /// A subscription to the session state.
   StreamSubscription _sessionSub;
 
+  /// An internal [BehaviorSubject] that broadcasts the data in the session.
+  final BehaviorSubject<SessionModel> _modelSubject = BehaviorSubject();
+
   /// A [BehaviorSubject] that broadcasts the state of the model.
   final BehaviorSubject<SessionConnectionState> _connectionSubject =
       BehaviorSubject.seeded(SessionConnectionState.CONNECTING);
@@ -46,9 +48,10 @@ class SessionDataBloc implements BlocBase {
   ValueObservable<String> get tokenStream => _tokenSubject.stream;
 
   /// A [BehaviorSubject] that broadcasts the current state of the queue.
-  final BehaviorSubject<List<SongModel>> _queueListSubject = BehaviorSubject();
+  final BehaviorSubject<Map<String, SongModel>> _queueListSubject =
+      BehaviorSubject();
 
-  ValueObservable<List<SongModel>> get queueListStream =>
+  ValueObservable<Map<String, SongModel>> get queueListStream =>
       _queueListSubject.stream;
 
   /// A [StreamController] that handles the queuing of new songs to play.
@@ -65,6 +68,12 @@ class SessionDataBloc implements BlocBase {
   StreamSink<String> get likeSink => _likeSubject.sink;
 
   StreamSubscription _likeSub;
+
+  /// A [StreamController] that handles the deletion of items in the queue.
+  final StreamController<String> _deleteSubject = StreamController.broadcast();
+
+  StreamSink<String> get deleteSink => _deleteSubject.sink;
+  StreamSubscription _deleteSub;
 
   // </editor-fold>
 
@@ -86,12 +95,17 @@ class SessionDataBloc implements BlocBase {
         // Generate a session model from the passed data.
         SessionModel model = SessionModel.fromMap(data);
 
+        // Push the new model.
+        if (model != _modelSubject.value) {
+          _modelSubject.add(model);
+        }
+
         // If we receive new data, push it.
         if (model.tokens.accessToken != _tokenSubject.value) {
           _tokenSubject.add(model.tokens.accessToken);
         }
 
-        if (!listsEqual(model.queue, _queueListSubject.value)) {
+        if (model.queue != _queueListSubject.value) {
           _queueListSubject.add(model.queue);
         }
       });
@@ -106,6 +120,9 @@ class SessionDataBloc implements BlocBase {
 
     // Listen for new items to like.
     _likeSub = _likeSubject.stream.listen(_likeTrack);
+
+    // Listen for new items to delete.
+    _deleteSub = _deleteSubject.stream.listen(_deleteTrack);
   }
 
   /// Queues the given track for the user.
@@ -114,13 +131,26 @@ class SessionDataBloc implements BlocBase {
     _dataHandler.queueTrack(_sid, uid, track);
   }
 
+  /// Likes the track at the given qid.
   void _likeTrack(String qid) async {
     String uid = await _authHandler.uid(checked: true);
     _dataHandler.likeTrack(_sid, qid, uid);
   }
 
+  /// Deletes the track at the given qid.
+  void _deleteTrack(String qid) async {
+    String uid = await _authHandler.uid(checked: true);
+    String songUid = _modelSubject.value.queue[qid]?.uid;
+
+    // If this is the user that proposed the track, delete it.
+    if (uid == songUid) {
+      _dataHandler.deleteTrack(_sid, qid);
+    }
+  }
+
   @override
   void dispose() {
+    _modelSubject?.close();
     _sessionSub?.cancel();
     _connectionSubject.close();
     _tokenSubject.close();
@@ -129,5 +159,7 @@ class SessionDataBloc implements BlocBase {
     _queueSubject.close();
     _likeSub?.cancel();
     _likeSubject.close();
+    _deleteSub?.cancel();
+    _deleteSubject.close();
   }
 }

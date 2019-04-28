@@ -35,7 +35,13 @@ class SessionDataHandler implements SessionDataHandlerBase {
     String qid = itemReference.key;
 
     // Create a new song model with the received key and push it.
-    SongModel song = SongModel(qid, track, uid, [uid]);
+    SongModel song = SongModel(
+      qid,
+      track,
+      uid,
+      [uid],
+      DateTime.now().millisecondsSinceEpoch,
+    );
     itemReference.set(song.toMap()).catchError((e) {
       throw StateError("errors.session.session_write");
     });
@@ -67,5 +73,20 @@ class SessionDataHandler implements SessionDataHandlerBase {
     upvotesReference.set(upvotes).catchError((e) {
       throw StateError("errors.session.session_write");
     });
+  }
+
+  /// Deletes the track at the given [qid].
+  @override
+  Future deleteTrack(String sid, String qid) async {
+    // Get a snapshot of the song.
+    final DatabaseReference songReference =
+    _firebase.child(sid).child(QUEUE_KEY).child(qid);
+    DataSnapshot snapshot = await songReference.once();
+    if (snapshot == null) {
+      throw StateError("errors.database.noSong");
+    }
+
+    // Deletes the song from the database.
+    songReference.remove();
   }
 }

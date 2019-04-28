@@ -10,4 +10,7 @@ abstract class SessionDataHandlerBase {
 
   /// Likes the track at the given [qid] with the given [uid].
   Future likeTrack(String sid, String qid, String uid);
+
+  /// Deletes the track at the given [qid].
+  Future deleteTrack(String sid, String qid);
 }

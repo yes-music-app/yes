@@ -1,4 +1,4 @@
-import 'package:yes_music/feature_flags/index.dart';
+import 'package:yes_music/options/index.dart';
 
 class FlagProvider {
   static final FlagProvider instance = FlagProvider._internal();
