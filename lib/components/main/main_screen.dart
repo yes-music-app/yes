@@ -169,7 +169,8 @@ class _MainScreenState extends State<MainScreen> {
   Widget _getQueue() {
     return StreamBuilder(
       stream: _dataBloc.queueListStream,
-      builder: (BuildContext context, AsyncSnapshot<List<SongModel>> snap) =>
+      builder: (BuildContext context,
+              AsyncSnapshot<Map<String, SongModel>> snap) =>
           queueBuilder(context, snap, _loginBloc.uidStream.value, _dataBloc),
     );
   }

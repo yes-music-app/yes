@@ -10,7 +10,7 @@ const double CARD_HEIGHT = 60;
 /// Builds a list of track cards to display in the queue.
 Widget queueBuilder(
   BuildContext context,
-  AsyncSnapshot<List<SongModel>> snapshot,
+  AsyncSnapshot<Map<String, SongModel>> snapshot,
   String uid,
   SessionDataBloc dataBloc,
 ) {
@@ -24,9 +24,10 @@ Widget queueBuilder(
   }
 
   // Get a reference to the queued tracks.
-  List<SongModel> tracks = snapshot.data;
+  Map<String, SongModel> queue = snapshot.data;
 
   // Sort by upvotes.
+  List<SongModel> tracks = queue.values.toList();
   tracks.sort(_compareSongs);
 
   return SliverFixedExtentList(

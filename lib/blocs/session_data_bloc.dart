@@ -5,7 +5,6 @@ import 'package:yes_music/blocs/utils/bloc_provider.dart';
 import 'package:yes_music/data/firebase/auth_handler_base.dart';
 import 'package:yes_music/data/firebase/firebase_provider.dart';
 import 'package:yes_music/data/firebase/session_data_handler_base.dart';
-import 'package:yes_music/helpers/list_utils.dart';
 import 'package:yes_music/models/spotify/track_model.dart';
 import 'package:yes_music/models/state/session_model.dart';
 import 'package:yes_music/models/state/song_model.dart';
@@ -49,9 +48,10 @@ class SessionDataBloc implements BlocBase {
   ValueObservable<String> get tokenStream => _tokenSubject.stream;
 
   /// A [BehaviorSubject] that broadcasts the current state of the queue.
-  final BehaviorSubject<List<SongModel>> _queueListSubject = BehaviorSubject();
+  final BehaviorSubject<Map<String, SongModel>> _queueListSubject =
+      BehaviorSubject();
 
-  ValueObservable<List<SongModel>> get queueListStream =>
+  ValueObservable<Map<String, SongModel>> get queueListStream =>
       _queueListSubject.stream;
 
   /// A [StreamController] that handles the queuing of new songs to play.
@@ -99,7 +99,7 @@ class SessionDataBloc implements BlocBase {
           _tokenSubject.add(model.tokens.accessToken);
         }
 
-        if (!listsEqual(model.queue, _queueListSubject.value)) {
+        if (model.queue != _queueListSubject.value) {
           _queueListSubject.add(model.queue);
         }
       });
