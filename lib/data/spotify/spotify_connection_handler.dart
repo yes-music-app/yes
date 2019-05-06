@@ -31,6 +31,18 @@ class SpotifyConnectionHandler implements ConnectionHandlerBase {
   }
 
   @override
+  Future<Map> refreshAccessToken(String refreshToken) async {
+    try {
+      return await CloudFunctions.instance.call(
+        functionName: "refreshAccessToken",
+        parameters: {"token": refreshToken},
+      );
+    } catch (e) {
+      throw StateError("errors.spotify.authRefresh");
+    }
+  }
+
+  @override
   Future connect() async {
     await _channel.invokeMethod("connect").catchError((e) {
       throw StateError("errors.remote.connect");

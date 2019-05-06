@@ -6,6 +6,9 @@ abstract class ConnectionHandlerBase {
   /// Request an access token from the Spotify Web API.
   Future<dynamic> requestAccessToken(String code);
 
+  /// Request a refreshed access token from the Spotify Web API.
+  Future<Map> refreshAccessToken(String refreshToken);
+
   /// Attempt to connect to the Spotify auth API.
   Future connect();
 
