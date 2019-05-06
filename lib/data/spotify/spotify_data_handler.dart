@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:http/http.dart' as http;
 import 'package:yes_music/data/spotify/data_handler_base.dart';
 import 'package:yes_music/helpers/data_utils.dart';
@@ -8,6 +9,31 @@ import 'package:yes_music/models/state/search_model.dart';
 
 /// A class that handles data interactions with the Spotify app.
 class SpotifyDataHandler implements DataHandlerBase {
+  /// Request the authorization URL from the Spotify Web API.
+  @override
+  Future<String> requestAuthUrl() async {
+    try {
+      return await CloudFunctions.instance.call(
+        functionName: "requestAuth",
+      );
+    } catch (e) {
+      throw StateError("errors.spotify.auth_url");
+    }
+  }
+
+  /// Request an access token from the Spotify Web API.
+  @override
+  Future<Map> requestAccessToken(String code) async {
+    try {
+      return await CloudFunctions.instance.call(
+        functionName: "requestAccessToken",
+        parameters: {"code": code},
+      );
+    } catch (e) {
+      throw StateError("errors.spotify.auth_cancel");
+    }
+  }
+
   /// Searches with the given [query], using [accessToken] for authorization.
   @override
   Future<SearchModel> search(
